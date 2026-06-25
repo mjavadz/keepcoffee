@@ -143,6 +143,19 @@ button {
   outline: none;
 }
 
+/* Visible keyboard focus for everything interactive (mouse clicks stay clean
+   thanks to :focus-visible). One consistent accent ring across the site. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
 img {
   max-width: 100%;
   display: block;

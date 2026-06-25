@@ -3,12 +3,8 @@ import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import ScrollToTop from './ScrollToTop';
-
-const PageLoader = () => (
-  <div style={{ padding: '160px 0', textAlign: 'center', color: 'var(--color-accent)' }}>
-    در حال بارگذاری...
-  </div>
-);
+import BackToTop from './BackToTop';
+import Loader from './Loader';
 
 export default function Layout() {
   return (
@@ -17,11 +13,12 @@ export default function Layout() {
       <ScrollToTop />
       <Header />
       <main id="main-content">
-        <Suspense fallback={<PageLoader />}>
+        <Suspense fallback={<Loader minHeight="70vh" />}>
           <Outlet />
         </Suspense>
       </main>
       <Footer />
+      <BackToTop />
     </>
   );
 }

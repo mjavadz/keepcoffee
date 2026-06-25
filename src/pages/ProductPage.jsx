@@ -7,6 +7,7 @@ import { getProduct, getRelated } from '../data/products';
 import { categoryLabel } from '../data/categories';
 import { useCart } from '../context/CartContext';
 import { formatToman, toPersianDigits } from '../utils/format';
+import { roastColor } from '../utils/roast';
 import './ProductPage.css';
 
 export default function ProductPage() {
@@ -69,7 +70,7 @@ export default function ProductPage() {
                     onClick={() => setActiveImg(i)}
                     aria-label={`تصویر ${toPersianDigits(i + 1)}`}
                   >
-                    <img src={img} alt="" />
+                    <img src={img} alt={`${product.name} - نمای ${toPersianDigits(i + 1)}`} />
                   </button>
                 ))}
               </div>
@@ -86,7 +87,17 @@ export default function ProductPage() {
 
             <div className="detail-meta">
               {product.roast && (
-                <div className="meta-row"><span>درجه برشت:</span><strong>{product.roast}</strong></div>
+                <div className="meta-row">
+                  <span>درجه برشت:</span>
+                  <strong className="roast-meta">
+                    <span
+                      className="roast-dot"
+                      style={{ backgroundColor: roastColor(product.roast) }}
+                      aria-hidden="true"
+                    />
+                    {product.roast}
+                  </strong>
+                </div>
               )}
               {product.notes?.length > 0 && (
                 <div className="meta-row">
@@ -100,7 +111,7 @@ export default function ProductPage() {
 
             <div className="detail-actions">
               <div className="qty-stepper" role="group" aria-label="تعداد">
-                <button onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="کاهش">−</button>
+                <button onClick={() => setQty((q) => Math.max(1, q - 1))} disabled={qty === 1} aria-label="کاهش">−</button>
                 <span>{toPersianDigits(qty)}</span>
                 <button onClick={() => setQty((q) => q + 1)} aria-label="افزایش">+</button>
               </div>

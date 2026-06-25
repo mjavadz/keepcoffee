@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart } from './Icons';
+import { ShoppingCart, Check } from './Icons';
 import { useCart } from '../context/CartContext';
 import { formatToman } from '../utils/format';
 import { categoryLabel } from '../data/categories';
+import { roastColor } from '../utils/roast';
 import './ProductCard.css';
 
 export default function ProductCard({ product }) {
@@ -26,8 +27,9 @@ export default function ProductCard({ product }) {
           className={`add-to-cart-btn ${added ? 'is-added' : ''}`}
           aria-label={`افزودن ${product.name} به سبد خرید`}
           onClick={handleAdd}
+          disabled={added}
         >
-          <ShoppingCart size={20} />
+          {added ? <Check size={20} /> : <ShoppingCart size={20} />}
         </button>
       </Link>
       <div className="product-info">
@@ -37,7 +39,14 @@ export default function ProductCard({ product }) {
         </h3>
         {product.roast && (
           <div className="product-taste-profile">
-            <span className="roast-level">{product.roast}</span>
+            <span className="roast-level">
+              <span
+                className="roast-dot"
+                style={{ backgroundColor: roastColor(product.roast) }}
+                aria-hidden="true"
+              />
+              {product.roast}
+            </span>
             {product.notes?.length > 0 && (
               <span className="tasting-notes">{product.notes.join('، ')}</span>
             )}

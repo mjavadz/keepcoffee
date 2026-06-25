@@ -69,6 +69,12 @@
   cursor: pointer;
   padding: 0;
   background: none;
+  transition: border-color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.gallery-thumb:hover {
+  border-color: var(--color-accent);
+  opacity: 0.85;
 }
 
 .gallery-thumb.is-active {
@@ -138,6 +144,20 @@
   color: var(--color-text-primary);
 }
 
+.roast-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.roast-meta .roast-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+
 .note-chips {
   display: flex;
   flex-wrap: wrap;
@@ -179,8 +199,13 @@
   transition: background-color var(--transition-fast);
 }
 
-.qty-stepper button:hover {
+.qty-stepper button:hover:not(:disabled) {
   background-color: var(--color-bg);
+}
+
+.qty-stepper button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 
 .qty-stepper span {

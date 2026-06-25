@@ -61,7 +61,7 @@
   flex: 1;
   padding: 16px 24px;
   border: none;
-  background-color: white;
+  background-color: var(--color-surface);
   font-family: inherit;
   font-size: 1rem;
   color: var(--color-text-primary);
@@ -69,7 +69,56 @@
 }
 
 .newsletter-input::placeholder {
-  color: #999;
+  color: var(--color-text-secondary);
+  opacity: 0.7;
+}
+
+.input-group.has-error {
+  outline: 2px solid #e05656;
+  outline-offset: 2px;
+}
+
+.newsletter-error {
+  display: block;
+  font-size: 0.85rem;
+  color: #e05656;
+  text-align: right;
+  font-weight: 600;
+}
+
+/* Success confirmation replaces the form after a valid submit */
+.newsletter-success {
+  flex: 1;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 28px 32px;
+  background-color: var(--color-surface);
+  border: 1px solid rgba(193, 154, 107, 0.25);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.newsletter-success strong {
+  color: var(--color-text-primary);
+  font-size: 1.2rem;
+}
+
+.newsletter-success span:last-child {
+  color: var(--color-text-secondary);
+}
+
+.newsletter-success-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  color: #1F1511;
+  margin-bottom: 4px;
 }
 
 .newsletter-btn {

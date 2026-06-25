@@ -2,6 +2,8 @@
   background-color: #1A120E; /* Deep dark espresso for footer */
   color: #FDFBF7;
   padding: 80px 0 24px;
+  /* Warm caramel stripe so the footer carries the brand palette, not just black */
+  border-top: 3px solid var(--color-accent);
 }
 
 .footer-top {
@@ -26,10 +28,13 @@
   max-width: 400px;
 }
 
+/* Footer sits on a fixed dark background in BOTH themes, so it must use fixed
+   light colors — theme vars (--color-text-*) turn near-black in light mode and
+   made these headings invisible. */
 .footer-links h4, .footer-social h4 {
   font-size: 1.2rem;
   margin-bottom: 24px;
-  color: var(--color-text-primary);
+  color: #FDFBF7;
   position: relative;
   padding-right: 16px;
 }
@@ -41,12 +46,12 @@
   top: 4px;
   bottom: 4px;
   width: 4px;
-  background-color: var(--color-primary);
+  background-color: var(--color-accent);
   border-radius: 4px;
 }
 
 .footer-social p {
-  color: var(--color-text-secondary);
+  color: rgba(255, 255, 255, 0.7);
   margin-bottom: 24px;
   font-size: 0.95rem;
   line-height: 1.6;

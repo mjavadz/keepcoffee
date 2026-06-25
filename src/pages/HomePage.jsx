@@ -4,6 +4,7 @@ import HeroSection from '../components/HeroSection';
 import Categories from '../components/Categories';
 import CoffeeFinder from '../components/CoffeeFinder';
 import ProductList from '../components/ProductList';
+import Loader from '../components/Loader';
 
 const Features = lazy(() => import('../components/Features'));
 const OurStory = lazy(() => import('../components/OurStory'));
@@ -12,11 +13,7 @@ const CustomerClub = lazy(() => import('../components/CustomerClub'));
 const BlogSnippet = lazy(() => import('../components/BlogSnippet'));
 const Newsletter = lazy(() => import('../components/Newsletter'));
 
-const SectionLoader = () => (
-  <div style={{ padding: '80px 0', textAlign: 'center', color: 'var(--color-accent)' }}>
-    در حال بارگذاری...
-  </div>
-);
+const SectionLoader = () => <Loader minHeight="40vh" />;
 
 export default function HomePage() {
   return (
