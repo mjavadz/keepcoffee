@@ -1,16 +1,50 @@
-# React + Vite
+# کیپ کافی · Keep Coffee
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+فروشگاه آنلاین قهوه تخصصی — یک وب‌اپ چندصفحه‌ای فارسی/راست‌به‌چپ با تم روشن و تاریک.
+A multi-page Persian/RTL specialty-coffee shop, built with React 19 + Vite.
 
-Currently, two official plugins are available:
+🌐 Live: [keepc.ir](https://keepc.ir)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ویژگی‌ها · Features
 
-## React Compiler
+- صفحات: خانه، فروشگاه، جزئیات محصول، وبلاگ، نوشته، درباره ما، تماس، باشگاه مشتریان، عمده‌فروشی، سبد خرید، ۴۰۴
+- تم روشن/تاریک/سیستمی
+- سبد خرید با `localStorage` (بدون درگاه پرداخت — تسویه از طریق واتس‌اپ/تلگرام)
+- کدِ صفحه‌ها به‌صورت route-level code-splitting بارگذاری می‌شود
+- تصاویر WebP میزبانی‌شده روی خود سایت
+- آیکون‌های SVG محلی (بدون وابستگی `lucide-react`)
+- متا تگ‌های SEO و داده‌ساختاریافته‌ی JSON-LD
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## پشته‌ی فنی · Tech stack
 
-## Expanding the ESLint configuration
+React 19 · Vite 8 · react-router-dom 7 · react-helmet-async
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## اجرا به‌صورت محلی · Local development
+
+```bash
+npm install
+npm run dev      # سرور توسعه روی http://localhost:5173
+npm run lint     # بررسی ESLint
+```
+
+## ساخت نسخه‌ی تولید · Production build
+
+```bash
+npm run build    # خروجی در پوشه‌ی dist/
+npm run preview  # پیش‌نمایش محلیِ خروجی build
+```
+
+## استقرار روی cPanel · Deploy (static, cPanel)
+
+سایت کاملاً استاتیک است و بک‌اند ندارد.
+
+1. `npm run build`
+2. **محتوای داخل پوشه‌ی `dist/`** را (شاملِ `.htaccess`) zip کنید — نه خودِ پوشه را.
+3. فایل zip را در `public_html` آپلود و extract کنید.
+
+فایل `public/.htaccess` مسیر‌دهی SPA را انجام می‌دهد تا لینک‌های مستقیم (deep links) کار کنند.
+
+## ساختار داده · Content data
+
+محتوای کاتالوگ و وبلاگ در `src/data/` قرار دارد (`products.js`, `posts.js`, `categories.js`) و
+اطلاعات تماس به‌صورت متمرکز در `src/data/site.js` است — این مقادیر را با اطلاعات واقعی جایگزین کنید.
