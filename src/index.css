@@ -1,0 +1,299 @@
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap');
+
+:root {
+  /* Light Theme - Coffee Palette */
+  --color-bg: #FCFBFA; 
+  --color-surface: #FFFFFF;
+  --color-primary: #3E2723; /* Darker espresso for more contrast */
+  --color-secondary: #795548;
+  --color-accent: #D4A373; 
+  --color-text-primary: #1F1511; /* Almost black */
+  --color-text-secondary: #5C4D43;
+  --color-border: #E8E2DA;
+  --color-overlay: rgba(252, 251, 250, 0.85);
+
+  /* Typography */
+  --font-family: 'Vazirmatn', system-ui, -apple-system, sans-serif;
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(62, 39, 35, 0.05);
+  --shadow-md: 0 4px 16px rgba(62, 39, 35, 0.08);
+  --shadow-lg: 0 12px 32px rgba(62, 39, 35, 0.12);
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+  
+  /* Transitions */
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark Theme Variables */
+[data-theme='dark'] {
+  --color-bg: #12100E; /* Deep dark coffee bean color */
+  --color-surface: #1C1916;
+  --color-primary: #F0E6D2; /* Light cream for primary text in dark mode */
+  --color-secondary: #A68B75;
+  --color-accent: #D4A373;
+  --color-text-primary: #FDFBF7;
+  --color-text-secondary: #B0A296;
+  --color-border: #332D27;
+  --color-overlay: rgba(28, 25, 22, 0.85);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-family);
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  direction: rtl;
+  scroll-behavior: smooth;
+  /* Offset anchor scroll so target sections aren't hidden behind the fixed header */
+  scroll-padding-top: 100px;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Skip-to-content link for keyboard & screen-reader users */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  right: 16px;
+  z-index: 2000;
+  padding: 12px 20px;
+  background: var(--color-primary);
+  color: var(--color-bg);
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  text-decoration: none;
+  transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+  top: 16px;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-secondary);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* Typography Utilities */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-primary);
+  font-weight: 500; /* Minimal and light */
+  letter-spacing: -0.5px;
+  line-height: 1.4;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Base Layout */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 24px;
+  border-radius: var(--radius-full);
+  font-weight: 500; /* Minimal */
+  font-size: 0.95rem;
+  transition: all var(--transition-fast);
+  gap: 8px;
+}
+
+.btn-primary {
+  background-color: var(--color-accent);
+  color: #1F1511; /* Always dark text on accent color */
+}
+
+.btn-primary:hover {
+  background-color: #E2B68A;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  border: 2px solid var(--color-border); /* Thicker border */
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-bg);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--color-text-primary);
+  border: 2px solid var(--color-border);
+}
+
+.btn-outline:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.btn-lg {
+  padding: 14px 32px;
+  font-size: 1.05rem;
+}
+
+/* Shared page-section helpers reused across pages */
+.page {
+  min-height: 60vh;
+  padding-top: 84px; /* clear the fixed header on non-home pages */
+}
+
+.page-hero {
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: 56px 0;
+  text-align: center;
+}
+
+.page-hero h1 {
+  font-size: 2.4rem;
+  color: var(--color-text-primary);
+  margin-bottom: 12px;
+}
+
+.page-hero p {
+  color: var(--color-text-secondary);
+  font-size: 1.1rem;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.breadcrumb {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.breadcrumb a {
+  color: var(--color-accent);
+}
+
+.section-pad {
+  padding: 80px 0;
+}
+
+/* Shared section header (used on home sections and pages) */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 48px;
+}
+
+.section-title {
+  font-size: 2rem;
+  color: var(--color-text-primary);
+}
+
+.view-all {
+  color: var(--color-accent);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.view-all:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+}
+
+/* View Transitions */
+@view-transition {
+  navigation: auto;
+}
+
+/* Performance Optimizations */
+.categories-section,
+.products-section,
+.features-section,
+.footer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}

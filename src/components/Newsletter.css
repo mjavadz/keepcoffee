@@ -1,0 +1,138 @@
+.newsletter-section {
+  padding: 80px 0;
+  background-color: var(--color-surface);
+}
+
+.newsletter-wrapper {
+  background: linear-gradient(135deg, var(--color-bg) 0%, var(--color-surface) 100%);
+  border-radius: var(--radius-lg);
+  padding: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 64px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(193, 154, 107, 0.1);
+}
+
+.newsletter-content {
+  flex: 1;
+}
+
+.newsletter-icon {
+  width: 64px;
+  height: 64px;
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 20px rgba(193, 154, 107, 0.3);
+}
+
+.newsletter-content h2 {
+  font-size: 2.2rem;
+  color: var(--color-text-primary);
+  margin-bottom: 16px;
+}
+
+.newsletter-content p {
+  font-size: 1.1rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.newsletter-form {
+  flex: 1;
+  max-width: 500px;
+}
+
+.input-group {
+  display: flex;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.newsletter-input {
+  flex: 1;
+  padding: 16px 24px;
+  border: none;
+  background-color: white;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--color-text-primary);
+  outline: none;
+}
+
+.newsletter-input::placeholder {
+  color: #999;
+}
+
+.newsletter-btn {
+  border-radius: 0;
+  padding: 0 32px;
+  font-size: 1.1rem;
+}
+
+.newsletter-disclaimer {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  text-align: right;
+}
+
+@media (max-width: 992px) {
+  .newsletter-wrapper {
+    flex-direction: column;
+    padding: 48px 32px;
+    gap: 40px;
+    text-align: center;
+  }
+  
+  .newsletter-icon {
+    margin: 0 auto 24px auto;
+  }
+  
+  .newsletter-form {
+    width: 100%;
+  }
+  
+  .newsletter-disclaimer {
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .newsletter-section {
+    padding: 60px 0;
+  }
+  
+  .newsletter-wrapper {
+    padding: 32px 24px;
+  }
+  
+  .newsletter-content h2 {
+    font-size: 1.8rem;
+  }
+  
+  .input-group {
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: none;
+    overflow: visible;
+  }
+  
+  .newsletter-input {
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .newsletter-btn {
+    border-radius: var(--radius-md);
+    padding: 16px;
+  }
+}

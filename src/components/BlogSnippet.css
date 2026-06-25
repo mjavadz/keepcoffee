@@ -1,0 +1,13 @@
+/* Homepage "magazine" section wrapper.
+   Card + grid styles live in BlogCard.css; section-header in index.css. */
+
+.blog-snippet-section {
+  padding: 80px 0;
+  background-color: var(--color-bg);
+}
+
+@media (max-width: 768px) {
+  .blog-snippet-section {
+    padding: 60px 0;
+  }
+}

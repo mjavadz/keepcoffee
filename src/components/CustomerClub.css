@@ -1,0 +1,222 @@
+.customer-club-section {
+  padding: 100px 0;
+  /* Fixed dark band in BOTH themes — using a theme variable here made the
+     background turn white in dark mode, hiding the white text. */
+  background-color: #1F1511;
+  color: white;
+  overflow: hidden;
+}
+
+.club-content {
+  display: flex;
+  align-items: center;
+  gap: 64px;
+}
+
+.club-text {
+  flex: 1;
+  position: relative;
+  z-index: 2;
+}
+
+.club-badge {
+  display: inline-block;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-accent);
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  letter-spacing: 0.5px;
+}
+
+.club-text h2 {
+  font-size: 2.5rem;
+  margin-bottom: 24px;
+  color: white;
+}
+
+.club-text p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 40px;
+}
+
+.club-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.benefit-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.benefit-item h4 {
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+  color: white;
+}
+
+.benefit-item p {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0;
+}
+
+.club-btn {
+  font-size: 1.1rem;
+  padding: 14px 32px;
+  box-shadow: 0 4px 20px rgba(193, 154, 107, 0.3); /* Accent shadow */
+}
+
+.club-image-container {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.club-card {
+  width: 380px;
+  height: 240px;
+  background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 2;
+  transform: rotate(-5deg);
+  transition: transform 0.5s ease;
+}
+
+.club-image-container:hover .club-card {
+  transform: rotate(0deg) scale(1.05);
+}
+
+.club-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(193, 154, 107, 0.2) 0%, transparent 100%);
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+.club-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.club-card-header h3 {
+  font-family: 'Courier New', Courier, monospace;
+  color: var(--color-accent);
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+}
+
+.club-card-header span {
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.card-chip {
+  width: 45px;
+  height: 35px;
+  background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); /* Placeholder chip color */
+  background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%); /* Gold chip */
+  border-radius: 6px;
+  margin-bottom: 24px;
+}
+
+.card-number {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.5rem;
+  letter-spacing: 4px;
+  color: white;
+}
+
+.club-card-footer {
+  display: flex;
+  justify-content: space-between;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.club-bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 1;
+}
+
+.circle-1 {
+  width: 300px;
+  height: 300px;
+  background-color: rgba(193, 154, 107, 0.2);
+  top: 10%;
+  right: 10%;
+}
+
+.circle-2 {
+  width: 250px;
+  height: 250px;
+  background-color: rgba(255, 255, 255, 0.05);
+  bottom: 10%;
+  left: 10%;
+}
+
+@media (max-width: 992px) {
+  .club-content {
+    flex-direction: column;
+    gap: 64px;
+  }
+  
+  .club-card {
+    transform: rotate(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .customer-club-section {
+    padding: 60px 0;
+  }
+  
+  .club-text h2 {
+    font-size: 2rem;
+  }
+  
+  .club-card {
+    width: 100%;
+    max-width: 380px;
+  }
+}

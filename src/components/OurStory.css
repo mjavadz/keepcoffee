@@ -1,0 +1,186 @@
+.our-story-section {
+  padding: 100px 0;
+  background-color: var(--color-bg);
+  overflow: hidden;
+}
+
+.story-header {
+  max-width: 700px;
+  margin: 0 auto 64px auto;
+  text-align: center;
+}
+
+.story-subtitle {
+  color: var(--color-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  display: block;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+
+.story-title {
+  font-size: 2.5rem;
+  color: var(--color-text-primary);
+  margin-bottom: 24px;
+}
+
+.story-desc {
+  font-size: 1.1rem;
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+}
+
+.story-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+  position: relative;
+}
+
+/* Vertical dashed line connecting the items */
+.story-timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  background: repeating-linear-gradient(to bottom, var(--color-primary) 0, var(--color-primary) 10px, transparent 10px, transparent 20px);
+  z-index: 0;
+  opacity: 0.3;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 64px;
+  position: relative;
+  z-index: 1;
+}
+
+.timeline-item.reversed {
+  flex-direction: row-reverse;
+}
+
+.timeline-image {
+  flex: 1;
+  max-width: 500px;
+  position: relative;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Inner frame clips the image (and its hover zoom) while letting the
+   timeline icon overhang the edge without being cut off. */
+.timeline-frame {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.timeline-image img {
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s ease;
+}
+
+.timeline-item:hover .timeline-image img {
+  transform: scale(1.05);
+}
+
+.timeline-icon {
+  position: absolute;
+  bottom: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 56px;
+  height: 56px;
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 20px rgba(193, 154, 107, 0.4);
+  z-index: 2;
+}
+
+.timeline-content {
+  flex: 1;
+  max-width: 400px;
+  background-color: var(--color-surface);
+  padding: 40px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+
+.timeline-item:not(.reversed) .timeline-content {
+  text-align: right;
+}
+
+.timeline-item.reversed .timeline-content {
+  text-align: right; /* Keep RTL text readable */
+}
+
+.timeline-content h3 {
+  font-size: 1.6rem;
+  color: var(--color-text-primary);
+  margin-bottom: 16px;
+}
+
+.timeline-content p {
+  font-size: 1.05rem;
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+}
+
+@media (max-width: 992px) {
+  .story-timeline::before {
+    left: 28px;
+  }
+  
+  .timeline-item, 
+  .timeline-item.reversed {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 40px;
+  }
+  
+  .timeline-image {
+    max-width: 100%;
+    width: 100%;
+    margin-right: 56px;
+  }
+  
+  .timeline-icon {
+    left: -28px;
+    bottom: auto;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  .timeline-content {
+    max-width: 100%;
+    margin-right: 56px;
+  }
+}
+
+@media (max-width: 768px) {
+  .our-story-section {
+    padding: 60px 0;
+  }
+  
+  .story-title {
+    font-size: 2rem;
+  }
+  
+  .timeline-image img {
+    height: 250px;
+  }
+}

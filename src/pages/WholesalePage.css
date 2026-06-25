@@ -1,0 +1,62 @@
+.wholesale-benefits {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  margin-bottom: 56px;
+}
+
+.wholesale-benefit {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  text-align: center;
+  transition: transform var(--transition-normal);
+}
+
+.wholesale-benefit:hover {
+  transform: translateY(-6px);
+}
+
+.wb-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg);
+  color: var(--color-accent);
+  margin-bottom: 16px;
+}
+
+.wholesale-benefit h3 {
+  color: var(--color-text-primary);
+  font-size: 1.15rem;
+  margin-bottom: 8px;
+}
+
+.wholesale-benefit p {
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+.wholesale-cta {
+  text-align: center;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 48px 24px;
+}
+
+.wholesale-cta h2 {
+  color: var(--color-text-primary);
+  font-size: 1.6rem;
+  margin-bottom: 12px;
+}
+
+.wholesale-cta p {
+  color: var(--color-text-secondary);
+  margin-bottom: 24px;
+}

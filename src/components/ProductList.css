@@ -1,0 +1,13 @@
+/* Homepage "featured products" section wrapper.
+   Card + grid styles live in ProductCard.css; section-header in index.css. */
+
+.products-section {
+  padding: 80px 0;
+  background-color: var(--color-surface);
+}
+
+@media (max-width: 768px) {
+  .products-section {
+    padding: 60px 0;
+  }
+}
