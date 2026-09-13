@@ -6,55 +6,55 @@ import './CoffeeFinder.css';
 const roasts = [
   {
     id: 'light',
-    label: 'برشت روشن',
-    sub: 'Light Roast',
-    name: 'اتیوپی یرگاچف',
-    origin: 'سینگل اوریجین',
-    desc: 'برای کسانی که طعم‌های روشن، میوه‌ای و سرزنده را دوست دارند؛ مثل یک صبح بهاری در فنجان.',
-    notes: ['شکوفه یاس', 'مرکبات', 'عسل'],
-    body: 2, acidity: 5, bitterness: 1,
-    image: '/images/photo-1514432324607-500.webp',
+    label: 'برشت متوازن',
+    sub: 'Balanced 50/50',
+    name: 'میکس ۵۰/۵۰ پرمیوم',
+    origin: '۵۰٪ عربیکا / ۵۰٪ روبوستا',
+    desc: 'هارمونی بی‌نقص برای ذائقه‌های دقیق؛ نیمی عربیکای معطر با اسیدیته زنده و نیمی روبوستای پربدنه با فوم غنی.',
+    notes: ['شکلات شیری', 'مرکبات ملایم', 'شهد گل'],
+    body: 3, acidity: 4, bitterness: 2,
+    image: '/images/photo-1498804103079-500.webp',
     bean: '#C2814B',
-    productSlug: 'ethiopia-yirgacheffe',
+    productSlug: 'mix-50-50-premium',
   },
   {
     id: 'medium',
     label: 'برشت متوسط',
-    sub: 'Medium Roast',
-    name: 'برزیل سانتوس',
-    origin: 'سینگل اوریجین',
-    desc: 'تعادلی دلنشین میان شیرینی و بدنه؛ انتخابی بی‌خطر و دوست‌داشتنی برای هر روز.',
-    notes: ['کارامل', 'بادام', 'شکلات شیری'],
-    body: 3, acidity: 3, bitterness: 2,
-    image: '/images/photo-1541167760496-500.webp',
+    sub: 'Medium 70/30',
+    name: 'میکس ۷۰/۳۰ پرمیوم',
+    origin: '۷۰٪ روبوستا اعلا / ۳۰٪ عربیکا تخصصی',
+    desc: 'ترکیبی ممتاز از دانه‌های روبوستای باکیفیت و عربیکای شسته‌شده با عطر دلنشین و پس‌مزه ماندگار و شیرین.',
+    notes: ['میوه خشک', 'شکلات تلخ', 'فندق'],
+    body: 4, acidity: 2, bitterness: 3,
+    image: '/images/photo-1514432324607-500.webp',
     bean: '#A05E2E',
-    productSlug: 'brazil-santos',
+    productSlug: 'mix-70-30-robusta-premium',
   },
   {
     id: 'medium-dark',
     label: 'متوسط رو به تیره',
-    sub: 'Medium-Dark',
-    name: 'ترکیب عربیکا کلاسیک',
-    origin: 'بلند تخصصی',
-    desc: 'عمیق، گرم و شکلاتی؛ برای لحظاتی که به یک فنجان پر و دلگرم‌کننده نیاز داری.',
-    notes: ['شکلات تلخ', 'فندق', 'کاکائو'],
-    body: 4, acidity: 2, bitterness: 3,
-    image: '/images/photo-1498804103079-500.webp',
+    sub: 'Rich 80/20',
+    name: 'میکس ۸۰/۲۰ روبوستا',
+    origin: '۸۰٪ روبوستا / ۲۰٪ عربیکا',
+    desc: 'فرمول طلایی و پرطرفدار کافه‌ای؛ ترکیب ۸۰ درصد روبوستای پرکافئین با ۲۰ درصد عربیکای معطر برای کرمای مخملی.',
+    notes: ['شکلات شیری', 'کارامل', 'فندق'],
+    body: 4, acidity: 1, bitterness: 4,
+    image: '/images/photo-1497935586351-500.webp',
     bean: '#6E3D20',
-    productSlug: 'classic-arabica-blend',
+    productSlug: 'mix-80-20-robusta',
   },
   {
     id: 'dark',
-    label: 'برشت تیره',
-    sub: 'Dark Roast',
-    name: 'اسپرسو ترکیب ویژه',
-    origin: 'بلند روبوستا',
-    desc: 'قوی، دودی و بی‌پروا؛ مخصوص عاشقان اسپرسوی غلیظ و یک بیدارباش واقعی.',
-    notes: ['شکلات تلخ', 'دود', 'ادویه'],
+    label: 'برشت تیره و پرقدرت',
+    sub: '100% Robusta',
+    name: 'میکس ۱۰۰ روبوستا پرمیوم',
+    origin: '۱۰۰٪ روبوستا سورت‌شده و دست‌چین',
+    desc: 'قوی، غلیظ و بدون زنندگی طعم؛ با بادی سنگین، کرمای ماندگار و کافئین فوق‌العاده بالا برای یک بیدارباش واقعی.',
+    notes: ['کاکائو', 'گردو', 'پایپ چوبی'],
     body: 5, acidity: 1, bitterness: 5,
     image: '/images/photo-1559525839-500.webp',
     bean: '#3C2117',
-    productSlug: 'espresso-signature-blend',
+    productSlug: 'mix-100-robusta-premium',
   },
 ];
 
@@ -69,67 +69,84 @@ export default function CoffeeFinder() {
   const roast = roasts[active];
 
   return (
-    <section className="coffee-finder-section">
+    <section className="finder-section">
       <div className="container">
         <div className="finder-header">
-          <span className="finder-eyebrow">راهنمای ذائقه</span>
-          <h2>قهوه‌ی هم‌ذائقه‌ات را کشف کن</h2>
-          <p>درجه‌ی برشته‌کاری دلخواهت را انتخاب کن تا پیشنهاد ما را زنده ببینی.</p>
+          <span className="finder-kicker">راهنمای هوشمند انتخاب</span>
+          <h2>قهوه مناسب سلیقه‌ی شما</h2>
+          <p>
+            طعم دلخواه‌تان را بر اساس میزان برشتگی (رست) و ویژگی‌های طعمی پیدا کنید.
+          </p>
         </div>
 
-        <div className="finder-interactive">
-          <div className="roast-selector" role="tablist" aria-label="درجه برشته‌کاری">
+        <div className="finder-card">
+          <div className="finder-tabs" role="tablist">
             {roasts.map((r, i) => (
               <button
                 key={r.id}
                 role="tab"
-                aria-selected={i === active}
-                className={`roast-option ${i === active ? 'is-active' : ''}`}
+                aria-selected={active === i}
+                className={`finder-tab ${active === i ? 'is-active' : ''}`}
                 onClick={() => setActive(i)}
-                style={{ '--bean': r.bean }}
               >
-                <span className="roast-swatch" aria-hidden="true" />
-                <span className="roast-labels">
-                  <span className="roast-label">{r.label}</span>
-                  <span className="roast-sub">{r.sub}</span>
-                </span>
+                <span className="tab-bean" style={{ background: r.bean }} />
+                <span className="tab-label">{r.label}</span>
+                <span className="tab-sub">{r.sub}</span>
               </button>
             ))}
           </div>
 
-          <div className="roast-preview" key={roast.id}>
-            <div className="preview-media">
-              <img src={roast.image} alt={roast.name} loading="lazy" />
-              <span className="preview-tag" style={{ '--bean': roast.bean }}>{roast.label}</span>
+          <div className="finder-body">
+            <div className="finder-visual">
+              <img
+                src={roast.image}
+                alt={roast.name}
+                loading="lazy"
+                width={500}
+                height={500}
+              />
+              <span className="visual-badge">{roast.origin}</span>
             </div>
 
-            <div className="preview-body">
-              <span className="preview-origin">{roast.origin}</span>
-              <h3>{roast.name}</h3>
-              <p>{roast.desc}</p>
-
-              <div className="preview-notes">
-                {roast.notes.map((n) => (
-                  <span key={n} className="note-chip">{n}</span>
-                ))}
+            <div className="finder-info">
+              <div className="finder-title-row">
+                <h3>{roast.name}</h3>
+                <span className="finder-roast-pill">{roast.label}</span>
               </div>
+              <p className="finder-desc">{roast.desc}</p>
 
-              <div className="preview-meters">
-                {attributes.map((a) => (
-                  <div className="meter" key={a.key}>
-                    <span className="meter-label">{a.label}</span>
-                    <span className="meter-track">
-                      {[1, 2, 3, 4, 5].map((n) => (
-                        <span key={n} className={`meter-dot ${n <= roast[a.key] ? 'on' : ''}`} />
-                      ))}
-                    </span>
+              <div className="finder-bars">
+                {attributes.map((attr) => (
+                  <div key={attr.key} className="meter-row">
+                    <span className="meter-label">{attr.label}</span>
+                    <div className="meter-track">
+                      <div
+                        className="meter-fill"
+                        style={{ width: `${(roast[attr.key] / 5) * 100}%` }}
+                      />
+                    </div>
+                    <span className="meter-val">{roast[attr.key]}/۵</span>
                   </div>
                 ))}
               </div>
 
-              <Link to={`/product/${roast.productSlug}`} className="btn btn-primary preview-cta">
-                مشاهده‌ی این قهوه
-                <ArrowLeft size={18} />
+              <div className="finder-notes">
+                <span className="notes-label">طعم‌یادها:</span>
+                <div className="notes-tags">
+                  {roast.notes.map((n) => (
+                    <span key={n} className="note-tag">
+                      {n}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <Link
+                to={`/product/${roast.productSlug}`}
+                className="btn btn-primary finder-cta"
+              >
+                مشاهده و خرید این قهوه
+                <ArrowLeft size={16} />
               </Link>
             </div>
           </div>
