@@ -9,7 +9,7 @@ const WholesaleBanner = lazy(() => import('../components/WholesaleBanner'));
 
 const benefits = [
   { icon: BadgePercent, title: 'قیمت مستقیم کارگاهی', desc: 'حذف واسطه‌ها و ارائه قیمت‌های دست اول کارگاه رستری برای کافه‌ها و شرکت‌های پخش.' },
-  { icon: Package, title: 'ثبات پروفایل برشت', desc: 'پایش مستمر دمایی با رستر صنعتی کرون (KORON) جهت تضمین یکنواختی کامل در تمام سفارش‌ها.' },
+  { icon: Package, title: 'ثبات پروفایل برشت', desc: 'پایش مستمر دمایی و تنظیم دقیق پروفایل برشته‌کاری جهت تضمین یکنواختی کامل در تمام سفارش‌ها.' },
   { icon: Truck, title: 'ارسال رایگان در تهران', desc: 'تحویل سریع و رایگان در تمام مناطق تهران برای خریدهای بالای ۲۰ کیلوگرم.' },
   { icon: Headset, title: 'مشاوره و کالیبراسیون', desc: 'مشاوره اختصاصی با مستر روستر جهت تنظیم آسیاب و بهینه‌سازی عصاره‌گیری منوی کافه.' },
 ];
@@ -29,7 +29,7 @@ export default function WholesalePage() {
       <SEO 
         title="فروش عمده و همکاری با کافه‌ها" 
         path="/wholesale" 
-        description="تأمین دانه قهوه تازه برشت برای کافه‌ها، رستوران‌ها و دفاتر پخش در تهران و سراسر کشور. قیمت‌های رقابتی، ارسال رایگان بالای ۲۰ کیلو و برشت صنعتی KORON." 
+        description="تأمین دانه قهوه تازه برشت برای کافه‌ها، رستوران‌ها و دفاتر پخش در تهران و سراسر کشور. قیمت‌های رقابتی، ارسال رایگان بالای ۲۰ کیلو و برشت تخصصی کارگاهی." 
       />
 
       <div className="page-hero">
@@ -87,10 +87,13 @@ export default function WholesalePage() {
         <div className="wholesale-cta">
           <span className="wholesale-cta-badge">مشاوره و ارسال بسته نمونه (Sample Pack)</span>
           <h2>آماده‌ی شروع همکاری هستید؟</h2>
-          <p>برای دریافت مشاوره، هماهنگی ارسال نمونه تست قهوه و ثبت سفارش با مسئول فروش و تأمین در تماس باشید:</p>
+          <p>برای دریافت مشاوره، هماهنگی ارسال نمونه تست قهوه و ثبت سفارش با واحد فروش در تماس باشید:</p>
           <div className="wholesale-cta-actions">
-            <a href={`tel:${site.phoneHref}`} className="btn btn-primary btn-lg">
-              <Phone size={18} /> تماس با آقای ربیعی: {site.phone}
+            <a href="tel:+989120142210" className="btn btn-primary btn-lg">
+              <Phone size={18} /> تماس با آقای رحیمی: ۰۹۱۲۰۱۴۲۲۱۰
+            </a>
+            <a href="tel:+989335333499" className="btn btn-outline btn-lg">
+              <Phone size={18} /> تماس با آقای ربیعی: ۰۹۳۳۵۳۳۳۴۹۹
             </a>
             <a href={links.whatsapp('سلام، برای استعلام همکاری عمده و دریافت بسته نمونه با شما تماس گرفتم.')} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg">
               <Send size={18} /> پیام در واتساپ

@@ -56,7 +56,10 @@ export default function Footer() {
               <a href={links.instagram()} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="social-link"><InstagramIcon /></a>
               <a href={links.telegram()} target="_blank" rel="noopener noreferrer" aria-label="Telegram" className="social-link"><MessageCircle size={24} /></a>
             </div>
-            <a href={links.tel()} className="footer-contact-link">{site.phone} (ربیعی)</a>
+            <div className="footer-contacts-list">
+              <a href="tel:+989120142210" className="footer-contact-link">۰۹۱۲۰۱۴۲۲۱۰ (رحیمی)</a>
+              <a href="tel:+989335333499" className="footer-contact-link">۰۹۳۳۵۳۳۳۴۹۹ (ربیعی)</a>
+            </div>
           </div>
         </div>
 

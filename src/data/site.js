@@ -4,11 +4,21 @@ export const site = {
   nameEn: 'Keep Coffee Roastery',
   url: 'https://keepcoffee.ir',
 
-  // --- Official Contact Info ---
-  phone: '۰۹۳۳۵۳۳۳۴۹۹',
-  contactPerson: 'ربیعی',
-  phoneHref: '+989335333499',
-  whatsapp: '989335333499',
+  // --- Official Contacts ---
+  phoneRahimi: '۰۹۱۲۰۱۴۲۲۱۰',
+  contactPersonRahimi: 'رحیمی',
+  phoneHrefRahimi: '+989120142210',
+
+  phoneRabiee: '۰۹۳۳۵۳۳۳۴۹۹',
+  contactPersonRabiee: 'ربیعی',
+  phoneHrefRabiee: '+989335333499',
+
+  // Primary default
+  phone: '۰۹۱۲۰۱۴۲۲۱۰',
+  contactPerson: 'رحیمی',
+  phoneHref: '+989120142210',
+
+  whatsapp: '989120142210',
   instagram: 'keepcoffeeroastery',
   telegram: 'keepcoffeeRoastery',
   email: 'info@keepcoffee.ir',
@@ -19,12 +29,14 @@ export const site = {
 
 // Helpers that build contact links from the site info
 export const links = {
-  tel: () => `tel:${site.phoneHref}`,
+  tel: (href) => `tel:${href || site.phoneHref}`,
+  telRahimi: () => `tel:${site.phoneHrefRahimi}`,
+  telRabiee: () => `tel:${site.phoneHrefRabiee}`,
   email: () => `mailto:${site.email}`,
   instagram: () => `https://instagram.com/${site.instagram}`,
   telegram: () => `https://t.me/${site.telegram}`,
-  whatsapp: (text) =>
-    `https://wa.me/${site.whatsapp}${text ? `?text=${encodeURIComponent(text)}` : ''}`,
+  whatsapp: (text, number = site.whatsapp) =>
+    `https://wa.me/${number}${text ? `?text=${encodeURIComponent(text)}` : ''}`,
   telegramShare: (text) =>
     `https://t.me/${site.telegram}${text ? `?text=${encodeURIComponent(text)}` : ''}`,
 };

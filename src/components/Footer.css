@@ -99,11 +99,17 @@
 }
 
 
+.footer-contacts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .footer-contact-link {
   display: inline-block;
   color: var(--color-accent);
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 0.98rem;
   text-decoration: none;
   direction: ltr;
   transition: color var(--transition-fast);

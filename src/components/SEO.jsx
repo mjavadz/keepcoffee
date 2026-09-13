@@ -5,7 +5,7 @@ const SITE_URL = "https://keepcoffee.ir";
 
 export default function SEO({ title, description, keywords, path = "/" }) {
   const defaultTitle = "کیپ کافی | برشته‌کاری تخصصی قهوه و ملزومات دم‌آوری";
-  const defaultDescription = "کیپ کافی؛ برشته‌کاری تخصصی قهوه در تهران. ارائه ۶ میکس اصیل دانه تازه برشت با دستگاه صنعتی کرون KORON، تجهیزات تخصصی و ارسال رایگان بالای ۲۰ کیلوگرم در تهران.";
+  const defaultDescription = "کیپ کافی؛ برشته‌کاری تخصصی قهوه در تهران. ارائه ۶ ترکیب اصیل دانه تازه برشت، تجهیزات تخصصی و ارسال رایگان بالای ۲۰ کیلوگرم در تهران.";
   const defaultKeywords = "کیپ کافی, خرید قهوه, قهوه روبوستا, اسپرسو, برشته کاری قهوه تهران, تجهیزات دم آوری, فروش عمده قهوه, keep coffee";
 
   const siteTitle = title ? `${title} | کیپ کافی` : defaultTitle;

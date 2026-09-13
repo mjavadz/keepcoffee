@@ -12,15 +12,15 @@ export default function HeroSection() {
       <div className="container hero-container">
         <div className="hero-content">
           <span className="hero-badge">
-            <Flame size={16} />
-            <span>برشته‌کاری تخصصی قهوه</span>
+            <Coffee size={16} />
+            <span>روستری کیپ کافی</span>
           </span>
           <h1 className="hero-title">
-            عطر و طعم اصیل قهوه تازه برشت؛ <br />
-            با <span className="highlight" style={{ whiteSpace: 'nowrap' }}>کیپ کافی</span> تجربه کنید.
+            طعم اصیل قهوه، <br />
+            مستقیم از <span className="highlight" style={{ whiteSpace: 'nowrap' }}>کارگاه برشته‌کاری</span>
           </h1>
           <p className="hero-subtitle">
-            ارائه ۶ ترکیب رسمی و اختصاصی کارگاه، فرآوری‌شده از مرغوب‌ترین دانه‌ها با دستگاه صنعتی کرون (KORON)، همراه با ادوات حرفه‌ای دم‌آوری و ارسال رایگان در تهران برای سفارش‌های بالای ۲۰ کیلوگرم.
+            عرضه ۶ ترکیب اختصاصی دانه قهوه تازه برشت و ادوات دم‌آوری، با ارسال رایگان در تهران برای سفارش‌های بالای ۲۰ کیلوگرم.
           </p>
           <div className="hero-actions">
             <Link to="/shop" className="btn btn-primary btn-lg">

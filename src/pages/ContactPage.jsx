@@ -13,57 +13,114 @@ const Instagram = ({ size = 18 }) => (
 );
 
 const contactCards = [
-  { icon: Phone, label: 'تلفن کارگاه و سفارشات', value: `${site.phone} (ربیعی)`, href: links.tel() },
-  { icon: Mail, label: 'ایمیل', value: site.email, href: links.email() },
-  { icon: MapPin, label: 'محل کارگاه', value: site.address },
-  { icon: Clock, label: 'ساعات کاری و پاسخگویی', value: site.hours },
+  { 
+    icon: Phone, 
+    label: 'مدیریت و هماهنگی کارگاه', 
+    value: '۰۹۱۲۰۱۴۲۲۱۰', 
+    sub: 'رحیمی',
+    href: 'tel:+989120142210',
+    highlight: true 
+  },
+  { 
+    icon: Phone, 
+    label: 'سفارشات و تأمین قهوه', 
+    value: '۰۹۳۳۵۳۳۳۴۹۹', 
+    sub: 'ربیعی',
+    href: 'tel:+989335333499' 
+  },
+  { 
+    icon: MapPin, 
+    label: 'محل کارگاه برشته‌کاری', 
+    value: site.address,
+    sub: 'ارسال رایگان در تهران بالای ۲۰ کیلو'
+  },
+  { 
+    icon: Clock, 
+    label: 'ساعات کاری و پاسخگویی', 
+    value: site.hours,
+    sub: 'همه‌روزه'
+  },
+  { 
+    icon: Mail, 
+    label: 'ایمیل رسمی', 
+    value: site.email, 
+    href: links.email() 
+  },
 ];
 
 export default function ContactPage() {
   return (
-    <div className="page">
-      <SEO title="تماس با ما" path="/contact" description="راه‌های ارتباط با کیپ کافی؛ تلفن، آدرس، ایمیل و شبکه‌های اجتماعی." />
+    <div className="page contact-page">
+      <SEO 
+        title="تماس با ما" 
+        path="/contact" 
+        description="راه‌های ارتباط مستقیم با کارگاه برشته‌کاری کیپ کافی؛ تماس با آقای رحیمی ۰۹۱۲۰۱۴۲۲۱۰ و آقای ربیعی ۰۹۳۳۵۳۳۳۴۹۹، واتساپ، تلگرام و آدرس کارگاه در تهران." 
+      />
 
       <div className="page-hero">
         <div className="container">
-          <h1>تماس با ما</h1>
-          <p>سوالی دارید؟ خوشحال می‌شویم کمکتان کنیم.</p>
+          <span className="contact-badge">کارگاه تخصصی برشته‌کاری</span>
+          <h1>تماس با کیپ کافی</h1>
+          <p>برای مشاوره، خرید خانگی، تأمین کافه‌ها و سفارش عمده در کنارتان هستیم.</p>
         </div>
       </div>
 
       <div className="container contact-layout">
         <div className="contact-cards">
-          {contactCards.map((c) => {
+          {contactCards.map((c, idx) => {
             const Icon = c.icon;
             const inner = (
               <>
                 <span className="contact-icon"><Icon size={22} /></span>
-                <div>
+                <div className="contact-info-block">
                   <span className="contact-label">{c.label}</span>
                   <span className="contact-value">{c.value}</span>
+                  {c.sub && <span className="contact-sub">{c.sub}</span>}
                 </div>
               </>
             );
             return c.href ? (
-              <a key={c.label} href={c.href} className="contact-card">{inner}</a>
+              <a 
+                key={idx} 
+                href={c.href} 
+                className={`contact-card ${c.highlight ? 'contact-card-highlight' : ''}`}
+              >
+                {inner}
+              </a>
             ) : (
-              <div key={c.label} className="contact-card">{inner}</div>
+              <div 
+                key={idx} 
+                className={`contact-card ${c.highlight ? 'contact-card-highlight' : ''}`}
+              >
+                {inner}
+              </div>
             );
           })}
         </div>
 
         <div className="contact-cta-panel">
+          <span className="cta-panel-tag">پاسخگویی سریع</span>
           <h2>سریع‌ترین راه ارتباط</h2>
-          <p>برای ثبت سفارش یا پرسش، از طریق شبکه‌های اجتماعی پیام دهید؛ در کوتاه‌ترین زمان پاسخ می‌دهیم.</p>
+          <p>برای ثبت سفارش، دریافت مشاوره طعمی یا هماهنگی ارسال نمونه، از طریق تماس تلفنی یا پیام‌رسان‌ها با ما در ارتباط باشید:</p>
+          
+          <div className="contact-quick-calls">
+            <a href="tel:+989120142210" className="btn btn-primary btn-lg contact-call-btn">
+              <Phone size={18} /> تماس با رحیمی: ۰۹۱۲۰۱۴۲۲۱۰
+            </a>
+            <a href="tel:+989335333499" className="btn btn-outline btn-lg contact-call-btn">
+              <Phone size={18} /> تماس با ربیعی: ۰۹۳۳۵۳۳۳۴۹۹
+            </a>
+          </div>
+
           <div className="contact-social-btns">
-            <a href={links.whatsapp('سلام، سوالی درباره محصولات کیپ کافی داشتم.')} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg">
-              <Send size={18} /> واتساپ
+            <a href={links.whatsapp('سلام، درباره محصولات کیپ کافی سوالی داشتم.')} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg">
+              <Send size={18} /> پیام در واتساپ
             </a>
             <a href={links.telegram()} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg">
-              <Send size={18} /> تلگرام
+              <Send size={18} /> کانال تلگرام
             </a>
             <a href={links.instagram()} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg">
-              <Instagram size={18} /> اینستاگرام
+              <Instagram size={18} /> صفحه اینستاگرام
             </a>
           </div>
         </div>
