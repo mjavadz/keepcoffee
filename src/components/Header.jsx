@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, Link } from 'react-router-dom';
-import { ShoppingCart, Menu, Coffee, Sun, Moon, Monitor, User, X } from './Icons';
-import { useTheme } from '../contexts/ThemeContext';
+import { Link, NavLink } from 'react-router-dom';
+import { ShoppingCart, Moon, Sun, Monitor, Menu, X, Coffee, User } from './Icons';
 import { useCart } from '../context/CartContext';
+import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import { toPersianDigits } from '../utils/format';
 import './Header.css';
 
 const navItems = [
   { to: '/', label: 'خانه', end: true },
-  { to: '/shop', label: 'فروشگاه' },
-  { to: '/blog', label: 'وبلاگ' },
-  { to: '/club', label: 'باشگاه مشتریان', highlight: true },
-  { to: '/wholesale', label: 'عمده‌فروشی' },
+  { to: '/shop', label: 'محصولات' },
+  { to: '/club', label: 'باشگاه مشتریان' },
   { to: '/about', label: 'درباره ما' },
-  { to: '/contact', label: 'تماس' },
+  { to: '/contact', label: 'تماس با ما' },
 ];
 
 export default function Header() {
+  const { count } = useCart();
+  const { theme, activeTheme, toggleTheme } = useTheme();
+  const { user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const { theme, activeTheme, toggleTheme } = useTheme();
-  const { count } = useCart();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -60,9 +60,7 @@ export default function Header() {
               key={item.to}
               to={item.to}
               end={item.end}
-              className={({ isActive }) =>
-                `${item.highlight ? 'nav-highlight' : ''} ${isActive ? 'is-active' : ''}`
-              }
+              className={({ isActive }) => (isActive ? 'is-active' : '')}
             >
               {item.label}
             </NavLink>
@@ -73,7 +71,12 @@ export default function Header() {
           <button className="icon-btn theme-toggle-btn" onClick={toggleTheme} aria-label="تغییر تم">
             {renderThemeIcon()}
           </button>
-          <Link to="/contact" className="icon-btn user-btn" aria-label="حساب کاربری / تماس">
+          <Link
+            to={user ? '/profile' : '/login'}
+            className="icon-btn user-btn"
+            aria-label={user ? 'حساب کاربری' : 'ورود / ثبت‌نام'}
+            title={user ? `حساب کاربری (${user.displayName})` : 'ورود / ثبت‌نام'}
+          >
             <User size={20} />
           </Link>
           <Link to="/cart" className="icon-btn cart-btn" aria-label="سبد خرید">
@@ -118,6 +121,12 @@ export default function Header() {
               {item.label}
             </NavLink>
           ))}
+          <NavLink
+            to={user ? '/profile' : '/login'}
+            className={({ isActive }) => (isActive ? 'is-active' : '')}
+          >
+            {user ? `پروفایل (${user.displayName})` : 'ورود / ثبت‌نام در باشگاه'}
+          </NavLink>
         </nav>
       </aside>
     </header>
