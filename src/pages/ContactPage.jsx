@@ -12,42 +12,6 @@ const Instagram = ({ size = 18 }) => (
   </svg>
 );
 
-const contactCards = [
-  { 
-    icon: Phone, 
-    label: 'مدیریت و هماهنگی کارگاه', 
-    value: '۰۹۱۲۰۱۴۲۲۱۰', 
-    sub: 'رحیمی',
-    href: 'tel:+989120142210',
-    highlight: true 
-  },
-  { 
-    icon: Phone, 
-    label: 'سفارشات و تأمین قهوه', 
-    value: '۰۹۳۳۵۳۳۳۴۹۹', 
-    sub: 'ربیعی',
-    href: 'tel:+989335333499' 
-  },
-  { 
-    icon: MapPin, 
-    label: 'محل کارگاه برشته‌کاری', 
-    value: site.address,
-    sub: 'ارسال رایگان در تهران بالای ۲۰ کیلو'
-  },
-  { 
-    icon: Clock, 
-    label: 'ساعات کاری و پاسخگویی', 
-    value: site.hours,
-    sub: 'همه‌روزه'
-  },
-  { 
-    icon: Mail, 
-    label: 'ایمیل رسمی', 
-    value: site.email, 
-    href: links.email() 
-  },
-];
-
 export default function ContactPage() {
   return (
     <div className="page contact-page">
@@ -66,58 +30,68 @@ export default function ContactPage() {
       </div>
 
       <div className="container contact-layout">
+        {/* 4 Balanced Cards in 2x2 Grid */}
         <div className="contact-cards">
-          {contactCards.map((c, idx) => {
-            const Icon = c.icon;
-            const inner = (
-              <>
-                <span className="contact-icon"><Icon size={22} /></span>
-                <div className="contact-info-block">
-                  <span className="contact-label">{c.label}</span>
-                  <span className="contact-value">{c.value}</span>
-                  {c.sub && <span className="contact-sub">{c.sub}</span>}
-                </div>
-              </>
-            );
-            return c.href ? (
-              <a 
-                key={idx} 
-                href={c.href} 
-                className={`contact-card ${c.highlight ? 'contact-card-highlight' : ''}`}
-              >
-                {inner}
-              </a>
-            ) : (
-              <div 
-                key={idx} 
-                className={`contact-card ${c.highlight ? 'contact-card-highlight' : ''}`}
-              >
-                {inner}
+          {/* Card 1: Merged Rahimi & Rabiee */}
+          <div className="contact-card contact-card-highlight">
+            <span className="contact-icon"><Phone size={22} /></span>
+            <div className="contact-info-block">
+              <span className="contact-label">تماس مستقیم و سفارشات</span>
+              <div className="contact-dual-phones">
+                <a href="tel:+989120142210" className="contact-phone-item" title="تماس با رحیمی">
+                  <span className="phone-person">رحیمی:</span>
+                  <span className="phone-num">۰۹۱۲۰۱۴۲۲۱۰</span>
+                </a>
+                <a href="tel:+989335333499" className="contact-phone-item" title="تماس با ربیعی">
+                  <span className="phone-person">ربیعی:</span>
+                  <span className="phone-num">۰۹۳۳۵۳۳۳۴۹۹</span>
+                </a>
               </div>
-            );
-          })}
-        </div>
-
-        <div className="contact-cta-panel">
-          <span className="cta-panel-tag">پاسخگویی سریع</span>
-          <h2>سریع‌ترین راه ارتباط</h2>
-          <p>برای ثبت سفارش، دریافت مشاوره طعمی یا هماهنگی ارسال نمونه، از طریق تماس تلفنی یا پیام‌رسان‌ها با ما در ارتباط باشید:</p>
-          
-          <div className="contact-quick-calls">
-            <a href="tel:+989120142210" className="btn btn-primary btn-lg contact-call-btn">
-              <Phone size={18} /> تماس با رحیمی: ۰۹۱۲۰۱۴۲۲۱۰
-            </a>
-            <a href="tel:+989335333499" className="btn btn-outline btn-lg contact-call-btn">
-              <Phone size={18} /> تماس با ربیعی: ۰۹۳۳۵۳۳۳۴۹۹
-            </a>
+            </div>
           </div>
 
+          {/* Card 2: Workshop Location (without yellow delivery text) */}
+          <div className="contact-card">
+            <span className="contact-icon"><MapPin size={22} /></span>
+            <div className="contact-info-block">
+              <span className="contact-label">محل کارگاه برشته‌کاری</span>
+              <span className="contact-value">{site.address}</span>
+            </div>
+          </div>
+
+          {/* Card 3: Working Hours */}
+          <div className="contact-card">
+            <span className="contact-icon"><Clock size={22} /></span>
+            <div className="contact-info-block">
+              <span className="contact-label">ساعات کاری و پاسخگویی</span>
+              <span className="contact-value">{site.hours}</span>
+              <span className="contact-sub">همه‌روزه</span>
+            </div>
+          </div>
+
+          {/* Card 4: Official Email */}
+          <a href={links.email()} className="contact-card">
+            <span className="contact-icon"><Mail size={22} /></span>
+            <div className="contact-info-block">
+              <span className="contact-label">ایمیل رسمی</span>
+              <span className="contact-value">{site.email}</span>
+              <span className="contact-sub">پشتیبانی و مکاتبات</span>
+            </div>
+          </a>
+        </div>
+
+        {/* CTA Panel: Messenger Links */}
+        <div className="contact-cta-panel">
+          <span className="cta-panel-tag">پاسخگویی سریع</span>
+          <h2>ارتباط در پیام‌رسان‌ها</h2>
+          <p>برای ثبت سفارش، دریافت مشاوره طعمی یا هماهنگی ارسال نمونه، از طریق پیام‌رسان‌های زیر با ما در ارتباط باشید:</p>
+          
           <div className="contact-social-btns">
-            <a href={links.whatsapp('سلام، درباره محصولات کیپ کافی سوالی داشتم.')} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg">
+            <a href={links.whatsapp('سلام، درباره محصولات کیپ کافی سوالی داشتم.')} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg">
               <Send size={18} /> پیام در واتساپ
             </a>
             <a href={links.telegram()} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg">
-              <Send size={18} /> کانال تلگرام
+              <Send size={18} /> کانال و پشتیبانی تلگرام
             </a>
             <a href={links.instagram()} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg">
               <Instagram size={18} /> صفحه اینستاگرام
