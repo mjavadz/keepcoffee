@@ -1,5 +1,6 @@
 // Product catalog for Keep Coffee Roastery
-// All prices are in Toman (per Kilogram for beans)
+// Beans have active prices in Toman (per Kilogram)
+// Equipment and accessories have price: null (inquiry only)
 
 export const products = [
   // ---------------- دانه‌های قهوه و میکس‌های کارگاه (beans) ----------------
@@ -100,16 +101,16 @@ export const products = [
       'هارمونی بی‌نقص برای ذائقه‌های دقیق؛ نیمی عربیکای معطر با اسیدیته زنده و نیمی روبوستای پربدنه با فوم غنی و کافئین مناسب. فنجانی متعادل و عمیق هم برای اسپرسو و هم برای موکاپات.',
   },
 
-  // ---------------- تجهیزات دم‌آوری (equipment) ----------------
+  // ---------------- تجهیزات دم‌آوری (equipment) - استعلام قیمت ----------------
   {
     id: 7,
     slug: 'bialetti-moka-3cup',
     name: 'موکاپات بیالتی ۳ کاپ',
-    price: 1200000,
+    price: null,
     category: 'equipment',
     image: '/images/photo-1544787219-500.webp',
     gallery: ['/images/photo-1544787219-500.webp'],
-    badge: 'جدید',
+    badge: 'اصلی',
     origin: 'ساخت ایتالیا',
     notes: [],
     description:
@@ -119,7 +120,7 @@ export const products = [
     id: 8,
     slug: 'v60-dripper',
     name: 'دریپر V60 سرامیکی',
-    price: 280000,
+    price: null,
     category: 'equipment',
     image: '/images/photo-1447933601403-500.webp',
     gallery: ['/images/photo-1447933601403-500.webp'],
@@ -132,7 +133,7 @@ export const products = [
     id: 9,
     slug: 'french-press',
     name: 'فرنچ پرس شیشه‌ای',
-    price: 450000,
+    price: null,
     category: 'equipment',
     image: '/images/photo-1559056199-500.webp',
     gallery: ['/images/photo-1559056199-500.webp'],
@@ -145,23 +146,23 @@ export const products = [
     id: 10,
     slug: 'manual-grinder',
     name: 'آسیاب دستی قهوه',
-    price: 950000,
+    price: null,
     category: 'equipment',
     image: '/images/photo-1572442388796-500.webp',
     gallery: ['/images/photo-1572442388796-500.webp'],
-    badge: 'پرفروش',
+    badge: 'پیشنهادی',
     origin: 'تیغه‌ی سرامیکی',
     notes: [],
     description:
       'آسیاب دستی با تیغه‌ی سرامیکی و درجه‌بندی دقیق؛ از پودر ریز اسپرسو تا درشتِ فرنچ‌پرس. بی‌صدا، قابل حمل و ایده‌آل برای تازه آسیاب کردن دانه‌ها.',
   },
 
-  // ---------------- لوازم جانبی (accessories) ----------------
+  // ---------------- لوازم جانبی (accessories) - استعلام قیمت ----------------
   {
     id: 11,
     slug: 'digital-scale',
     name: 'ترازو دیجیتال قهوه',
-    price: 850000,
+    price: null,
     category: 'accessories',
     image: '/images/photo-1620189507195-500.webp',
     gallery: ['/images/photo-1620189507195-500.webp'],
@@ -174,11 +175,11 @@ export const products = [
     id: 12,
     slug: 'gooseneck-kettle',
     name: 'کتری گردن‌غازی',
-    price: 680000,
+    price: null,
     category: 'accessories',
     image: '/images/photo-1511920170033-800.webp',
     gallery: ['/images/photo-1511920170033-800.webp'],
-    badge: 'جدید',
+    badge: 'استیل',
     origin: 'استیل ضدزنگ',
     notes: [],
     description:

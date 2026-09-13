@@ -1,24 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap');
 
 :root {
-  /* Light Theme - Coffee Palette */
-  --color-bg: #FCFBFA; 
+  /* Light Theme - Keep Coffee Roastery Artisan Palette */
+  --color-bg: #F7F3EC; /* Warm artisanal parchment paper */
   --color-surface: #FFFFFF;
-  --color-primary: #3E2723; /* Darker espresso for more contrast */
-  --color-secondary: #795548;
-  --color-accent: #D4A373; 
-  --color-text-primary: #1F1511; /* Almost black */
-  --color-text-secondary: #5C4D43;
-  --color-border: #E8E2DA;
-  --color-overlay: rgba(252, 251, 250, 0.85);
+  --color-primary: #18261E; /* Deep Roastery Forest/Olive Green */
+  --color-secondary: #3D5545;
+  --color-accent: #C88D4E; /* Warm roasted caramel/amber */
+  --color-text-primary: #15221A;
+  --color-text-secondary: #4E6355;
+  --color-border: #E0D7CB;
+  --color-overlay: rgba(247, 243, 236, 0.9);
 
   /* Typography */
   --font-family: 'Vazirmatn', system-ui, -apple-system, sans-serif;
   
   /* Shadows */
-  --shadow-sm: 0 2px 8px rgba(62, 39, 35, 0.05);
-  --shadow-md: 0 4px 16px rgba(62, 39, 35, 0.08);
-  --shadow-lg: 0 12px 32px rgba(62, 39, 35, 0.12);
+  --shadow-sm: 0 2px 8px rgba(24, 38, 30, 0.05);
+  --shadow-md: 0 4px 16px rgba(24, 38, 30, 0.08);
+  --shadow-lg: 0 12px 32px rgba(24, 38, 30, 0.12);
 
   /* Radius */
   --radius-sm: 8px;
@@ -31,21 +31,21 @@
   --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Dark Theme Variables */
+/* Dark Theme - Deep Roastery Olive & Warm Cream */
 [data-theme='dark'] {
-  --color-bg: #12100E; /* Deep dark coffee bean color */
-  --color-surface: #1C1916;
-  --color-primary: #F0E6D2; /* Light cream for primary text in dark mode */
-  --color-secondary: #A68B75;
-  --color-accent: #D4A373;
-  --color-text-primary: #FDFBF7;
-  --color-text-secondary: #B0A296;
-  --color-border: #332D27;
-  --color-overlay: rgba(28, 25, 22, 0.85);
+  --color-bg: #101914; /* Deep textured olive green roastery dark */
+  --color-surface: #17241D;
+  --color-primary: #F4EDE4; /* Warm cream parchment for primary headers */
+  --color-secondary: #8BA193;
+  --color-accent: #DE9E48; /* Glowing warm golden amber */
+  --color-text-primary: #F7F4EF;
+  --color-text-secondary: #A8BDB1;
+  --color-border: #26382D;
+  --color-overlay: rgba(16, 25, 20, 0.9);
 
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.65);
 }
 
 *, *::before, *::after {

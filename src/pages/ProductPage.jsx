@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart } from '../components/Icons';
+import { ShoppingCart, Phone } from '../components/Icons';
 import SEO from '../components/SEO';
 import ProductCard from '../components/ProductCard';
 import { getProduct, getRelated } from '../data/products';
@@ -8,6 +8,7 @@ import { categoryLabel } from '../data/categories';
 import { useCart } from '../context/CartContext';
 import { formatToman, toPersianDigits } from '../utils/format';
 import { roastColor } from '../utils/roast';
+import { site, links } from '../data/site';
 import './ProductPage.css';
 
 export default function ProductPage() {
@@ -109,20 +110,32 @@ export default function ProductPage() {
               )}
             </div>
 
-            <div className="detail-actions">
-              <div className="qty-stepper" role="group" aria-label="تعداد">
-                <button onClick={() => setQty((q) => Math.max(1, q - 1))} disabled={qty === 1} aria-label="کاهش">−</button>
-                <span>{toPersianDigits(qty)}</span>
-                <button onClick={() => setQty((q) => q + 1)} aria-label="افزایش">+</button>
+            {product.price ? (
+              <div className="detail-actions">
+                <div className="qty-stepper" role="group" aria-label="تعداد">
+                  <button onClick={() => setQty((q) => Math.max(1, q - 1))} disabled={qty === 1} aria-label="کاهش">−</button>
+                  <span>{toPersianDigits(qty)}</span>
+                  <button onClick={() => setQty((q) => q + 1)} aria-label="افزایش">+</button>
+                </div>
+                <button className={`btn btn-primary btn-lg add-btn ${added ? 'is-added' : ''}`} onClick={handleAdd}>
+                  <ShoppingCart size={18} />
+                  {added ? 'به سبد اضافه شد ✓' : 'افزودن به سبد خرید'}
+                </button>
+                <button className="btn btn-outline btn-lg" onClick={() => navigate('/cart')}>
+                  مشاهده سبد
+                </button>
               </div>
-              <button className={`btn btn-primary btn-lg add-btn ${added ? 'is-added' : ''}`} onClick={handleAdd}>
-                <ShoppingCart size={18} />
-                {added ? 'به سبد اضافه شد ✓' : 'افزودن به سبد خرید'}
-              </button>
-              <button className="btn btn-outline btn-lg" onClick={() => navigate('/cart')}>
-                مشاهده سبد
-              </button>
-            </div>
+            ) : (
+              <div className="detail-actions">
+                <a href={`tel:${site.phoneHref}`} className="btn btn-primary btn-lg" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <Phone size={18} />
+                  تماس جهت استعلام قیمت ({site.phone})
+                </a>
+                <a href={links.whatsapp(`سلام، برای استعلام قیمت و موجودی ${product.name} پیام دادم.`)} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg">
+                  استعلام در واتساپ
+                </a>
+              </div>
+            )}
           </div>
         </div>
 
