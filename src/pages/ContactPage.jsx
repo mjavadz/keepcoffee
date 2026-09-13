@@ -13,10 +13,10 @@ const Instagram = ({ size = 18 }) => (
 );
 
 const contactCards = [
-  { icon: Phone, label: 'تلفن', value: site.phone, href: links.tel() },
+  { icon: Phone, label: 'تلفن کارگاه و سفارشات', value: `${site.phone} (ربیعی)`, href: links.tel() },
   { icon: Mail, label: 'ایمیل', value: site.email, href: links.email() },
-  { icon: MapPin, label: 'آدرس', value: site.address },
-  { icon: Clock, label: 'ساعات کاری', value: site.hours },
+  { icon: MapPin, label: 'محل کارگاه', value: site.address },
+  { icon: Clock, label: 'ساعات کاری و پاسخگویی', value: site.hours },
 ];
 
 export default function ContactPage() {

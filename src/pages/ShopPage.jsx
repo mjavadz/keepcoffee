@@ -4,6 +4,7 @@ import SEO from '../components/SEO';
 import ProductCard from '../components/ProductCard';
 import { products } from '../data/products';
 import { categories } from '../data/categories';
+import { toPersianDigits } from '../utils/format';
 import './ShopPage.css';
 
 const sortOptions = [
@@ -35,10 +36,25 @@ export default function ShopPage() {
       );
     }
     switch (sort) {
-      case 'price-asc': list = [...list].sort((a, b) => a.price - b.price); break;
-      case 'price-desc': list = [...list].sort((a, b) => b.price - a.price); break;
-      case 'name': list = [...list].sort((a, b) => a.name.localeCompare(b.name, 'fa')); break;
-      default: break;
+      case 'price-asc':
+        list = [...list].sort((a, b) => {
+          if (!a.price) return 1;
+          if (!b.price) return -1;
+          return a.price - b.price;
+        });
+        break;
+      case 'price-desc':
+        list = [...list].sort((a, b) => {
+          if (!a.price) return 1;
+          if (!b.price) return -1;
+          return b.price - a.price;
+        });
+        break;
+      case 'name':
+        list = [...list].sort((a, b) => a.name.localeCompare(b.name, 'fa'));
+        break;
+      default:
+        break;
     }
     return list;
   }, [activeCategory, query, sort]);
@@ -96,7 +112,7 @@ export default function ShopPage() {
           </div>
         </div>
 
-        <p className="shop-count">{visible.length} محصول</p>
+        <p className="shop-count">{toPersianDigits(visible.length)} محصول</p>
 
         {visible.length > 0 ? (
           <div className="products-grid">

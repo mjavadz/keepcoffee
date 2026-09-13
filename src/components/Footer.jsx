@@ -56,12 +56,13 @@ export default function Footer() {
               <a href={links.instagram()} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="social-link"><InstagramIcon /></a>
               <a href={links.telegram()} target="_blank" rel="noopener noreferrer" aria-label="Telegram" className="social-link"><MessageCircle size={24} /></a>
             </div>
-            <p className="footer-contact">{site.phone}</p>
+            <a href={links.tel()} className="footer-contact-link">{site.phone} (ربیعی)</a>
           </div>
         </div>
 
         <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} Keep Coffee. تمامی حقوق محفوظ است.</p>
+          <p>© {new Date().getFullYear()} Keep Coffee Roastery — تمامی حقوق محفوظ است.</p>
+          <span className="footer-shipping-policy">ارسال شهری رایگان در تهران برای سفارش‌های بالای ۲۰ کیلوگرم</span>
         </div>
       </div>
     </footer>

@@ -1,12 +1,12 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
-const SITE_URL = "https://keepc.ir";
+const SITE_URL = "https://keepcoffee.ir";
 
 export default function SEO({ title, description, keywords, path = "/" }) {
-  const defaultTitle = "کیپ کافی | خرید آنلاین قهوه تخصصی و تجهیزات دم‌آوری";
-  const defaultDescription = "کیپ کافی عرضه کننده بهترین دانه‌های قهوه تخصصی (اسپشیالتی)، لوازم دم‌آوری و تجهیزات کافه در ایران. طعم واقعی قهوه را با ما تجربه کنید.";
-  const defaultKeywords = "قهوه, خرید قهوه, قهوه تخصصی, اسپرسو, تجهیزات قهوه, رستری قهوه";
+  const defaultTitle = "کیپ کافی | برشته‌کاری تخصصی قهوه و ملزومات دم‌آوری";
+  const defaultDescription = "کیپ کافی؛ برشته‌کاری تخصصی قهوه در تهران. ارائه ۶ میکس اصیل دانه تازه برشت با دستگاه صنعتی کرون KORON، تجهیزات تخصصی و ارسال رایگان بالای ۲۰ کیلوگرم در تهران.";
+  const defaultKeywords = "کیپ کافی, خرید قهوه, قهوه روبوستا, اسپرسو, برشته کاری قهوه تهران, تجهیزات دم آوری, فروش عمده قهوه, keep coffee";
 
   const siteTitle = title ? `${title} | کیپ کافی` : defaultTitle;
   const metaDescription = description || defaultDescription;
@@ -44,10 +44,10 @@ export default function SEO({ title, description, keywords, path = "/" }) {
         {JSON.stringify({
           "@context": "https://schema.org",
           "@type": "CafeOrCoffeeShop",
-          "name": "کیپ کافی (Keep Coffee)",
+          "name": "کیپ کافی (Keep Coffee Roastery)",
           "description": description || defaultDescription,
-          "url": "https://keepc.ir",
-          "telephone": "+982100000000",
+          "url": "https://keepcoffee.ir",
+          "telephone": "+989335333499",
           "address": {
             "@type": "PostalAddress",
             "addressLocality": "Tehran",

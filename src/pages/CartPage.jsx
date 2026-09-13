@@ -78,8 +78,12 @@ export default function CartPage() {
                 <span>جمع کل</span>
                 <span>{formatToman(subtotal)}</span>
               </div>
+              <div className="cart-shipping-banner">
+                <span className="shipping-icon">🚚</span>
+                <span>ارسال رایگان در تهران برای سفارش‌های بالای ۲۰ کیلوگرم</span>
+              </div>
               <p className="summary-note">
-                پرداخت آنلاین فعال نیست؛ سفارش خود را از طریق واتساپ یا تلگرام نهایی کنید و هماهنگی پرداخت و ارسال انجام می‌شود.
+                پرداخت آنلاین به طور مستقیم فعال نیست؛ سفارش خود را از طریق واتساپ یا تلگرام ارسال کنید تا سریعاً تأیید، هماهنگی و ارسال شود.
               </p>
               <a href={links.whatsapp(orderText)} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg cart-checkout">
                 <Send size={18} /> ثبت سفارش در واتساپ

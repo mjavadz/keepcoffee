@@ -1,25 +1,31 @@
 import React from 'react';
-import { Coffee, Monitor, ShoppingCart } from './Icons'; // Using available icons as placeholders for features
+import { Flame, Truck, Award, BadgePercent } from './Icons';
 import './Features.css';
 
 const features = [
   {
     id: 1,
-    icon: <Coffee size={32} />,
-    title: 'رست تازه',
-    desc: 'قهوه‌های ما هر هفته رست می‌شوند تا عطر و طعم بی‌نظیر آن‌ها حفظ شود.'
+    icon: <Flame size={28} />,
+    title: 'رست تازه هفتگی',
+    desc: 'قهوه‌های ما به صورت هفتگی و بر اساس سفارش با دستگاه صنعتی کرون رست می‌شوند تا اوج تازگی عطر و طعم حفظ شود.'
   },
   {
     id: 2,
-    icon: <ShoppingCart size={32} />,
-    title: 'ارسال رایگان تهران',
-    desc: 'ارسال شهری داخل تهران برای سفارش‌های بالای ۲۰ کیلوگرم کاملاً رایگان است.'
+    icon: <Truck size={28} />,
+    title: 'ارسال رایگان در تهران',
+    desc: 'ارسال شهری داخل تهران برای سفارش‌های بالای ۲۰ کیلوگرم (کافه‌ها، همکاران و خریدهای تجمعی) کاملاً رایگان است.'
   },
   {
     id: 3,
-    icon: <Monitor size={32} />,
-    title: 'ضمانت اصالت',
-    desc: 'تمامی تجهیزات دم‌آوری ما از برندهای معتبر و با ضمانت اصل بودن کالا هستند.'
+    icon: <Award size={28} />,
+    title: '۶ ترکیب اصیل کارگاه',
+    desc: 'از ۱۰۰٪ روبوستا تا ۵۰/۵۰ پرمیوم؛ فرمولاسیون مهندسی‌شده با پروفایل حرارتی دقیق برای عصاره‌گیری بی‌نقص.'
+  },
+  {
+    id: 4,
+    icon: <BadgePercent size={28} />,
+    title: 'باشگاه مشتریان و تخفیف',
+    desc: 'با هر خرید و ثبت حضور روزانه امتیاز بگیرید و از تخفیف‌های دائمی تا ۱۵٪ در سفارش‌های بعدی بهره‌مند شوید.'
   }
 ];
 
@@ -28,8 +34,9 @@ export default function Features() {
     <section id="features" className="features-section">
       <div className="container">
         <div className="features-header">
-          <h2>چرا کیپ کافی؟</h2>
-          <p>تعهد ما، ارائه بالاترین کیفیت و بهترین تجربه برای شماست</p>
+          <span className="features-badge">ارزش‌های بنیادین کارگاه</span>
+          <h2>چرا برشته‌کاری کیپ کافی؟</h2>
+          <p>تعهد ما، ارائه بالاترین کیفیت دانه، تازگی برشت و بهترین تجربه برای همراهان است.</p>
         </div>
         
         <div className="features-grid">

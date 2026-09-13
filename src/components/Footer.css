@@ -99,12 +99,36 @@
 }
 
 
+.footer-contact-link {
+  display: inline-block;
+  color: var(--color-accent);
+  font-weight: 700;
+  font-size: 1.05rem;
+  text-decoration: none;
+  direction: ltr;
+  transition: color var(--transition-fast);
+}
+
+.footer-contact-link:hover {
+  color: #FFFFFF;
+}
+
 .footer-bottom {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 24px;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.85rem;
+}
+
+.footer-shipping-policy {
+  color: var(--color-accent);
+  font-weight: 600;
+  font-size: 0.82rem;
 }
 
 @media (max-width: 768px) {

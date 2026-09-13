@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft } from './Icons';
+import { ArrowLeft, Truck, Flame, Coffee } from './Icons';
 import './HeroSection.css';
 
 export default function HeroSection() {
@@ -11,21 +11,40 @@ export default function HeroSection() {
       
       <div className="container hero-container">
         <div className="hero-content">
-          <span className="hero-badge">کیمیاگریِ طعم‌ها</span>
+          <span className="hero-badge">
+            <Flame size={16} />
+            <span>برشته‌کاری تخصصی قهوه</span>
+          </span>
           <h1 className="hero-title">
-            بیداری تنها آغاز مسیر است؛ <br /> عطر و طعم‌های شگفت‌انگیز را با <span className="highlight" style={{ whiteSpace: 'nowrap' }}>کیپ کافی</span> تجربه کنید.
+            عطر و طعم اصیل قهوه تازه برشت؛ <br />
+            با <span className="highlight" style={{ whiteSpace: 'nowrap' }}>کیپ کافی</span> تجربه کنید.
           </h1>
           <p className="hero-subtitle">
-            دعوتی به کشفِ جغرافیای قهوه. مجموعه‌ای از کمیاب‌ترین دانه‌های تخصصی و ادواتِ حرفه‌ایِ دم‌آوری، تا شما معمارِ فنجانِ بی‌نقصِ خود باشید.
+            ارائه ۶ ترکیب رسمی و اختصاصی کارگاه، فرآوری‌شده از مرغوب‌ترین دانه‌ها با دستگاه صنعتی کرون (KORON)، همراه با ادوات حرفه‌ای دم‌آوری و ارسال رایگان در تهران برای سفارش‌های بالای ۲۰ کیلوگرم.
           </p>
           <div className="hero-actions">
-            <Link to="/shop" className="btn btn-primary">
-              شروع خرید
+            <Link to="/shop" className="btn btn-primary btn-lg">
+              مشاهده محصولات و ثبت سفارش
               <ArrowLeft size={18} />
             </Link>
-            <Link to="/about" className="btn btn-secondary">
-              داستان ما
+            <Link to="/club" className="btn btn-secondary btn-lg">
+              باشگاه مشتریان و تخفیف‌ها
             </Link>
+          </div>
+
+          <div className="hero-trust-row">
+            <div className="trust-item">
+              <Truck size={18} />
+              <span>ارسال رایگان در تهران (بالای ۲۰ کیلو)</span>
+            </div>
+            <div className="trust-item">
+              <Flame size={18} />
+              <span>رست تازه هفتگی</span>
+            </div>
+            <div className="trust-item">
+              <Coffee size={18} />
+              <span>۶ ترکیب رسمی کارگاه</span>
+            </div>
           </div>
         </div>
       </div>

@@ -10,7 +10,9 @@ import './Header.css';
 const navItems = [
   { to: '/', label: 'خانه', end: true },
   { to: '/shop', label: 'محصولات' },
+  { to: '/wholesale', label: 'همکاری عمده' },
   { to: '/club', label: 'باشگاه مشتریان' },
+  { to: '/blog', label: 'مجله قهوه' },
   { to: '/about', label: 'درباره ما' },
   { to: '/contact', label: 'تماس با ما' },
 ];
