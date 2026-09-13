@@ -20,7 +20,7 @@ export default function HeroSection() {
             مستقیم از <span className="highlight" style={{ whiteSpace: 'nowrap' }}>کارگاه برشته‌کاری</span>
           </h1>
           <p className="hero-subtitle">
-            عرضه ۶ ترکیب اختصاصی دانه قهوه تازه برشت و ادوات دم‌آوری، با ارسال رایگان در تهران برای سفارش‌های بالای ۲۰ کیلوگرم.
+            از شکوهِ خاستگاه‌های دوردست تا طنین عطر تازه در فنجان شما؛ جایی که دانه‌های دست‌چین با صبوری و تخصص برشته می‌شوند تا هر جرعه، ضیافتی آرام از اصالت، گرما و بیداری باشد.
           </p>
           <div className="hero-actions">
             <Link to="/shop" className="btn btn-primary btn-lg">
@@ -43,7 +43,7 @@ export default function HeroSection() {
             </div>
             <div className="trust-item">
               <Coffee size={18} />
-              <span>۶ ترکیب رسمی کارگاه</span>
+              <span>ترکیب‌های تخصصی کارگاه</span>
             </div>
           </div>
         </div>
