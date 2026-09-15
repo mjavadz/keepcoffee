@@ -1,10 +1,17 @@
+/* RoasteryCalculator.css
+   Special B2B Tool for Cafe Managers & Baristas
+   Uses fixed high-contrast luxury roastery colors in BOTH light and dark themes
+   so text never turns dark green in daytime mode.
+*/
+
 .roastery-calc-card {
-  background: linear-gradient(145deg, #18261E, #111B15);
+  background: linear-gradient(145deg, #18261E 0%, #101914 100%);
   border: 1px solid rgba(222, 158, 72, 0.35);
   border-radius: var(--radius-lg);
   padding: 36px 32px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
   margin-bottom: 60px;
+  color: #F7F4EF;
 }
 
 .calc-header {
@@ -22,7 +29,7 @@
   border-radius: 14px;
   background: rgba(222, 158, 72, 0.12);
   border: 1px solid rgba(222, 158, 72, 0.35);
-  color: var(--color-accent);
+  color: #DE9E48;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -32,7 +39,7 @@
 .calc-badge {
   display: inline-block;
   background: rgba(222, 158, 72, 0.15);
-  color: var(--color-accent);
+  color: #DE9E48;
   border: 1px solid rgba(222, 158, 72, 0.3);
   font-size: 0.78rem;
   font-weight: 700;
@@ -42,14 +49,15 @@
 }
 
 .calc-title {
-  font-size: 1.5rem;
+  font-size: 1.55rem;
   font-weight: 900;
-  color: var(--color-text-primary);
+  color: #FFFFFF;
   margin: 0 0 6px;
+  line-height: 1.35;
 }
 
 .calc-subtitle {
-  color: var(--color-text-secondary);
+  color: rgba(247, 244, 239, 0.8);
   font-size: 0.94rem;
   line-height: 1.6;
   margin: 0;
@@ -84,14 +92,14 @@
 .control-label-row label, .control-label {
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--color-text-primary);
+  color: #FFFFFF;
   margin-bottom: 8px;
 }
 
 .control-value-badge {
   background: rgba(222, 158, 72, 0.2);
-  border: 1px solid var(--color-accent);
-  color: var(--color-accent);
+  border: 1px solid #DE9E48;
+  color: #DE9E48;
   padding: 4px 14px;
   border-radius: var(--radius-full);
   font-size: 0.92rem;
@@ -101,18 +109,18 @@
 .calc-range-slider {
   width: 100%;
   height: 8px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 4px;
   outline: none;
   cursor: pointer;
-  accent-color: var(--color-accent);
+  accent-color: #DE9E48;
 }
 
 .slider-ticks {
   display: flex;
   justify-content: space-between;
-  font-size: 0.76rem;
-  color: var(--color-text-secondary);
+  font-size: 0.78rem;
+  color: rgba(247, 244, 239, 0.65);
   margin-top: 8px;
 }
 
@@ -124,8 +132,8 @@
 }
 
 .blend-select-chip {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-sm);
   padding: 10px 12px;
   text-align: right;
@@ -138,50 +146,50 @@
 
 .blend-select-chip:hover {
   border-color: rgba(222, 158, 72, 0.4);
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.09);
 }
 
 .blend-select-chip.is-active {
-  border-color: var(--color-accent);
-  background: rgba(222, 158, 72, 0.12);
-  box-shadow: 0 0 0 1px var(--color-accent);
+  border-color: #DE9E48;
+  background: rgba(222, 158, 72, 0.15);
+  box-shadow: 0 0 0 1px #DE9E48;
 }
 
 .chip-name {
   font-size: 0.88rem;
   font-weight: 700;
-  color: var(--color-text-primary);
+  color: #FFFFFF;
 }
 
 .chip-roast {
-  font-size: 0.76rem;
-  color: var(--color-accent);
+  font-size: 0.78rem;
+  color: #DE9E48;
 }
 
 .calc-quick-features {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-top: 12px;
+  padding-top: 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .qf-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.84rem;
-  color: var(--color-text-secondary);
+  gap: 10px;
+  font-size: 0.85rem;
+  color: rgba(247, 244, 239, 0.85);
 }
 
 .qf-check {
-  color: #22C55E;
+  color: #4ADE80;
   flex-shrink: 0;
 }
 
 /* Output Results Box */
 .calc-results-box {
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.38);
   border: 1px solid rgba(222, 158, 72, 0.25);
   border-radius: var(--radius-md);
   padding: 24px 22px;
@@ -200,18 +208,18 @@
 
 .results-header h4 {
   margin: 0;
-  font-size: 1.05rem;
-  color: var(--color-text-primary);
+  font-size: 1.08rem;
+  color: #FFFFFF;
   font-weight: 800;
 }
 
 .results-volume-pill {
   font-size: 0.86rem;
-  color: var(--color-text-secondary);
+  color: rgba(247, 244, 239, 0.8);
 }
 
 .results-volume-pill strong {
-  color: var(--color-accent);
+  color: #DE9E48;
 }
 
 .results-stats-grid {
@@ -221,8 +229,8 @@
 }
 
 .stat-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-sm);
   padding: 14px;
 }
@@ -233,8 +241,8 @@
 
 .stat-label {
   display: block;
-  font-size: 0.8rem;
-  color: var(--color-text-secondary);
+  font-size: 0.82rem;
+  color: rgba(247, 244, 239, 0.72);
   margin-bottom: 6px;
 }
 
@@ -248,24 +256,24 @@
 .stat-val {
   font-size: 1.35rem;
   font-weight: 900;
-  color: var(--color-text-primary);
+  color: #FFFFFF;
 }
 
 .stat-val.accent {
-  color: var(--color-accent);
+  color: #DE9E48;
 }
 
 .stat-val.gold {
-  color: #22C55E;
+  color: #4ADE80;
 }
 
 .stat-sub {
-  font-size: 0.78rem;
-  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  color: rgba(247, 244, 239, 0.72);
 }
 
 .stat-sub.save {
-  color: #22C55E;
+  color: #4ADE80;
   font-weight: 700;
 }
 
@@ -283,13 +291,14 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
-  font-size: 0.84rem;
-  color: var(--color-text-secondary);
+  font-size: 0.86rem;
+  color: rgba(247, 244, 239, 0.85);
+  line-height: 1.6;
 }
 
 .delivery-status-note.is-free {
-  background: rgba(34, 197, 94, 0.08);
-  border-color: rgba(34, 197, 94, 0.3);
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(74, 222, 128, 0.4);
   color: #86EFAC;
 }
 
@@ -307,6 +316,12 @@
   font-weight: 800;
   padding: 14px;
   font-size: 0.95rem;
+  background: linear-gradient(135deg, #DE9E48, #C88D4E);
+  color: #101914;
+}
+
+.calc-cta-btn:hover {
+  background: linear-gradient(135deg, #E8AC5A, #D69756);
 }
 
 .calc-phones-row {
@@ -319,13 +334,13 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.82rem;
-  color: var(--color-text-secondary);
+  font-size: 0.84rem;
+  color: rgba(247, 244, 239, 0.82);
   transition: color var(--transition-fast);
 }
 
 .calc-phone-link:hover {
-  color: var(--color-accent);
+  color: #DE9E48;
 }
 
 @media (max-width: 920px) {
@@ -347,6 +362,6 @@
   }
   .calc-phones-row {
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
   }
 }
