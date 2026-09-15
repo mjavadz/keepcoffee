@@ -36,7 +36,7 @@ export default function ProductPage() {
   const isBean = product.category === 'beans';
 
   const handleAdd = () => {
-    addItem(product.slug, qty);
+    addItem(product.slug, qty, isBean ? selectedGrind : null);
     setAdded(true);
     setTimeout(() => setAdded(false), 1600);
   };

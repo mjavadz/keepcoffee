@@ -1,0 +1,218 @@
+/* FloatingContact.css
+   Persistent, elegant mobile & desktop consultation launcher
+   Positioned bottom-right (RTL natural hand position)
+*/
+
+.floating-contact-wrapper {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 920;
+  direction: rtl;
+  font-family: var(--font-family);
+}
+
+.floating-contact-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #DE9E48 0%, #C88D4E 100%);
+  color: #101914;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 12px 20px;
+  font-weight: 800;
+  font-size: 0.92rem;
+  box-shadow: 0 8px 24px rgba(222, 158, 72, 0.4);
+  cursor: pointer;
+  position: relative;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.floating-contact-trigger:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(222, 158, 72, 0.5);
+}
+
+.floating-pulse-ring {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: var(--radius-full);
+  border: 2px solid rgba(222, 158, 72, 0.6);
+  animation: pulse-ring 2.5s infinite;
+  pointer-events: none;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 0; }
+  100% { transform: scale(0.95); opacity: 0; }
+}
+
+.floating-trigger-label {
+  letter-spacing: -0.2px;
+}
+
+/* Popover Panel */
+.floating-contact-popover {
+  position: absolute;
+  bottom: calc(100% + 14px);
+  right: 0;
+  width: 290px;
+  background: linear-gradient(145deg, #18261E 0%, #101914 100%);
+  border: 1px solid rgba(222, 158, 72, 0.35);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  animation: popover-fade-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes popover-fade-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.floating-contact-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+.contact-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #22C55E;
+  box-shadow: 0 0 8px #22C55E;
+  flex-shrink: 0;
+}
+
+.header-info {
+  flex-grow: 1;
+}
+
+.header-info strong {
+  display: block;
+  color: #FFFFFF;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.header-info p {
+  color: rgba(247, 244, 239, 0.75);
+  font-size: 0.74rem;
+  margin: 0;
+}
+
+.floating-close-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast);
+}
+
+.floating-close-btn:hover {
+  color: #FFFFFF;
+}
+
+/* Link items */
+.floating-contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.floating-link-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.floating-link-item:hover {
+  background: rgba(222, 158, 72, 0.12);
+  border-color: rgba(222, 158, 72, 0.4);
+  transform: translateX(-2px);
+}
+
+.fli-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.floating-link-item.whatsapp .fli-icon {
+  background: rgba(37, 211, 102, 0.15);
+  color: #25D366;
+  border: 1px solid rgba(37, 211, 102, 0.3);
+}
+
+.floating-link-item.phone .fli-icon {
+  background: rgba(222, 158, 72, 0.15);
+  color: #DE9E48;
+  border: 1px solid rgba(222, 158, 72, 0.3);
+}
+
+.floating-link-item.telegram .fli-icon {
+  background: rgba(36, 161, 222, 0.15);
+  color: #24A1DE;
+  border: 1px solid rgba(36, 161, 222, 0.3);
+}
+
+.fli-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.fli-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.fli-sub {
+  font-size: 0.72rem;
+  color: rgba(247, 244, 239, 0.7);
+}
+
+@media (max-width: 600px) {
+  .floating-contact-wrapper {
+    bottom: 20px;
+    right: 18px;
+  }
+  .floating-trigger-label {
+    display: none;
+  }
+  .floating-contact-trigger {
+    padding: 12px;
+    width: 48px;
+    height: 48px;
+    justify-content: center;
+  }
+  .floating-contact-popover {
+    width: 270px;
+    right: 0;
+  }
+}

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { products } from '../data/products';
+import { products, grindOptions } from '../data/products';
 
 const CartContext = createContext();
 export const useCart = () => useContext(CartContext);
@@ -17,7 +17,7 @@ function loadInitial() {
 }
 
 export function CartProvider({ children }) {
-  // items: [{ slug, qty }]
+  // items: [{ slug, qty, grind }]
   const [items, setItems] = useState(loadInitial);
 
   useEffect(() => {
@@ -28,25 +28,40 @@ export function CartProvider({ children }) {
     }
   }, [items]);
 
-  const addItem = (slug, qty = 1) => {
+  const addItem = (slug, qty = 1, grind = null) => {
     setItems((prev) => {
-      const existing = prev.find((i) => i.slug === slug);
+      const matchItem = (i) => i.slug === slug && (i.grind || null) === (grind || null);
+      const existing = prev.find(matchItem);
       if (existing) {
-        return prev.map((i) => (i.slug === slug ? { ...i, qty: i.qty + qty } : i));
+        return prev.map((i) =>
+          matchItem(i) ? { ...i, qty: i.qty + qty } : i
+        );
       }
-      return [...prev, { slug, qty }];
+      return [...prev, { slug, qty, grind: grind || null }];
     });
   };
 
-  const updateQty = (slug, qty) => {
+  const updateQty = (cartKey, qty) => {
     setItems((prev) =>
       prev
-        .map((i) => (i.slug === slug ? { ...i, qty: Math.max(1, qty) } : i))
+        .map((i) => {
+          const itemKey = i.grind ? `${i.slug}-${i.grind}` : i.slug;
+          return itemKey === cartKey || i.slug === cartKey
+            ? { ...i, qty: Math.max(1, qty) }
+            : i;
+        })
         .filter((i) => i.qty > 0)
     );
   };
 
-  const removeItem = (slug) => setItems((prev) => prev.filter((i) => i.slug !== slug));
+  const removeItem = (cartKey) =>
+    setItems((prev) =>
+      prev.filter((i) => {
+        const itemKey = i.grind ? `${i.slug}-${i.grind}` : i.slug;
+        return itemKey !== cartKey && i.slug !== cartKey;
+      })
+    );
+
   const clear = () => setItems([]);
 
   // Join cart entries with product data for rendering & totals
@@ -55,7 +70,17 @@ export function CartProvider({ children }) {
       items
         .map((i) => {
           const product = products.find((p) => p.slug === i.slug);
-          return product ? { ...product, qty: i.qty, lineTotal: product.price * i.qty } : null;
+          if (!product) return null;
+          const grindObj = grindOptions?.find((g) => g.id === i.grind);
+          const itemKey = i.grind ? `${i.slug}-${i.grind}` : i.slug;
+          return {
+            ...product,
+            cartKey: itemKey,
+            grind: i.grind,
+            grindLabel: grindObj ? grindObj.label : null,
+            qty: i.qty,
+            lineTotal: (product.price || 0) * i.qty,
+          };
         })
         .filter(Boolean),
     [items]

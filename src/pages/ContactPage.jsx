@@ -38,11 +38,11 @@ export default function ContactPage() {
             <div className="contact-info-block">
               <span className="contact-label">تماس مستقیم و سفارشات</span>
               <div className="contact-dual-phones">
-                <a href="tel:+989120142210" className="contact-phone-item" title="تماس با رحیمی">
+                <a href={links.telRahimi()} className="contact-phone-item" title="تماس با رحیمی">
                   <span className="phone-person">رحیمی:</span>
                   <span className="phone-num">۰۹۱۲۰۱۴۲۲۱۰</span>
                 </a>
-                <a href="tel:+989335333499" className="contact-phone-item" title="تماس با ربیعی">
+                <a href={links.telRabiee()} className="contact-phone-item" title="تماس با ربیعی">
                   <span className="phone-person">ربیعی:</span>
                   <span className="phone-num">۰۹۳۳۵۳۳۳۴۹۹</span>
                 </a>

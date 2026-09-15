@@ -57,8 +57,8 @@ export default function Footer() {
               <a href={links.telegram()} target="_blank" rel="noopener noreferrer" aria-label="Telegram" className="social-link"><MessageCircle size={24} /></a>
             </div>
             <div className="footer-contacts-list">
-              <a href="tel:+989120142210" className="footer-contact-link">۰۹۱۲۰۱۴۲۲۱۰ (رحیمی)</a>
-              <a href="tel:+989335333499" className="footer-contact-link">۰۹۳۳۵۳۳۳۴۹۹ (ربیعی)</a>
+              <a href={links.telRahimi()} className="footer-contact-link">۰۹۱۲۰۱۴۲۲۱۰ (رحیمی)</a>
+              <a href={links.telRabiee()} className="footer-contact-link">۰۹۳۳۵۳۳۳۴۹۹ (ربیعی)</a>
             </div>
           </div>
         </div>

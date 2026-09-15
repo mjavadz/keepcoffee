@@ -1,97 +1,172 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Trash2, Send } from '../components/Icons';
+import { Trash2, Send, Phone, Check, Coffee } from '../components/Icons';
 import SEO from '../components/SEO';
 import { useCart } from '../context/CartContext';
 import { formatToman, toPersianDigits } from '../utils/format';
-import { links } from '../data/site';
+import { site, links } from '../data/site';
 import './CartPage.css';
 
-function buildOrderText(items, subtotal) {
+function buildOrderText(items, subtotal, customer = {}) {
   const lines = items.map(
-    (i) => `• ${i.name} × ${toPersianDigits(i.qty)} — ${formatToman(i.lineTotal)}`
+    (i) => `• ${i.name}${i.grindLabel ? ` [آسیاب: ${i.grindLabel}]` : ''} × ${toPersianDigits(i.qty)} — ${formatToman(i.lineTotal)}`
   );
+
+  const customerDetails = [];
+  if (customer.name?.trim()) customerDetails.push(`👤 نام سفارش‌دهنده: ${customer.name.trim()}`);
+  if (customer.phone?.trim()) customerDetails.push(`📞 شماره تماس: ${customer.phone.trim()}`);
+  if (customer.address?.trim()) customerDetails.push(`📍 آدرس تحویل: ${customer.address.trim()}`);
+
   return [
-    'سلام، می‌خواهم این سفارش را ثبت کنم:',
+    'سلام و درود، سفارش جدید از وب‌سایت کیپ کافی:',
     '',
+    ...(customerDetails.length > 0 ? [...customerDetails, '------------------------------'] : []),
+    'اقلام سفارش:',
     ...lines,
     '',
-    `جمع کل: ${formatToman(subtotal)}`,
+    `مبلغ کل فاکتور: ${formatToman(subtotal)}`,
+    '',
+    'لطفاً جهت تأیید و هماهنگی ارسال راهنمایی بفرمایید.'
   ].join('\n');
 }
 
 export default function CartPage() {
   const { detailedItems, subtotal, count, updateQty, removeItem, clear } = useCart();
+  
+  const [customer, setCustomer] = useState({
+    name: '',
+    phone: '',
+    address: ''
+  });
 
-  const orderText = buildOrderText(detailedItems, subtotal);
+  const orderText = buildOrderText(detailedItems, subtotal, customer);
+
+  const breadcrumbs = [
+    { name: 'خانه', url: '/' },
+    { name: 'سبد خرید', url: '/cart' }
+  ];
 
   return (
     <div className="page">
-      <SEO title="سبد خرید" path="/cart" description="سبد خرید شما در کیپ کافی." />
+      <SEO 
+        title="سبد خرید" 
+        path="/cart" 
+        description="سبد خرید دانه قهوه و تجهیزات برشته‌کاری کیپ کافی با امکان ارسال سریع به سراسر ایران."
+        breadcrumbs={breadcrumbs}
+      />
 
       <div className="page-hero">
         <div className="container">
-          <h1>سبد خرید</h1>
-          <p>{count > 0 ? `${toPersianDigits(count)} کالا در سبد شما` : 'سبد خرید شما خالی است'}</p>
+          <h1>سبد خرید شما</h1>
+          <p>{count > 0 ? `${toPersianDigits(count)} ردیف کالا آماده ارسال مستقیم از کارگاه` : 'سبد خرید شما در حال حاضر خالی است'}</p>
         </div>
       </div>
 
       <div className="container cart-wrap">
         {detailedItems.length === 0 ? (
           <div className="cart-empty">
-            <p>هنوز محصولی به سبد اضافه نکرده‌اید.</p>
-            <Link to="/shop" className="btn btn-primary btn-lg">رفتن به فروشگاه</Link>
+            <div className="cart-empty-icon">☕</div>
+            <p>هنوز محصولی به سبد خرید خود اضافه نکرده‌اید.</p>
+            <Link to="/shop" className="btn btn-primary btn-lg">مشاهده کاتالوگ قهوه‌ها</Link>
           </div>
         ) : (
           <div className="cart-layout">
             <div className="cart-items">
               {detailedItems.map((item) => (
-                <div key={item.slug} className="cart-row">
+                <div key={item.cartKey} className="cart-row">
                   <Link to={`/product/${item.slug}`} className="cart-thumb">
                     <img src={item.image} alt={item.name} />
                   </Link>
                   <div className="cart-row-main">
                     <Link to={`/product/${item.slug}`} className="cart-name">{item.name}</Link>
+                    {item.grindLabel && (
+                      <span className="cart-grind-tag">آسیاب: {item.grindLabel}</span>
+                    )}
                     <span className="cart-unit">{formatToman(item.price)}</span>
                   </div>
                   <div className="qty-stepper" role="group" aria-label="تعداد">
-                    <button onClick={() => updateQty(item.slug, item.qty - 1)} aria-label="کاهش">−</button>
+                    <button onClick={() => updateQty(item.cartKey, item.qty - 1)} aria-label="کاهش">−</button>
                     <span>{toPersianDigits(item.qty)}</span>
-                    <button onClick={() => updateQty(item.slug, item.qty + 1)} aria-label="افزایش">+</button>
+                    <button onClick={() => updateQty(item.cartKey, item.qty + 1)} aria-label="افزایش">+</button>
                   </div>
                   <span className="cart-line-total">{formatToman(item.lineTotal)}</span>
-                  <button className="cart-remove" onClick={() => removeItem(item.slug)} aria-label={`حذف ${item.name}`}>
+                  <button className="cart-remove" onClick={() => removeItem(item.cartKey)} aria-label={`حذف ${item.name}`}>
                     <Trash2 size={18} />
                   </button>
                 </div>
               ))}
-              <button className="cart-clear" onClick={clear}>خالی کردن سبد</button>
+              <button className="cart-clear" onClick={clear}>خالی کردن کامل سبد</button>
             </div>
 
             <aside className="cart-summary">
-              <h2>خلاصه سفارش</h2>
+              <h2>خلاصه پیش‌فاکتور</h2>
               <div className="summary-row">
-                <span>تعداد اقلام</span>
-                <span>{toPersianDigits(count)}</span>
+                <span>تعداد کل بسته‌ها</span>
+                <span>{toPersianDigits(count)} عدد</span>
               </div>
               <div className="summary-row summary-total">
-                <span>جمع کل</span>
-                <span>{formatToman(subtotal)}</span>
+                <span>مبلغ کل سفارش</span>
+                <span className="total-gold-price">{formatToman(subtotal)}</span>
               </div>
+
               <div className="cart-shipping-banner">
                 <span className="shipping-icon">🚚</span>
-                <span>ارسال رایگان در تهران برای سفارش‌های بالای ۲۰ کیلوگرم</span>
+                <span>ارسال رایگان در تمامی مناطق تهران برای سفارش‌های بالای ۲۰ کیلوگرم</span>
               </div>
-              <p className="summary-note">
-                پرداخت آنلاین به طور مستقیم فعال نیست؛ سفارش خود را از طریق واتساپ یا تلگرام ارسال کنید تا سریعاً تأیید، هماهنگی و ارسال شود.
-              </p>
-              <a href={links.whatsapp(orderText)} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg cart-checkout">
-                <Send size={18} /> ثبت سفارش در واتساپ
-              </a>
-              <a href={links.telegramShare(orderText)} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg cart-checkout">
-                <Send size={18} /> ثبت سفارش در تلگرام
-              </a>
-              <Link to="/shop" className="cart-continue">← ادامه خرید</Link>
+
+              {/* Fast Checkout Customer Inputs */}
+              <div className="cart-customer-box">
+                <h4 className="customer-box-title">مشخصات تحویل‌گیرنده (اختیاری):</h4>
+                <div className="customer-inputs-grid">
+                  <input
+                    type="text"
+                    placeholder="نام و نام خانوادگی"
+                    value={customer.name}
+                    onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
+                    className="customer-field"
+                  />
+                  <input
+                    type="tel"
+                    placeholder="شماره تماس (جهت هماهنگی پیک)"
+                    value={customer.phone}
+                    onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
+                    className="customer-field"
+                    dir="ltr"
+                  />
+                  <textarea
+                    placeholder="آدرس دقیق محل تحویل در تهران یا شهرستان"
+                    value={customer.address}
+                    onChange={(e) => setCustomer({ ...customer, address: e.target.value })}
+                    className="customer-field customer-textarea"
+                    rows={2}
+                  />
+                </div>
+              </div>
+
+              <div className="cart-actions-group">
+                <a
+                  href={links.whatsapp(orderText)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-primary btn-lg cart-checkout btn-whatsapp"
+                >
+                  <Send size={18} /> ارسال پیش‌فاکتور به واتساپ سفارشات
+                </a>
+                <a
+                  href={links.telegramShare(orderText)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-outline btn-lg cart-checkout btn-telegram"
+                >
+                  <Send size={18} /> ارسال پیش‌فاکتور در تلگرام
+                </a>
+              </div>
+
+              <div className="cart-assistance-note">
+                <span>سفارش شما بلافاصله در کارگاه با دانه‌های تازه برشت آماده و با پیک اختصاصی ارسال می‌شود.</span>
+              </div>
+
+              <Link to="/shop" className="cart-continue">← ادامه خرید و افزودن محصول دیگر</Link>
             </aside>
           </div>
         )}

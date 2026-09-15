@@ -4,6 +4,7 @@ import Header from './Header';
 import Footer from './Footer';
 import ScrollToTop from './ScrollToTop';
 import BackToTop from './BackToTop';
+import FloatingContact from './FloatingContact';
 import Loader from './Loader';
 
 export default function Layout() {
@@ -19,6 +20,7 @@ export default function Layout() {
       </main>
       <Footer />
       <BackToTop />
+      <FloatingContact />
     </>
   );
 }
