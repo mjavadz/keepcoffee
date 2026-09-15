@@ -52,7 +52,7 @@ const tiers = [
     tag: 'مخصوص حرفه‌ای‌ها و کافه‌دارها',
     icon: Gem,
     minSpend: 'خرید بالای ۱۵ میلیون تومان',
-    discount: '۱۵٪ تخفیف دائمی روی کلیه محصولات',
+    discount: '۱۵٪ تخفیف روی کلیه محصولات',
     color: '#E0B589',
     perks: [
       '۱۵٪ تخفیف بدون سقف روی تمام سفارش‌ها',
@@ -255,7 +255,6 @@ export default function ClubPage() {
 
         <div className="club-steps-grid">
           <div className="step-card">
-            <div className="step-num">۰۱</div>
             <div className="step-icon-wrap">
               <Gift size={28} />
             </div>
@@ -266,7 +265,6 @@ export default function ClubPage() {
           </div>
 
           <div className="step-card featured-step">
-            <div className="step-num">۰۲</div>
             <div className="step-icon-wrap">
               <Coffee size={28} />
             </div>
@@ -277,7 +275,6 @@ export default function ClubPage() {
           </div>
 
           <div className="step-card">
-            <div className="step-num">۰۳</div>
             <div className="step-icon-wrap">
               <Percent size={28} />
             </div>
