@@ -7,16 +7,16 @@ export const site = {
   // --- Official Contacts ---
   phoneRahimi: '۰۹۱۲۰۱۴۲۲۱۰',
   contactPersonRahimi: 'رحیمی',
-  phoneHrefRahimi: '+989120142210',
+  phoneHrefRahimi: '09120142210',
 
   phoneRabiee: '۰۹۳۳۵۳۳۳۴۹۹',
   contactPersonRabiee: 'ربیعی',
-  phoneHrefRabiee: '+989335333499',
+  phoneHrefRabiee: '09335333499',
 
   // Primary default
   phone: '۰۹۱۲۰۱۴۲۲۱۰',
   contactPerson: 'رحیمی',
-  phoneHref: '+989120142210',
+  phoneHref: '09120142210',
 
   whatsapp: '989120142210',
   instagram: 'keepcoffeeroastery',
@@ -24,7 +24,7 @@ export const site = {
   email: 'info@keepcoffee.ir',
   address: 'تهران، کارگاه تخصصی برشته‌کاری کیپ کافی',
   hours: 'هر روز ۹ صبح تا ۹ شب',
-  shippingPolicy: 'ارسال شهری داخل تهران برای سفارش‌های بالای ۲۰ کیلوگرم رایگان می‌باشد.'
+  shippingPolicy: 'ارسال رایگان در تهران برای سفارش‌های بالای ۲۰ کیلوگرم'
 };
 
 // Helpers that build contact links from the site info

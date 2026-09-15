@@ -1,67 +1,91 @@
 import React, { Suspense, lazy } from 'react';
-import { Truck, Package, BadgePercent, Headset, Phone, Send, Coffee } from '../components/Icons';
+import { Truck, Package, BadgePercent, Headset, Phone, Send, Coffee, HelpCircle } from '../components/Icons';
 import SEO from '../components/SEO';
+import RoasteryCalculator from '../components/RoasteryCalculator';
 import { site, links } from '../data/site';
 import { formatToman } from '../utils/format';
+import { products } from '../data/products';
 import './WholesalePage.css';
 
 const WholesaleBanner = lazy(() => import('../components/WholesaleBanner'));
 
 const benefits = [
-  { icon: BadgePercent, title: 'قیمت مستقیم کارگاهی', desc: 'حذف واسطه‌ها و ارائه قیمت‌های دست اول کارگاه رستری برای کافه‌ها و شرکت‌های پخش.' },
-  { icon: Package, title: 'ثبات پروفایل برشت', desc: 'پایش مستمر دمایی و تنظیم دقیق پروفایل برشته‌کاری جهت تضمین یکنواختی کامل در تمام سفارش‌ها.' },
-  { icon: Truck, title: 'ارسال رایگان در تهران', desc: 'تحویل سریع و رایگان در تمام مناطق تهران برای خریدهای بالای ۲۰ کیلوگرم.' },
-  { icon: Headset, title: 'مشاوره و کالیبراسیون', desc: 'مشاوره اختصاصی با مستر روستر جهت تنظیم آسیاب و بهینه‌سازی عصاره‌گیری منوی کافه.' },
-];
-
-const officialBlends = [
-  { name: 'میکس ۱۰۰ روبوستا کلاسیک', ratio: '۱۰۰٪ روبوستا', price: 2200000, notes: 'کافئین فوق‌العاده، کرمای غلیظ فندقی، بادی سنگین' },
-  { name: 'میکس ۱۰۰ روبوستا پرمیوم', ratio: '۱۰۰٪ روبوستا پرمیوم', price: 2380000, notes: 'دانه‌های سورت‌شده دست‌چین، بدون تلخی زننده، کرمای ماندگار' },
-  { name: 'میکس ۸۰/۲۰ روبوستا', ratio: '۸۰٪ روبوستا / ۲۰٪ عربیکا', price: 2490000, notes: 'تعادل هوشمند کافئین و عطر دلنشین، فرمول پرطرفدار کافه‌ای' },
-  { name: 'میکس ۷۰/۳۰ روبوستا کلاسیک', ratio: '۷۰٪ روبوستا / ۳۰٪ عربیکا', price: 2630000, notes: 'ترکیب اصیل و همه‌پسند اسپرسو بار با فوم پایدار' },
-  { name: 'میکس ۷۰/۳۰ روبوستا پرمیوم', ratio: '۷۰٪ روبوستا / ۳۰٪ عربیکا', price: 2740000, notes: 'طعم‌یادهای شکلات تلخ و بادام بوداده با اسیدیته بسیار ملایم' },
-  { name: 'میکس ۵۰/۵۰ پرمیوم', ratio: '۵۰٪ عربیکا / ۵۰٪ روبوستا', price: 3200000, notes: 'توازن طلایی پیچیدگی عطر و تن‌واری سنگین، پرچمدار کارگاه' },
+  { icon: BadgePercent, title: 'قیمت مستقیم و دست‌اول کارگاه', desc: 'حذف کامل دلال‌ها و واسطه‌ها؛ خرید مستقیم با نرخ مصوب کارگاه برشته‌کاری.' },
+  { icon: Package, title: 'ثبات پروفایل برشت (Roast Curve)', desc: 'پایش و ثبت دیجیتال پروفایل دمایی برشت در هر بچ برای تضمین طعم یکدست در تمام طول سال.' },
+  { icon: Truck, title: 'ارسال رایگان در سراسر تهران', desc: 'تحویل منظم هفتگی با پیک اختصاصی در تمامی مناطق تهران برای سفارش‌های بالای ۲۰ کیلوگرم.' },
+  { icon: Headset, title: 'کالیبراسیون و مشاوره باریستا', desc: 'پشتیبانی فنی رایگان توسط مستر روستر کارگاه جهت تنظیم آسیاب و عصاره‌گیری استاندارد منوی کافه.' },
 ];
 
 export default function WholesalePage() {
+  const beanProducts = products.filter(p => p.category === 'beans');
+
+  const breadcrumbs = [
+    { name: 'خانه', url: '/' },
+    { name: 'همکاری عمده و تأمین کافه‌ها', url: '/wholesale' }
+  ];
+
+  const wholesaleFAQ = [
+    {
+      question: "آیا قبل از ثبت سفارش عمده امکان دریافت نمونه تست (Sample Pack) وجود دارد؟",
+      answer: "بله، برای کافه‌ها و شرکت‌های همکار بسته نمونه تست از ترکیب‌های منتخب کارگاه ارسال می‌شود تا پیش از عقد قرارداد، کیفیت عصاره‌گیری و عطر قهوه روی دستگاه‌های اسپرسوی خودتان ارزیابی شود."
+    },
+    {
+      question: "حداقل میزان سفارش برای بهره‌مندی از نرخ عمده و ارسال رایگان چقدر است؟",
+      answer: "حداقل سفارش برای قیمت همکاری ۱۰ کیلوگرم است و برای سفارش‌های بالای ۲۰ کیلوگرم، ارسال در سراسر تهران کاملاً رایگان انجام می‌پذیرد."
+    },
+    {
+      question: "بسته‌بندی دانه‌ها در سفارش‌های عمده به چه صورت است؟",
+      answer: "دانه‌های قهوه در پاکت‌های ضخیم آلومینیومی چندلایه، زیپ‌کیپ‌دار و مجهز به سوپاپ یک‌طرفه تخلیه گاز (One-Way Degassing Valve) بسته‌بندی می‌شوند تا طراوت و گازهای برشت تازه تا ماه‌ها حفظ شود."
+    },
+    {
+      question: "آیا کالیبراسیون و تنظیم دستگاه آسیاب کافه توسط کارگاه انجام می‌شود؟",
+      answer: "بله، تیم فنی و روستر کیپ کافی در صورت نیاز، تنظیمات درجه آسیاب، زمان عصاره‌گیری و نسبت آب به قهوه (Brew Ratio) را با منوی کافه شما هماهنگ می‌نمایند."
+    }
+  ];
+
   return (
     <div className="page wholesale-page">
       <SEO 
-        title="فروش عمده و همکاری با کافه‌ها" 
+        title="فروش عمده قهوه و تأمین تخصصی کافه‌ها" 
         path="/wholesale" 
-        description="تأمین دانه قهوه تازه برشت برای کافه‌ها، رستوران‌ها و دفاتر پخش در تهران و سراسر کشور. قیمت‌های رقابتی، ارسال رایگان بالای ۲۰ کیلو و برشت تخصصی کارگاهی." 
+        description="تأمین دانه قهوه تازه برشت برای کافه‌ها، رستوران‌ها، هتل‌ها و دفاتر پخش در تهران و سراسر کشور. قیمت دست‌اول کارگاه، ارسال رایگان بالای ۲۰ کیلو و برشته‌کاری تخصصی."
+        breadcrumbs={breadcrumbs}
+        faq={wholesaleFAQ}
       />
 
       <div className="page-hero">
         <div className="container">
-          <span className="wholesale-hero-tag">لاین هورکا و تأمین کافه‌ها</span>
-          <h1>همکاری عمده با روستری کیپ کافی</h1>
-          <p>تأمین پایدار، ثبات در طعم و کیفیت تضمین‌شده برای کسب‌وکار شما.</p>
+          <span className="wholesale-hero-tag">لاین هورکا و زنجیره تأمین کافه‌ها</span>
+          <h1>همکاری عمده با کارگاه برشته‌کاری کیپ کافی</h1>
+          <p>تأمین پایدار، ثبات دقیق در پروفایل طعمی و قیمت‌های مستقیم کارگاهی برای کسب‌وکار شما.</p>
         </div>
       </div>
 
       <div className="container section-pad">
+        {/* Interactive B2B Supply & Cost Calculator */}
+        <RoasteryCalculator />
+
         {/* Blends Grid */}
         <div className="wholesale-catalog-section">
           <div className="section-header" style={{ textAlign: 'center', justifyContent: 'center' }}>
             <div>
-              <span className="section-sub-badge">نرخ‌نامه مصوب کارگاه</span>
-              <h2 className="section-title">۶ ترکیب رسمی کیپ کافی جهت تأمین و سفارش</h2>
-              <p className="section-desc">قیمت‌ها بر حسب تومان برای هر کیلوگرم دانه قهوه | ارسال رایگان در تهران بالای ۲۰ کیلو</p>
+              <span className="section-sub-badge">نرخ‌نامه رسمی کارگاه</span>
+              <h2 className="section-title">ترکیب‌های تخصصی کیپ کافی جهت تأمین و سفارش</h2>
+              <p className="section-desc">قیمت‌ها بر حسب تومان برای هر کیلوگرم دانه قهوه | ارسال رایگان در تهران بالای ۲۰ کیلوگرم</p>
             </div>
           </div>
 
           <div className="wholesale-blends-grid">
-            {officialBlends.map((b, idx) => (
-              <div key={idx} className="wholesale-blend-card">
+            {beanProducts.map((b) => (
+              <div key={b.id} className="wholesale-blend-card">
                 <div className="blend-card-header">
                   <Coffee size={22} className="blend-header-icon" />
                   <h3>{b.name}</h3>
                 </div>
-                <span className="blend-ratio-pill">{b.ratio}</span>
-                <p className="blend-desc-text">{b.notes}</p>
+                <span className="blend-ratio-pill">{b.origin}</span>
+                <p className="blend-desc-text">{b.description}</p>
                 <div className="blend-price-footer">
-                  <span className="price-label">قیمت هر کیلو:</span>
+                  <span className="price-label">قیمت هر کیلوگرم:</span>
                   <strong className="price-number">{formatToman(b.price)}</strong>
                 </div>
               </div>
@@ -83,20 +107,42 @@ export default function WholesalePage() {
           })}
         </div>
 
+        {/* FAQ Section */}
+        <div className="wholesale-faq-section">
+          <div className="section-header" style={{ textAlign: 'center', justifyContent: 'center', marginBottom: '28px' }}>
+            <div>
+              <span className="section-sub-badge">راهنمای همکاری</span>
+              <h2 className="section-title">پرسش‌های متداول همکاران و کافه‌داران</h2>
+            </div>
+          </div>
+
+          <div className="wholesale-faq-grid">
+            {wholesaleFAQ.map((item, idx) => (
+              <div key={idx} className="w-faq-item">
+                <div className="w-faq-q">
+                  <HelpCircle size={18} className="w-faq-icon" />
+                  <h4>{item.question}</h4>
+                </div>
+                <p className="w-faq-a">{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Contact CTA */}
         <div className="wholesale-cta">
-          <span className="wholesale-cta-badge">مشاوره و ارسال بسته نمونه (Sample Pack)</span>
-          <h2>آماده‌ی شروع همکاری هستید؟</h2>
-          <p>برای دریافت مشاوره، هماهنگی ارسال نمونه تست قهوه و ثبت سفارش با واحد فروش در تماس باشید:</p>
+          <span className="wholesale-cta-badge">مشاوره حضوری و ارسال بسته تست</span>
+          <h2>آماده‌ی ارتقای کیفیت قهوه کافه‌تان هستید؟</h2>
+          <p>برای دریافت مشاوره، هماهنگی ارسال نمونه تست قهوه (Sample Pack) و استعلام قراردادهای تأمین با واحد مدیریت و فروش کارگاه در تماس باشید:</p>
           <div className="wholesale-cta-actions">
-            <a href="tel:+989120142210" className="btn btn-primary btn-lg">
-              <Phone size={18} /> تماس با آقای رحیمی: ۰۹۱۲۰۱۴۲۲۱۰
+            <a href={links.telRahimi()} className="btn btn-primary btn-lg">
+              <Phone size={18} /> تماس با آقای رحیمی: {site.phoneRahimi}
             </a>
-            <a href="tel:+989335333499" className="btn btn-outline btn-lg">
-              <Phone size={18} /> تماس با آقای ربیعی: ۰۹۳۳۵۳۳۳۴۹۹
+            <a href={links.telRabiee()} className="btn btn-outline btn-lg">
+              <Phone size={18} /> تماس با آقای ربیعی: {site.phoneRabiee}
             </a>
             <a href={links.whatsapp('سلام، برای استعلام همکاری عمده و دریافت بسته نمونه با شما تماس گرفتم.')} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg">
-              <Send size={18} /> پیام در واتساپ
+              <Send size={18} /> پیام مستقیم واتساپ
             </a>
           </div>
         </div>

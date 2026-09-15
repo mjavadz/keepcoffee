@@ -59,9 +59,20 @@ export default function ShopPage() {
     return list;
   }, [activeCategory, query, sort]);
 
+  const breadcrumbs = [
+    { name: 'خانه', url: '/' },
+    { name: 'فروشگاه آنلاین', url: '/shop' }
+  ];
+
   return (
     <div className="page">
-      <SEO title="فروشگاه" path="/shop" description="خرید آنلاین دانه قهوه تخصصی، تجهیزات دم‌آوری و لوازم جانبی از کیپ کافی." />
+      <SEO 
+        title="فروشگاه تخصصی دانه قهوه و ملزومات دم‌آوری" 
+        path="/shop" 
+        description="خرید آنلاین انواع دانه قهوه تازه برشت، میکس‌های اسپرسو روبوستا و عربیکا، و تجهیزات تخصصی دم‌آوری از کارگاه برشته‌کاری کیپ کافی با ضمانت اصالت و تازگی."
+        keywords="خرید دانه قهوه, خرید قهوه اسپرسو, قیمت قهوه کیلویی, قهوه روبوستا, قهوه ۷۰ ۳۰, فروشگاه قهوه تهران, کیپ کافی"
+        breadcrumbs={breadcrumbs}
+      />
 
       <div className="page-hero">
         <div className="container">

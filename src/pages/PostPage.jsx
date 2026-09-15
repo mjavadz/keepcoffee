@@ -31,9 +31,23 @@ export default function PostPage() {
 
   const more = posts.filter((p) => p.slug !== slug).slice(0, 3);
 
+  const breadcrumbItems = [
+    { name: 'خانه', url: '/' },
+    { name: 'مجله و آموزش', url: '/blog' },
+    { name: post.title, url: `/blog/${post.slug}` }
+  ];
+
   return (
     <div className="page">
-      <SEO title={post.title} path={`/blog/${post.slug}`} description={post.excerpt} />
+      <SEO 
+        title={post.title} 
+        path={`/blog/${post.slug}`} 
+        description={post.excerpt}
+        image={post.image}
+        type="article"
+        article={post}
+        breadcrumbs={breadcrumbItems}
+      />
 
       <article className="post">
         <div className="post-hero" style={{ backgroundImage: `url('${post.image}')` }}>
