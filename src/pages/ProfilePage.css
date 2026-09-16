@@ -33,37 +33,52 @@
 }
 
 .user-avatar-wrap {
-  width: 72px;
-  height: 72px;
+  width: 76px;
+  height: 76px;
   border-radius: 50%;
   background: radial-gradient(circle, #DE9E48 0%, #B87A30 100%);
   color: #101914;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 900;
   border: 3px solid #FFFFFF;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   position: relative;
   flex-shrink: 0;
+  overflow: visible;
 }
 
-.user-avatar-badge {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 22px;
-  height: 22px;
-  background: #22C55E;
-  color: #FFFFFF;
+.user-avatar-img {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
-  font-size: 0.76rem;
-  font-weight: 800;
+  object-fit: cover;
+  display: block;
+}
+
+.avatar-edit-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 28px;
+  height: 28px;
+  background: #DE9E48;
+  color: #101914;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 2px solid #101914;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: transform var(--transition-fast);
+}
+
+.avatar-edit-badge:hover {
+  transform: scale(1.1);
+  background: #FFFFFF;
 }
 
 .user-details-block {
@@ -200,6 +215,92 @@
   font-weight: 800;
   padding: 1px 6px;
   border-radius: 4px;
+}
+
+.tab-pill-sparkle.new-badge {
+  background: #6366F1;
+}
+
+/* Avatar Settings Box */
+.avatar-settings-box {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.avatar-preview-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #DE9E48 0%, #B87A30 100%);
+  color: #101914;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 900;
+  border: 2px solid #FFFFFF;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-actions-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-grow: 1;
+}
+
+.avatar-actions-col strong {
+  font-size: 0.94rem;
+  color: var(--color-text-primary);
+}
+
+.avatar-actions-col p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.avatar-btns-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: 6px;
+}
+
+.btn-outline-danger {
+  background: none;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #EF4444;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition-fast);
+}
+
+.btn-outline-danger:hover {
+  background: #EF4444;
+  color: #FFFFFF;
 }
 
 /* Profile / Settings Tab Layout */

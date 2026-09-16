@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 import Loader from '../components/Loader';
 import CheckInCard from '../components/CheckInCard';
+import WalletHub from '../components/club/WalletHub';
 import LuckyWheel from '../components/club/LuckyWheel';
 import BrewAssistant from '../components/club/BrewAssistant';
 import CoffeeJournal from '../components/club/CoffeeJournal';
@@ -11,7 +12,21 @@ import ReferralHub from '../components/club/ReferralHub';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api';
 import { toPersianDigits, formatToman } from '../utils/format';
-import { Award, Flame, Star, Gift, Clock, Coffee, Trophy, User, Send, Check } from '../components/Icons';
+import {
+  Award,
+  Flame,
+  Star,
+  Gift,
+  Clock,
+  Coffee,
+  Trophy,
+  User,
+  Send,
+  Check,
+  Wallet,
+  Camera,
+  Trash2
+} from '../components/Icons';
 import './ProfilePage.css';
 
 const REASON_LABELS = {
@@ -26,23 +41,26 @@ const REASON_LABELS = {
 };
 
 const TABS = [
-  { id: 'wheel', label: 'گردونه شانس و جوایز', icon: Gift },
+  { id: 'wallet', label: 'کیف پول و دارایی‌ها', icon: Wallet, badge: 'جدید' },
+  { id: 'wheel', label: 'گردونه شانس و جوایز', icon: Gift, badge: 'رایگان' },
   { id: 'brew', label: 'دستیار دم‌آوری', icon: Clock },
   { id: 'journal', label: 'دفترچه طعم‌یابی', icon: Coffee },
   { id: 'quests', label: 'ماموریت‌ها و نشان‌ها', icon: Trophy },
   { id: 'referral', label: 'کد معرف و دعوت', icon: Send },
-  { id: 'settings', label: 'اطلاعات و سوابق', icon: User },
+  { id: 'settings', label: 'مشخصات و عکس', icon: User },
 ];
 
 export default function ProfilePage() {
   const { user, logout, refresh } = useAuth();
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
 
-  const [activeTab, setActiveTab] = useState('wheel');
+  const [activeTab, setActiveTab] = useState('wallet');
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
+  const [userAvatar, setUserAvatar] = useState(null);
   const [journalPrefill, setJournalPrefill] = useState(null);
   const [localBonusPoints, setLocalBonusPoints] = useState(0);
   const [journalCount, setJournalCount] = useState(0);
@@ -72,10 +90,13 @@ export default function ProfilePage() {
     };
   }, [loadProfile]);
 
-  // Load local journal count
+  // Load avatar and local journal count
   useEffect(() => {
     if (!storageKey) return;
     try {
+      const savedAvatar = localStorage.getItem(`${storageKey}_avatar`);
+      if (savedAvatar) setUserAvatar(savedAvatar);
+
       const saved = localStorage.getItem(`${storageKey}_journal`);
       if (saved) {
         const parsed = JSON.parse(saved);
@@ -87,6 +108,49 @@ export default function ProfilePage() {
       }
     } catch (e) {}
   }, [storageKey]);
+
+  // Handle avatar upload and compression
+  const handleAvatarFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setSaveMsg('لطفاً یک فایل تصویری معتبر انتخاب کنید.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 160;
+        canvas.height = 160;
+        const ctx = canvas.getContext('2d');
+        const minDim = Math.min(img.width, img.height);
+        const sx = (img.width - minDim) / 2;
+        const sy = (img.height - minDim) / 2;
+        ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, 160, 160);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+        setUserAvatar(dataUrl);
+        if (storageKey) {
+          localStorage.setItem(`${storageKey}_avatar`, dataUrl);
+        }
+        setSaveMsg('عکس پروفایل با موفقیت به‌روزرسانی شد ✓');
+        setTimeout(() => setSaveMsg(''), 3500);
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveAvatar = () => {
+    setUserAvatar(null);
+    if (storageKey) {
+      localStorage.removeItem(`${storageKey}_avatar`);
+    }
+    setSaveMsg('عکس پروفایل حذف شد.');
+    setTimeout(() => setSaveMsg(''), 3000);
+  };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -100,7 +164,7 @@ export default function ProfilePage() {
         address: (form.get('address') || '').trim(),
       });
       await Promise.all([loadProfile(), refresh()]);
-      setSaveMsg('اطلاعات با موفقیت ذخیره شد ✓');
+      setSaveMsg('مشخصات حساب با موفقیت در دیتابیس ذخیره شد ✓');
     } catch (err) {
       setSaveMsg(err.message || 'ذخیره ناموفق بود.');
     } finally {
@@ -143,19 +207,50 @@ export default function ProfilePage() {
   const history = profileData?.history || [];
 
   // Determine user VIP badge
-  const userTier = totalDisplayPoints >= 1000 ? 'VIP Roastery' : totalDisplayPoints >= 300 ? 'طلایی (Gold)' : 'نقره‌ای (Silver)';
+  const userTier =
+    totalDisplayPoints >= 1000
+      ? 'VIP Roastery'
+      : totalDisplayPoints >= 300
+      ? 'طلایی (Gold)'
+      : 'نقره‌ای (Silver)';
 
   return (
     <div className="page profile-hub-page">
-      <SEO title="باشگاه مشتریان و حساب من" path="/profile" noindex={true} description="داشبورد و اپ‌های تخصصی باشگاه مشتریان کیپ کافی" />
+      <SEO
+        title="باشگاه مشتریان و حساب من"
+        path="/profile"
+        noindex={true}
+        description="داشبورد و اپ‌های تخصصی باشگاه مشتریان کیپ کافی"
+      />
+
+      {/* Hidden File Input for Avatar */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={handleAvatarFileChange}
+      />
 
       {/* Luxury Club Hero Header */}
       <div className="club-dashboard-hero">
         <div className="container">
           <div className="dashboard-hero-content">
+            {/* Interactive Avatar Container */}
             <div className="user-avatar-wrap">
-              <span className="user-avatar-text">{(currentUser?.displayName || 'K')[0]}</span>
-              <span className="user-avatar-badge" title="عضو رسمی باشگاه">✓</span>
+              {userAvatar ? (
+                <img src={userAvatar} alt={currentUser?.displayName} className="user-avatar-img" />
+              ) : (
+                <span className="user-avatar-text">{(currentUser?.displayName || 'K')[0]}</span>
+              )}
+              <button
+                type="button"
+                className="avatar-edit-badge"
+                title="تغییر عکس پروفایل"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Camera size={13} />
+              </button>
             </div>
 
             <div className="user-details-block">
@@ -208,7 +303,11 @@ export default function ProfilePage() {
               >
                 <Icon size={18} />
                 <span>{tab.label}</span>
-                {tab.id === 'wheel' && <span className="tab-pill-sparkle">رایگان</span>}
+                {tab.badge && (
+                  <span className={`tab-pill-sparkle ${tab.badge === 'جدید' ? 'new-badge' : ''}`}>
+                    {tab.badge}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -216,7 +315,12 @@ export default function ProfilePage() {
 
         {/* Active Tab Panel */}
         <div className="club-tab-content">
-          {/* Tab 1: Lucky Wheel & Coupons */}
+          {/* Tab 1: Multi-Asset Wallet & Bank Cards */}
+          {activeTab === 'wallet' && (
+            <WalletHub user={currentUser} storageKey={storageKey} />
+          )}
+
+          {/* Tab 2: Lucky Wheel & Coupons */}
           {activeTab === 'wheel' && (
             <LuckyWheel
               user={currentUser}
@@ -225,12 +329,12 @@ export default function ProfilePage() {
             />
           )}
 
-          {/* Tab 2: Brew Assistant */}
+          {/* Tab 3: Brew Assistant */}
           {activeTab === 'brew' && (
             <BrewAssistant onLogToJournal={handleLogFromBrew} />
           )}
 
-          {/* Tab 3: Coffee Tasting Journal */}
+          {/* Tab 4: Coffee Tasting Journal */}
           {activeTab === 'journal' && (
             <CoffeeJournal
               user={currentUser}
@@ -240,7 +344,7 @@ export default function ProfilePage() {
             />
           )}
 
-          {/* Tab 4: Quests & Badges */}
+          {/* Tab 5: Quests & Badges */}
           {activeTab === 'quests' && (
             <QuestsAndBadges
               user={{ ...currentUser, points: totalDisplayPoints }}
@@ -249,20 +353,56 @@ export default function ProfilePage() {
             />
           )}
 
-          {/* Tab 5: Referral Hub */}
+          {/* Tab 6: Referral Hub */}
           {activeTab === 'referral' && (
             <ReferralHub user={currentUser} />
           )}
 
-          {/* Tab 6: Account Settings & History */}
+          {/* Tab 7: Account Settings & Profile Picture */}
           {activeTab === 'settings' && (
             <div className="profile-grid">
               <section className="profile-main">
                 <div className="profile-card">
-                  <h2 className="profile-card-title">اطلاعات من</h2>
+                  <h2 className="profile-card-title">ویرایش مشخصات و عکس کاربری</h2>
+
+                  {/* Avatar Upload Control Row inside settings */}
+                  <div className="avatar-settings-box">
+                    <div className="avatar-preview-circle">
+                      {userAvatar ? (
+                        <img src={userAvatar} alt="Profile" className="preview-img" />
+                      ) : (
+                        <span className="preview-letter">{(currentUser?.displayName || 'K')[0]}</span>
+                      )}
+                    </div>
+                    <div className="avatar-actions-col">
+                      <strong>عکس پروفایل</strong>
+                      <p>تصویر دلخواه خود را برای نمایش در باشگاه مشتریان بارگذاری کنید.</p>
+                      <div className="avatar-btns-row">
+                        <button
+                          type="button"
+                          className="btn btn-outline btn-sm"
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <Camera size={15} />
+                          <span>انتخاب عکس جدید</span>
+                        </button>
+                        {userAvatar && (
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={handleRemoveAvatar}
+                          >
+                            <Trash2 size={14} />
+                            <span>حذف عکس</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
                   <form className="info-form" onSubmit={handleUpdate} key={currentUser?.id}>
                     <div className="auth-field">
-                      <label htmlFor="pf-name">نام و نام خانوادگی</label>
+                      <label htmlFor="pf-name">نام و نام خانوادگی (نام نمایشی)</label>
                       <input
                         id="pf-name"
                         name="displayName"
@@ -273,7 +413,7 @@ export default function ProfilePage() {
                     </div>
 
                     <div className="auth-field">
-                      <label htmlFor="pf-email">ایمیل</label>
+                      <label htmlFor="pf-email">ایمیل حساب</label>
                       <input
                         id="pf-email"
                         type="email"
@@ -282,7 +422,7 @@ export default function ProfilePage() {
                         readOnly
                         disabled
                       />
-                      <span className="auth-hint">ایمیل ورود قابل تغییر نیست.</span>
+                      <span className="auth-hint">ایمیل ورود برای امنیت حساب غیرقابل تغییر است.</span>
                     </div>
 
                     <div className="auth-field">
@@ -311,7 +451,7 @@ export default function ProfilePage() {
                     {saveMsg && <p className="info-save-msg">{saveMsg}</p>}
 
                     <button type="submit" className="btn btn-primary" disabled={saving}>
-                      {saving ? 'در حال ذخیره…' : 'ذخیره اطلاعات'}
+                      {saving ? 'در حال ذخیره…' : 'ذخیره تغییرات در دیتابیس'}
                     </button>
                   </form>
                 </div>
