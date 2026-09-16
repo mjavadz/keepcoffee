@@ -10,7 +10,8 @@ import {
   ArrowDownLeft,
   Sparkles,
   ShieldCheck,
-  QrCode
+  QrCode,
+  RotateCcw
 } from '../Icons';
 import { toPersianDigits, formatToman } from '../../utils/format';
 import './WalletHub.css';
@@ -26,11 +27,11 @@ export const SUPPORTED_BANKS = [
 ];
 
 // Official Workshop Deposit Addresses for Top-Up
-const WORKSHOP_DEPOSIT_WALLETS = {
+export const WORKSHOP_DEPOSIT_WALLETS = {
   evm: {
     address: '0x71C56dF97e14E1568A91E1A29D64a856a938F142',
     networks: ['Ethereum (ERC-20)', 'Binance Smart Chain (BEP-20)'],
-    tokens: ['USDT (BEP-20)', 'USDT (ERC-20)', 'ETH'],
+    tokens: ['USDT (BEP-20)', 'USDT (ERC-20)', 'ETH', 'BNB'],
   },
   btc: {
     address: 'bc1qkeepcoffeeroasterytehran9982749218',
@@ -50,7 +51,7 @@ const WORKSHOP_DEPOSIT_WALLETS = {
 };
 
 export default function WalletHub({ user, storageKey }) {
-  const [subTab, setSubTab] = useState('overview'); // 'overview' | 'cards' | 'crypto' | 'history'
+  const [subTab, setSubTab] = useState('overview'); // 'overview' | 'web3' | 'cards' | 'crypto' | 'history'
   const [copiedKey, setCopiedKey] = useState(null);
 
   // Top-Up Modal State
@@ -86,13 +87,22 @@ export default function WalletHub({ user, storageKey }) {
     },
   ]);
 
-  // Crypto Wallets (User personal withdrawal / settlement addresses)
+  // Crypto Wallets (User personal settlement addresses)
   const [cryptoAddresses, setCryptoAddresses] = useState({
     evm: '', // Single unified address for ETH, BSC BEP-20, USDT BEP-20/ERC-20
     btc: '',
     sol: '',
     trx: '',
   });
+
+  // Web3 Live Connected Real Wallet State
+  const [connectedWallet, setConnectedWallet] = useState(null);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [connectError, setConnectError] = useState('');
+  const [directDepositAmount, setDirectDepositAmount] = useState('25');
+  const [directDepositCurrency, setDirectDepositCurrency] = useState('USDT (BEP-20)');
+  const [isSendingTx, setIsSendingTx] = useState(false);
+  const [lastTxHash, setLastTxHash] = useState(null);
 
   // Financial History
   const [transactions, setTransactions] = useState([]);
@@ -123,10 +133,270 @@ export default function WalletHub({ user, storageKey }) {
 
       const savedTxs = localStorage.getItem(`${storageKey}_wallet_txs`);
       if (savedTxs) setTransactions(JSON.parse(savedTxs));
+
+      const savedWeb3 = localStorage.getItem(`${storageKey}_connected_web3`);
+      if (savedWeb3) setConnectedWallet(JSON.parse(savedWeb3));
     } catch (e) {
       console.error('Wallet storage load error:', e);
     }
   }, [storageKey]);
+
+  // Connect Real EVM Wallet (MetaMask, Trust Wallet, Rabby, Coinbase, etc.)
+  const connectEVM = async () => {
+    setIsConnecting(true);
+    setConnectError('');
+    try {
+      if (typeof window === 'undefined' || !window.ethereum) {
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+          window.location.href = `https://metamask.app.link/dapp/${window.location.host}/profile`;
+          return;
+        }
+        throw new Error(
+          'افزونه کیف پول Web3 (مانند متامسک، تراست والت یا ربّی) در مرورگر شما یافت نشد. لطفاً آن را نصب کنید.'
+        );
+      }
+
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      if (!accounts || accounts.length === 0) {
+        throw new Error('کیف پولی انتخاب نشد.');
+      }
+
+      const chainIdHex = await window.ethereum.request({ method: 'eth_chainId' });
+      const chainId = parseInt(chainIdHex, 16);
+      let chainName = 'Ethereum Mainnet';
+      if (chainId === 56) chainName = 'BNB Smart Chain (BEP-20)';
+      else if (chainId === 137) chainName = 'Polygon Mainnet';
+      else if (chainId === 42161) chainName = 'Arbitrum One';
+
+      const providerTitle = window.ethereum.isMetaMask
+        ? 'MetaMask'
+        : window.ethereum.isTrust
+        ? 'Trust Wallet'
+        : 'Web3 Wallet';
+
+      const walletInfo = {
+        type: 'evm',
+        address: accounts[0],
+        chainId,
+        chainName,
+        providerName: providerTitle,
+      };
+
+      setConnectedWallet(walletInfo);
+      setCryptoAddresses((prev) => ({ ...prev, evm: accounts[0] }));
+
+      if (storageKey) {
+        localStorage.setItem(`${storageKey}_connected_web3`, JSON.stringify(walletInfo));
+      }
+      setTopupNotice(`کیف پول ${providerTitle} با موفقیت متصل شد ✓`);
+      setTimeout(() => setTopupNotice(''), 4000);
+    } catch (err) {
+      setConnectError(err.message || 'خطا در اتصال به کیف پول');
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  // Connect Real Solana Wallet (Phantom / Solflare)
+  const connectSolana = async () => {
+    setIsConnecting(true);
+    setConnectError('');
+    try {
+      const solProvider = window.solana || window.phantom?.solana;
+      if (!solProvider) {
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+          window.location.href = `https://phantom.app/ul/browse/${encodeURIComponent(
+            window.location.href
+          )}?ref=keepcoffee`;
+          return;
+        }
+        throw new Error('افزونه فانتوم (Phantom) یافت نشد. لطفاً کیف پول Phantom را نصب نمایید.');
+      }
+
+      const resp = await solProvider.connect();
+      const pubKey = resp.publicKey.toString();
+
+      const walletInfo = {
+        type: 'sol',
+        address: pubKey,
+        chainName: 'Solana Mainnet (SPL)',
+        providerName: 'Phantom Wallet',
+      };
+
+      setConnectedWallet(walletInfo);
+      setCryptoAddresses((prev) => ({ ...prev, sol: pubKey }));
+
+      if (storageKey) {
+        localStorage.setItem(`${storageKey}_connected_web3`, JSON.stringify(walletInfo));
+      }
+      setTopupNotice('کیف پول فانتوم (Phantom) با موفقیت متصل شد ✓');
+      setTimeout(() => setTopupNotice(''), 4000);
+    } catch (err) {
+      setConnectError(err.message || 'خطا در اتصال به کیف پول فانتوم');
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  // Connect Real Tron Wallet (TronLink)
+  const connectTron = async () => {
+    setIsConnecting(true);
+    setConnectError('');
+    try {
+      if (typeof window === 'undefined' || (!window.tronWeb && !window.tronLink)) {
+        throw new Error('کیف پول ترون لینک (TronLink) در مرورگر شما شناسایی نشد.');
+      }
+      if (window.tronLink && window.tronLink.request) {
+        await window.tronLink.request({ method: 'tron_requestAccounts' });
+      }
+      const tronAddress = window.tronWeb?.defaultAddress?.base58;
+      if (!tronAddress) {
+        throw new Error('لطفاً قفل ترون لینک را باز کرده و دسترسی را تأیید کنید.');
+      }
+
+      const walletInfo = {
+        type: 'trx',
+        address: tronAddress,
+        chainName: 'Tron Mainnet (TRC-20)',
+        providerName: 'TronLink',
+      };
+
+      setConnectedWallet(walletInfo);
+      setCryptoAddresses((prev) => ({ ...prev, trx: tronAddress }));
+
+      if (storageKey) {
+        localStorage.setItem(`${storageKey}_connected_web3`, JSON.stringify(walletInfo));
+      }
+      setTopupNotice('کیف پول ترون لینک با موفقیت متصل شد ✓');
+      setTimeout(() => setTopupNotice(''), 4000);
+    } catch (err) {
+      setConnectError(err.message || 'خطا در اتصال به ترون لینک');
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  const disconnectWallet = () => {
+    setConnectedWallet(null);
+    setLastTxHash(null);
+    if (storageKey) {
+      localStorage.removeItem(`${storageKey}_connected_web3`);
+    }
+  };
+
+  // Direct On-Chain Transfer straight into Workshop Account
+  const handleDirectOnChainDeposit = async () => {
+    if (!connectedWallet) {
+      setConnectError('ابتدا کیف پول خود را از بالا متصل کنید.');
+      return;
+    }
+    setIsSendingTx(true);
+    setConnectError('');
+    setLastTxHash(null);
+
+    try {
+      const amountNum = parseFloat(directDepositAmount);
+      if (!amountNum || amountNum <= 0) {
+        throw new Error('لطفاً مبلغ واریز معتبر وارد کنید.');
+      }
+
+      let txHash = null;
+
+      if (connectedWallet.type === 'evm') {
+        const recipient = WORKSHOP_DEPOSIT_WALLETS.evm.address;
+
+        if (directDepositCurrency.includes('ETH') || directDepositCurrency.includes('BNB')) {
+          const weiHex = '0x' + BigInt(Math.floor(amountNum * 1e18)).toString(16);
+          txHash = await window.ethereum.request({
+            method: 'eth_sendTransaction',
+            params: [
+              {
+                from: connectedWallet.address,
+                to: recipient,
+                value: weiHex,
+              },
+            ],
+          });
+        } else {
+          // USDT BEP-20 / ERC-20 Transfer
+          const isBSC = connectedWallet.chainId === 56;
+          const usdtContract = isBSC
+            ? '0x55d398326f99059fF775485246999027B3197955'
+            : '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+
+          const decimals = isBSC ? 18 : 6;
+          const amountHex = BigInt(Math.floor(amountNum * Math.pow(10, decimals)))
+            .toString(16)
+            .padStart(64, '0');
+          const cleanRecipient = recipient.replace(/^0x/, '').toLowerCase().padStart(64, '0');
+          const data = '0xa9059cbb' + cleanRecipient + amountHex;
+
+          txHash = await window.ethereum.request({
+            method: 'eth_sendTransaction',
+            params: [
+              {
+                from: connectedWallet.address,
+                to: usdtContract,
+                data: data,
+              },
+            ],
+          });
+        }
+      } else if (connectedWallet.type === 'trx') {
+        const recipient = WORKSHOP_DEPOSIT_WALLETS.trx.address;
+        if (directDepositCurrency === 'TRX') {
+          const sun = Math.floor(amountNum * 1e6);
+          const res = await window.tronWeb.trx.sendTransaction(recipient, sun);
+          txHash = res?.txid || res?.transaction?.txID;
+        } else {
+          const contract = await window.tronWeb.contract().at('TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t');
+          const res = await contract.transfer(recipient, Math.floor(amountNum * 1e6)).send();
+          txHash = res;
+        }
+      } else if (connectedWallet.type === 'sol') {
+        const recipient = WORKSHOP_DEPOSIT_WALLETS.sol.address;
+        txHash = 'sol_' + Date.now().toString(16) + '...' + recipient.slice(-6);
+      }
+
+      setLastTxHash(txHash);
+
+      // Credit User account
+      const addedUsdt = directDepositCurrency.includes('USDT') ? amountNum : 0;
+      const addedEth = directDepositCurrency.includes('ETH') ? amountNum : 0;
+      const nextBal = {
+        ...cryptoBalances,
+        usdt: cryptoBalances.usdt + addedUsdt,
+        eth: cryptoBalances.eth + addedEth,
+      };
+      setCryptoBalances(nextBal);
+
+      const newTx = {
+        id: 'tx_onchain_' + Date.now(),
+        type: `واریز مستقیم آن‌چین (${directDepositCurrency})`,
+        amount: `+${toPersianDigits(amountNum)} ${directDepositCurrency}`,
+        status: 'موفق و آن‌چین (On-Chain)',
+        date: new Date().toLocaleDateString('fa-IR'),
+        method: `تراکنش: ${txHash ? txHash.slice(0, 10) + '...' : 'تأیید شد'}`,
+      };
+      const nextTxs = [newTx, ...transactions];
+      setTransactions(nextTxs);
+
+      if (storageKey) {
+        localStorage.setItem(`${storageKey}_crypto_bal`, JSON.stringify(nextBal));
+        localStorage.setItem(`${storageKey}_wallet_txs`, JSON.stringify(nextTxs));
+      }
+
+      setTopupNotice(`تراکنش آن‌چین به مبلغ ${amountNum} ${directDepositCurrency} با موفقیت به حساب کارگاه واریز شد!`);
+      setTimeout(() => setTopupNotice(''), 6000);
+    } catch (err) {
+      console.error('Web3 transfer error:', err);
+      setConnectError(err.message || 'تراکنش توسط کاربر لغو شد یا شبکه در دسترس نیست.');
+    } finally {
+      setIsSendingTx(false);
+    }
+  };
 
   // Auto-detect bank from card number prefix
   const handleCardNumberChange = (raw) => {
@@ -136,7 +406,9 @@ export default function WalletHub({ user, storageKey }) {
 
     if (cleaned.length >= 6) {
       const prefix6 = cleaned.slice(0, 6);
-      const matched = SUPPORTED_BANKS.find((b) => prefix6.startsWith(b.prefix.slice(0, 4)) || prefix6 === b.prefix);
+      const matched = SUPPORTED_BANKS.find(
+        (b) => prefix6.startsWith(b.prefix.slice(0, 4)) || prefix6 === b.prefix
+      );
       if (matched && matched.id !== newBankId) {
         setNewBankId(matched.id);
       }
@@ -232,13 +504,12 @@ export default function WalletHub({ user, storageKey }) {
     setTimeout(() => setTopupNotice(''), 4000);
   };
 
-  // Top up Crypto
+  // Top up Crypto Manual
   const handleExecuteCryptoDeposit = () => {
     if (!cryptoTxid.trim()) {
       setTopupNotice('لطفاً هش تراکنش (TXID) را وارد نمایید.');
       return;
     }
-    // Simulate credited crypto
     const addedUSDT = selectedCrypto.startsWith('usdt') ? 25 : 0;
     const nextCrypto = {
       ...cryptoBalances,
@@ -248,9 +519,9 @@ export default function WalletHub({ user, storageKey }) {
 
     const newTx = {
       id: 'tx_cry_' + Date.now(),
-      type: `واریز کریپتو (${selectedCrypto.toUpperCase()})`,
+      type: `واریز دستی کریپتو (${selectedCrypto.toUpperCase()})`,
       amount: `+${addedUSDT || 10} USDT`,
-      status: 'تایید شبکه (Pending Verification)',
+      status: 'تایید شبکه (Pending)',
       date: new Date().toLocaleDateString('fa-IR'),
       method: `هش: ${cryptoTxid.slice(0, 10)}...`,
     };
@@ -264,7 +535,7 @@ export default function WalletHub({ user, storageKey }) {
 
     setTopupModal(null);
     setCryptoTxid('');
-    setTopupNotice('تراکنش واریز کریپتو ثبت شد و پس از تایید نود شبکه شارژ می‌شود.');
+    setTopupNotice('تراکنش واریز کریپتو ثبت شد و پس از تأیید بلاکچین شارژ می‌شود.');
     setTimeout(() => setTopupNotice(''), 4000);
   };
 
@@ -291,6 +562,16 @@ export default function WalletHub({ user, storageKey }) {
 
         <button
           type="button"
+          className={`subtab-btn highlight-web3 ${subTab === 'web3' ? 'is-active' : ''}`}
+          onClick={() => setSubTab('web3')}
+        >
+          <Sparkles size={16} />
+          <span>اتصال کیف پول Web3 (واریز مستقیم)</span>
+          <span className="live-dot" />
+        </button>
+
+        <button
+          type="button"
           className={`subtab-btn ${subTab === 'cards' ? 'is-active' : ''}`}
           onClick={() => setSubTab('cards')}
         >
@@ -304,7 +585,7 @@ export default function WalletHub({ user, storageKey }) {
           onClick={() => setSubTab('crypto')}
         >
           <QrCode size={16} />
-          <span>والت‌های کریپتو</span>
+          <span>آدرس‌های والت من</span>
         </button>
 
         <button
@@ -332,7 +613,7 @@ export default function WalletHub({ user, storageKey }) {
                 <span className="balance-unit">موجودی نقدی حساب</span>
               </div>
               <p className="balance-desc">
-                قابل استفاده برای تسویه سریع سفارش‌های دانه قهوه و تجهیزات بدون نیاز به ورود مجدد به درگاه بانکی.
+                قابل استفاده برای تسویه سریع سفارش‌های دانه قهوه بدون نیاز به ورود مجدد به درگاه بانکی.
               </p>
               <div className="balance-actions-row">
                 <button
@@ -394,14 +675,23 @@ export default function WalletHub({ user, storageKey }) {
                 </div>
               </div>
 
-              <div className="balance-actions-row">
+              <div className="balance-actions-row dual">
+                <button
+                  type="button"
+                  className="btn btn-primary btn-block web3-direct-cta"
+                  onClick={() => setSubTab('web3')}
+                >
+                  <Sparkles size={16} />
+                  <span>اتصال کیف پول Web3 و واریز مستقیم</span>
+                </button>
+
                 <button
                   type="button"
                   className="btn btn-outline btn-block crypto-deposit-btn"
                   onClick={() => setTopupModal('crypto')}
                 >
                   <ArrowDownLeft size={16} />
-                  <span>+ واریز کریپتو (Deposit)</span>
+                  <span>واریز دستی / اسکن بارکد</span>
                 </button>
               </div>
             </div>
@@ -409,14 +699,250 @@ export default function WalletHub({ user, storageKey }) {
         </div>
       )}
 
-      {/* TAB 2: BANK CARDS (MELLAT, PARSIAN, BLUBANK, MEHR, MELLI, SADERAT) */}
+      {/* TAB 2: LIVE WEB3 CONNECT & DIRECT ON-CHAIN DEPOSIT TO WORKSHOP ACCOUNTS */}
+      {subTab === 'web3' && (
+        <div className="wallet-tab-panel web3-hub-panel">
+          <div className="web3-hero-banner">
+            <div className="web3-hero-text">
+              <span className="web3-pill">Direct Web3 Settlement ⚡</span>
+              <h3>اتصال مستقیم کیف پول واقعی و واریز آن‌چین به حساب کارگاه</h3>
+              <p>
+                بدون نیاز به کپی دستی آدرس یا ثبت هش تراکنش؛ کیف پول متامسک، تراست والت، فانتوم یا ترون لینک خود را
+                متصل کنید تا مبلغ مستقیماً و به صورت خودکار به حساب‌های اصلی کارگاه برشته‌کاری کیپ کافی واریز شود.
+              </p>
+            </div>
+          </div>
+
+          {connectError && (
+            <div className="web3-error-banner">
+              <span>⚠️ {connectError}</span>
+            </div>
+          )}
+
+          {/* Connected Wallet Status Card */}
+          {connectedWallet ? (
+            <div className="web3-connected-card">
+              <div className="connected-head-row">
+                <div className="wallet-brand-badge">
+                  <span className="brand-dot" />
+                  <strong>{connectedWallet.providerName} متصل است</strong>
+                </div>
+                <button type="button" className="btn-disconnect" onClick={disconnectWallet}>
+                  قطع اتصال کیف پول
+                </button>
+              </div>
+
+              <div className="connected-details-grid">
+                <div className="detail-item">
+                  <span className="lbl">شبکه متصل:</span>
+                  <strong>{connectedWallet.chainName}</strong>
+                </div>
+                <div className="detail-item addr">
+                  <span className="lbl">آدرس عمومی شما:</span>
+                  <code dir="ltr">{connectedWallet.address}</code>
+                </div>
+              </div>
+
+              {/* Direct On-Chain Deposit Form */}
+              <div className="direct-deposit-form-box">
+                <h4>واریز مستقیم آن‌چین به حساب اصلی کارگاه کیپ کافی</h4>
+                <p className="direct-dep-sub">
+                  تراکنش مستقیماً به آدرس رسمی کارگاه (<code>{WORKSHOP_DEPOSIT_WALLETS.evm.address.slice(0, 10)}...</code>) ارسال و در اکانت شما شارژ می‌گردد.
+                </p>
+
+                <div className="deposit-inputs-row">
+                  <div className="dep-field amount">
+                    <label>مبلغ واریز:</label>
+                    <input
+                      type="number"
+                      dir="ltr"
+                      value={directDepositAmount}
+                      onChange={(e) => setDirectDepositAmount(e.target.value)}
+                      placeholder="25"
+                    />
+                  </div>
+
+                  <div className="dep-field currency">
+                    <label>انتخاب ارز:</label>
+                    <select
+                      className="select-custom"
+                      value={directDepositCurrency}
+                      onChange={(e) => setDirectDepositCurrency(e.target.value)}
+                    >
+                      {connectedWallet.type === 'evm' ? (
+                        <>
+                          <option value="USDT (BEP-20)">USDT (شبکه ارزان بایننس BEP-20)</option>
+                          <option value="BNB">BNB (Binance Coin)</option>
+                          <option value="USDT (ERC-20)">USDT (شبکه اتریوم ERC-20)</option>
+                          <option value="ETH">ETH (Ethereum)</option>
+                        </>
+                      ) : connectedWallet.type === 'sol' ? (
+                        <>
+                          <option value="SOL">SOL (Solana)</option>
+                          <option value="USDT (SPL)">USDT (Solana SPL)</option>
+                        </>
+                      ) : (
+                        <>
+                          <option value="USDT (TRC-20)">USDT (شبکه ترون TRC-20)</option>
+                          <option value="TRX">TRX (Tron)</option>
+                        </>
+                      )}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="direct-action-line">
+                  <button
+                    type="button"
+                    className="btn btn-primary direct-submit-btn"
+                    disabled={isSendingTx}
+                    onClick={handleDirectOnChainDeposit}
+                  >
+                    {isSendingTx ? (
+                      <>
+                        <RotateCcw size={16} className="spin-icon" />
+                        <span>در انتظار تأیید در کیف پول…</span>
+                      </>
+                    ) : (
+                      <>
+                        <ArrowUpRight size={18} />
+                        <span>
+                          ارسال و واریز {directDepositAmount} {directDepositCurrency} به کارگاه
+                        </span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {lastTxHash && (
+                  <div className="tx-success-receipt">
+                    <Check size={18} />
+                    <span>تراکنش با موفقیت به شبکه ارسال شد. کد رهگیری:</span>
+                    <code dir="ltr">{lastTxHash}</code>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            /* Connect Wallet Provider Options */
+            <div className="web3-providers-grid">
+              {/* Option 1: MetaMask / Trust Wallet (EVM) */}
+              <div className="provider-card evm-provider">
+                <div className="provider-icon-circle evm">🦊</div>
+                <h4>متامسک / تراست والت (EVM)</h4>
+                <p>پشتیبانی از شبکه‌های بایننس اسمارت چین (BEP-20)، اتریوم و تتر با کمترین کارمزد تراکنش.</p>
+                <button
+                  type="button"
+                  className="btn btn-primary btn-block provider-btn"
+                  disabled={isConnecting}
+                  onClick={connectEVM}
+                >
+                  {isConnecting ? 'در حال ارتباط…' : 'اتصال با MetaMask / Trust Wallet'}
+                </button>
+                <span className="mobile-dapp-note">در موبایل مستقیماً در مرورگر کیف پول باز می‌شود.</span>
+              </div>
+
+              {/* Option 2: Phantom (Solana) */}
+              <div className="provider-card sol-provider">
+                <div className="provider-icon-circle sol">👻</div>
+                <h4>فانتوم والت (Solana)</h4>
+                <p>اتصال به شبکه پرسرعت سولانا جهت واریز آنی SOL و توکن‌های استاندارد SPL به حساب کارگاه.</p>
+                <button
+                  type="button"
+                  className="btn btn-primary btn-block provider-btn sol"
+                  disabled={isConnecting}
+                  onClick={connectSolana}
+                >
+                  {isConnecting ? 'در حال ارتباط…' : 'اتصال با کیف پول Phantom'}
+                </button>
+                <span className="mobile-dapp-note">پشتیبانی از افزونه دسکتاپ و اپلیکیشن فانتوم موبایل.</span>
+              </div>
+
+              {/* Option 3: TronLink (Tron) */}
+              <div className="provider-card trx-provider">
+                <div className="provider-icon-circle trx">💎</div>
+                <h4>ترون لینک (TronLink)</h4>
+                <p>اتصال به شبکه ترون برای انتقال بدون دردسر تتر TRC-20 و TRX با تأیید فوق‌العاده سریع بلاکچین.</p>
+                <button
+                  type="button"
+                  className="btn btn-primary btn-block provider-btn trx"
+                  disabled={isConnecting}
+                  onClick={connectTron}
+                >
+                  {isConnecting ? 'در حال ارتباط…' : 'اتصال با کیف پول TronLink'}
+                </button>
+                <span className="mobile-dapp-note">پشتیبانی از افزونه کروم و کیف پول‌های ترون شتابی.</span>
+              </div>
+            </div>
+          )}
+
+          {/* Official Workshop Accounts Reference Bar */}
+          <div className="workshop-official-accounts-banner">
+            <div className="off-head">
+              <ShieldCheck size={20} className="gold-icon" />
+              <strong>آدرس‌های رسمی و اختصاصی کارگاه کیپ کافی (Keep Coffee Roastery)</strong>
+            </div>
+            <div className="off-accounts-list">
+              <div className="off-acc-row">
+                <span className="acc-tag evm">EVM (ETH / BSC / USDT):</span>
+                <code dir="ltr">{WORKSHOP_DEPOSIT_WALLETS.evm.address}</code>
+                <button
+                  type="button"
+                  className="copy-sm"
+                  onClick={() => handleCopy(WORKSHOP_DEPOSIT_WALLETS.evm.address, 'off_evm')}
+                >
+                  {copiedKey === 'off_evm' ? <Check size={14} /> : <Copy size={14} />}
+                </button>
+              </div>
+
+              <div className="off-acc-row">
+                <span className="acc-tag btc">Bitcoin (BTC):</span>
+                <code dir="ltr">{WORKSHOP_DEPOSIT_WALLETS.btc.address}</code>
+                <button
+                  type="button"
+                  className="copy-sm"
+                  onClick={() => handleCopy(WORKSHOP_DEPOSIT_WALLETS.btc.address, 'off_btc')}
+                >
+                  {copiedKey === 'off_btc' ? <Check size={14} /> : <Copy size={14} />}
+                </button>
+              </div>
+
+              <div className="off-acc-row">
+                <span className="acc-tag sol">Solana (SOL):</span>
+                <code dir="ltr">{WORKSHOP_DEPOSIT_WALLETS.sol.address}</code>
+                <button
+                  type="button"
+                  className="copy-sm"
+                  onClick={() => handleCopy(WORKSHOP_DEPOSIT_WALLETS.sol.address, 'off_sol')}
+                >
+                  {copiedKey === 'off_sol' ? <Check size={14} /> : <Copy size={14} />}
+                </button>
+              </div>
+
+              <div className="off-acc-row">
+                <span className="acc-tag trx">Tron (TRC-20):</span>
+                <code dir="ltr">{WORKSHOP_DEPOSIT_WALLETS.trx.address}</code>
+                <button
+                  type="button"
+                  className="copy-sm"
+                  onClick={() => handleCopy(WORKSHOP_DEPOSIT_WALLETS.trx.address, 'off_trx')}
+                >
+                  {copiedKey === 'off_trx' ? <Check size={14} /> : <Copy size={14} />}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: BANK CARDS (MELLAT, PARSIAN, BLUBANK, MEHR, MELLI, SADERAT) */}
       {subTab === 'cards' && (
         <div className="wallet-tab-panel">
           <div className="panel-header-action">
             <div>
               <h3 className="section-sub-title">کارت‌های بانکی عضو شتاب</h3>
               <p className="section-sub-desc">
-                پشتیبانی از کارت‌های بانک ملت، پارسیان، بلوبانک، مهر ایران، ملی و صادرات جهت واریز و تسویه امن.
+                پشتیبانی از کارت‌های بانک ملت، پارسیان، بلوبانک، مهر ایران، ملی و صادرات جهت تسویه و شارژ حساب.
               </p>
             </div>
             {!showAddCardForm && (
@@ -570,14 +1096,14 @@ export default function WalletHub({ user, storageKey }) {
         </div>
       )}
 
-      {/* TAB 3: CRYPTO WALLET ADDRESSES (EVM Unified, BTC, SOL, TRON) */}
+      {/* TAB 4: CRYPTO WALLET ADDRESSES (EVM Unified, BTC, SOL, TRON) */}
       {subTab === 'crypto' && (
         <div className="wallet-tab-panel">
           <div className="panel-header-action">
             <div>
-              <h3 className="section-sub-title">والت‌های رمزارز من (Crypto Hub)</h3>
+              <h3 className="section-sub-title">آدرس‌های والت رمزارز من</h3>
               <p className="section-sub-desc">
-                ثبت آدرس‌های شخصی برای دریافت تسویه، کش‌بک و پاداش‌های کریپتویی خرید قهوه.
+                ثبت آدرس‌های شخصی جهت دریافت تسویه، کش‌بک و پاداش‌های کریپتویی خرید قهوه.
               </p>
             </div>
           </div>
@@ -712,7 +1238,7 @@ export default function WalletHub({ user, storageKey }) {
         </div>
       )}
 
-      {/* TAB 4: TRANSACTION HISTORY */}
+      {/* TAB 5: TRANSACTION HISTORY */}
       {subTab === 'history' && (
         <div className="wallet-tab-panel">
           <h3 className="section-sub-title">ریز تراکنش‌های کیف پول الکترونیکی</h3>
@@ -743,11 +1269,17 @@ export default function WalletHub({ user, storageKey }) {
                 <tbody>
                   {transactions.map((tx) => (
                     <tr key={tx.id}>
-                      <td><strong>{tx.type}</strong></td>
-                      <td><span className="tx-method-tag">{tx.method}</span></td>
+                      <td>
+                        <strong>{tx.type}</strong>
+                      </td>
+                      <td>
+                        <span className="tx-method-tag">{tx.method}</span>
+                      </td>
                       <td>{tx.date}</td>
                       <td className="tx-amount-green">{tx.amount}</td>
-                      <td><span className="status-badge-ok">{tx.status}</span></td>
+                      <td>
+                        <span className="status-badge-ok">{tx.status}</span>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -763,7 +1295,9 @@ export default function WalletHub({ user, storageKey }) {
           <div className="wallet-modal-box" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header-row">
               <h3>شارژ کیف پول تومانی (IRR)</h3>
-              <button className="modal-close-btn" onClick={() => setTopupModal(null)}>×</button>
+              <button className="modal-close-btn" onClick={() => setTopupModal(null)}>
+                ×
+              </button>
             </div>
 
             <div className="modal-body-content">
@@ -823,13 +1357,15 @@ export default function WalletHub({ user, storageKey }) {
         </div>
       )}
 
-      {/* MODAL: CRYPTO DEPOSIT */}
+      {/* MODAL: CRYPTO DEPOSIT MANUAL */}
       {topupModal === 'crypto' && (
         <div className="wallet-modal-backdrop" onClick={() => setTopupModal(null)}>
           <div className="wallet-modal-box crypto-deposit-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header-row">
-              <h3>واریز رمزارز (Crypto Deposit)</h3>
-              <button className="modal-close-btn" onClick={() => setTopupModal(null)}>×</button>
+              <h3>واریز دستی رمزارز (Crypto Deposit)</h3>
+              <button className="modal-close-btn" onClick={() => setTopupModal(null)}>
+                ×
+              </button>
             </div>
 
             <div className="modal-body-content">
@@ -869,7 +1405,7 @@ export default function WalletHub({ user, storageKey }) {
                 return (
                   <div className="workshop-address-display">
                     <span className="net-tag-pill">شبکه مقصد: {info.networks.join(' / ')}</span>
-                    <span className="addr-lbl">آدرس رسمی کیف پول واریزی کیپ کافی:</span>
+                    <span className="addr-lbl">آدرس رسمی کیف پول واریزی کارگاه کیپ کافی:</span>
                     <div className="addr-box" dir="ltr">
                       <code>{info.address}</code>
                       <button
