@@ -1,0 +1,220 @@
+.referral-hub-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+
+.referral-banner-head {
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 18px;
+}
+
+.ref-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(222, 158, 72, 0.12);
+  border: 1px solid rgba(222, 158, 72, 0.3);
+  color: var(--color-accent);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.referral-banner-head h3 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin: 0 0 6px;
+}
+
+.referral-banner-head p {
+  font-size: 0.92rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.referral-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+/* Perks Box */
+.ref-perks-box {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ref-perk-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+}
+
+.perk-icon-wrap {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.ref-perk-item strong {
+  display: block;
+  font-size: 0.98rem;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.ref-perk-item.friend strong {
+  color: #22C55E;
+}
+
+.ref-perk-item.you strong {
+  color: var(--color-accent);
+}
+
+.ref-perk-item p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+/* Action Box */
+.ref-action-box {
+  background: linear-gradient(145deg, #18261E 0%, #101914 100%);
+  border: 1px solid rgba(222, 158, 72, 0.35);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  color: #F7F4EF;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.ref-box-label {
+  font-size: 0.86rem;
+  color: rgba(247, 244, 239, 0.8);
+  font-weight: 700;
+}
+
+.ref-code-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px dashed rgba(222, 158, 72, 0.5);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+}
+
+.ref-code-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #DE9E48;
+}
+
+.ref-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(222, 158, 72, 0.2);
+  border: 1px solid rgba(222, 158, 72, 0.4);
+  color: #DE9E48;
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all var(--transition-fast);
+}
+
+.ref-copy-btn:hover {
+  background: #DE9E48;
+  color: #101914;
+}
+
+.ref-copy-btn.is-copied {
+  background: #22C55E;
+  border-color: #22C55E;
+  color: #FFFFFF;
+}
+
+.ref-share-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ref-btn-wa {
+  background: #25D366;
+  border-color: #25D366;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 800;
+}
+
+.ref-btn-wa:hover {
+  background: #20BA5A;
+}
+
+.ref-btn-tg {
+  border-color: #229ED9;
+  color: #229ED9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 800;
+}
+
+.ref-btn-tg:hover {
+  background: rgba(34, 158, 217, 0.15);
+}
+
+.ref-stats-footer {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+
+.ref-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ref-stat span {
+  font-size: 0.74rem;
+  color: rgba(247, 244, 239, 0.6);
+}
+
+.ref-stat strong {
+  font-size: 0.94rem;
+  color: #FFFFFF;
+}
+
+@media (max-width: 880px) {
+  .referral-grid {
+    grid-template-columns: 1fr;
+  }
+}
