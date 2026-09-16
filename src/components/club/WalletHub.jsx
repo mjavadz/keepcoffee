@@ -48,10 +48,10 @@ export const WORKSHOP_DEPOSIT_WALLETS = {
     networks: ['Tron Network (TRC-20)'],
     tokens: ['TRX', 'USDT (TRC-20)'],
   },
-  ton: {
+  gram: {
     address: 'UQDKeepCoffeeRoasteryTehranTonOfficialNetwork9982',
-    networks: ['TON Network (The Open Network / Telegram)'],
-    tokens: ['TON', 'GRAM', 'USDT (TON Jetton)'],
+    networks: ['شبکه تلگرام (Telegram Network)'],
+    tokens: ['GRAM', 'USDT (Telegram)'],
   },
 };
 
@@ -75,7 +75,6 @@ export default function WalletHub({ user, storageKey }) {
     eth: 0,
     sol: 0,
     trx: 0,
-    ton: 0,
     gram: 0,
   });
 
@@ -100,7 +99,7 @@ export default function WalletHub({ user, storageKey }) {
     btc: '',
     sol: '',
     trx: '',
-    ton: '', // Telegram TON / Tonkeeper Address (UQ... / EQ...)
+    gram: '', // Telegram Wallet / Tonkeeper Address (UQ... / EQ...)
   });
 
   // Web3 Live Connected Real Wallet State
@@ -286,8 +285,8 @@ export default function WalletHub({ user, storageKey }) {
     }
   };
 
-  // Connect Real TON Wallet (Tonkeeper / Telegram Wallet / Gram)
-  const connectTON = async () => {
+  // Connect Real Telegram / Gram Wallet (Tonkeeper / Telegram Wallet)
+  const connectGramWallet = async () => {
     setIsConnecting(true);
     setConnectError('');
     try {
@@ -301,7 +300,7 @@ export default function WalletHub({ user, storageKey }) {
           return;
         }
         window.open('https://tonkeeper.com/', '_blank');
-        throw new Error('افزونه تونکیپر (Tonkeeper) یا ولت تلگرام یافت نشد. صفحه نصب تونکیپر باز شد.');
+        throw new Error('کیف پول تونکیپر یا ولت تلگرام یافت نشد. صفحه نصب تونکیپر برای شما باز شد.');
       }
 
       let address = '';
@@ -318,22 +317,22 @@ export default function WalletHub({ user, storageKey }) {
       }
 
       const walletInfo = {
-        type: 'ton',
+        type: 'gram',
         address,
-        chainName: 'TON Network (The Open Network)',
-        providerName: 'Tonkeeper / Telegram Wallet',
+        chainName: 'شبکه تلگرام (Telegram Gram)',
+        providerName: 'تونکیپر / ولت تلگرام (Gram)',
       };
 
       setConnectedWallet(walletInfo);
-      setCryptoAddresses((prev) => ({ ...prev, ton: address }));
+      setCryptoAddresses((prev) => ({ ...prev, gram: address }));
 
       if (storageKey) {
         localStorage.setItem(`${storageKey}_connected_web3`, JSON.stringify(walletInfo));
       }
-      setTopupNotice('کیف پول تونکیپر / تلگرام با موفقیت متصل شد ✓');
+      setTopupNotice('کیف پول تلگرام (Gram) با موفقیت متصل شد ✓');
       setTimeout(() => setTopupNotice(''), 4000);
     } catch (err) {
-      setConnectError(err.message || 'خطا در اتصال به کیف پول تونکیپر');
+      setConnectError(err.message || 'خطا در اتصال به کیف پول تلگرام');
     } finally {
       setIsConnecting(false);
     }
@@ -419,8 +418,8 @@ export default function WalletHub({ user, storageKey }) {
       } else if (connectedWallet.type === 'sol') {
         const recipient = WORKSHOP_DEPOSIT_WALLETS.sol.address;
         txHash = 'sol_' + Date.now().toString(16) + '...' + recipient.slice(-6);
-      } else if (connectedWallet.type === 'ton') {
-        const recipient = WORKSHOP_DEPOSIT_WALLETS.ton.address;
+      } else if (connectedWallet.type === 'gram' || connectedWallet.type === 'ton') {
+        const recipient = WORKSHOP_DEPOSIT_WALLETS.gram.address;
         const nanoAmount = Math.floor(amountNum * 1e9);
         const memo = encodeURIComponent(`KeepCoffee_UID_${user?.id || '42'}`);
         const tonTransferUrl = `ton://transfer/${recipient}?amount=${nanoAmount}&text=${memo}`;
@@ -439,7 +438,7 @@ export default function WalletHub({ user, storageKey }) {
         } else {
           window.location.href = tonTransferUrl;
         }
-        txHash = 'ton_' + Date.now().toString(16) + '...' + recipient.slice(-6);
+        txHash = 'gram_' + Date.now().toString(16) + '...' + recipient.slice(-6);
       }
 
       setLastTxHash(txHash);
@@ -447,13 +446,11 @@ export default function WalletHub({ user, storageKey }) {
       // Credit User account
       const addedUsdt = directDepositCurrency.includes('USDT') ? amountNum : 0;
       const addedEth = directDepositCurrency.includes('ETH') ? amountNum : 0;
-      const addedTon = directDepositCurrency.includes('TON') ? amountNum : 0;
       const addedGram = directDepositCurrency.includes('GRAM') ? amountNum : 0;
       const nextBal = {
         ...cryptoBalances,
         usdt: (cryptoBalances.usdt || 0) + addedUsdt,
         eth: (cryptoBalances.eth || 0) + addedEth,
-        ton: (cryptoBalances.ton || 0) + addedTon,
         gram: (cryptoBalances.gram || 0) + addedGram,
       };
       setCryptoBalances(nextBal);
@@ -762,14 +759,6 @@ export default function WalletHub({ user, storageKey }) {
 
                 <div className="crypto-token-row">
                   <div className="token-meta">
-                    <span className="token-sym ton">TON</span>
-                    <span className="token-name">تون کوین تلگرام (TON)</span>
-                  </div>
-                  <strong className="token-val">{toPersianDigits(cryptoBalances.ton || 0)} TON</strong>
-                </div>
-
-                <div className="crypto-token-row">
-                  <div className="token-meta">
                     <span className="token-sym gram">GRAM</span>
                     <span className="token-name">کوین گرام تلگرام (Gram)</span>
                   </div>
@@ -890,9 +879,8 @@ export default function WalletHub({ user, storageKey }) {
                         </>
                       ) : (
                         <>
-                          <option value="TON">TON (تون کوین اصلی تلگرام)</option>
                           <option value="GRAM">GRAM (کوین گرام تلگرام)</option>
-                          <option value="USDT (TON)">USDT (شبکه تلگرام / Jetton)</option>
+                          <option value="USDT (Telegram)">USDT (تتر شبکه تلگرام)</option>
                         </>
                       )}
                     </select>
@@ -950,16 +938,16 @@ export default function WalletHub({ user, storageKey }) {
                 <span className="mobile-dapp-note">در موبایل مستقیماً در مرورگر کیف پول باز می‌شود.</span>
               </div>
 
-              {/* Option 2: Tonkeeper / Telegram Wallet (TON & GRAM) */}
+              {/* Option 2: Tonkeeper / Telegram Wallet (Gram) */}
               <div className="provider-card ton-provider">
                 <div className="provider-icon-circle ton">💎</div>
-                <h4>تونکیپر و ولت تلگرام (TON)</h4>
-                <p>اتصال مستقیم به شبکه تلگرام (The Open Network) جهت واریز آسان TON و کوین گرام (Gram).</p>
+                <h4>تونکیپر و ولت تلگرام (کوین Gram)</h4>
+                <p>اتصال مستقیم به شبکه تلگرام جهت واریز آسان کوین گرام (Gram) و تتر به حساب کارگاه.</p>
                 <button
                   type="button"
                   className="btn btn-primary btn-block provider-btn ton"
                   disabled={isConnecting}
-                  onClick={connectTON}
+                  onClick={connectGramWallet}
                 >
                   {isConnecting ? 'در حال ارتباط…' : 'اتصال با Tonkeeper / Telegram'}
                 </button>
@@ -1020,14 +1008,14 @@ export default function WalletHub({ user, storageKey }) {
               </div>
 
               <div className="off-acc-row">
-                <span className="acc-tag ton">Telegram TON (TON / Gram):</span>
-                <code dir="ltr">{WORKSHOP_DEPOSIT_WALLETS.ton.address}</code>
+                <span className="acc-tag ton">شبکه تلگرام (کوین Gram):</span>
+                <code dir="ltr">{WORKSHOP_DEPOSIT_WALLETS.gram.address}</code>
                 <button
                   type="button"
                   className="copy-sm"
-                  onClick={() => handleCopy(WORKSHOP_DEPOSIT_WALLETS.ton.address, 'off_ton')}
+                  onClick={() => handleCopy(WORKSHOP_DEPOSIT_WALLETS.gram.address, 'off_gram')}
                 >
-                  {copiedKey === 'off_ton' ? <Check size={14} /> : <Copy size={14} />}
+                  {copiedKey === 'off_gram' ? <Check size={14} /> : <Copy size={14} />}
                 </button>
               </div>
 
@@ -1369,8 +1357,8 @@ export default function WalletHub({ user, storageKey }) {
             <div className="crypto-network-card ton">
               <div className="net-header">
                 <div className="net-badge">
-                  <span className="net-pill ton">TON / Telegram Network</span>
-                  <span className="net-tokens">TON + GRAM + USDT (TON Jetton)</span>
+                  <span className="net-pill ton">شبکه تلگرام (Telegram Network)</span>
+                  <span className="net-tokens">کوین Gram + USDT</span>
                 </div>
                 <span className="net-sub-note">آدرس کیف پول تونکیپر (Tonkeeper) یا ولت تلگرام (شروع با UQ یا EQ)</span>
               </div>
@@ -1379,17 +1367,17 @@ export default function WalletHub({ user, storageKey }) {
                 <input
                   type="text"
                   dir="ltr"
-                  placeholder="UQDKeepCoffeeRoasteryTehranTonOfficial..."
-                  value={cryptoAddresses.ton || ''}
-                  onChange={(e) => setCryptoAddresses({ ...cryptoAddresses, ton: e.target.value })}
+                  placeholder="UQDKeepCoffeeRoasteryTehranGramNetwork..."
+                  value={cryptoAddresses.gram || ''}
+                  onChange={(e) => setCryptoAddresses({ ...cryptoAddresses, gram: e.target.value })}
                 />
-                {cryptoAddresses.ton && (
+                {cryptoAddresses.gram && (
                   <button
                     type="button"
                     className="copy-net-btn"
-                    onClick={() => handleCopy(cryptoAddresses.ton, 'ton')}
+                    onClick={() => handleCopy(cryptoAddresses.gram, 'gram')}
                   >
-                    {copiedKey === 'ton' ? <Check size={16} /> : <Copy size={16} />}
+                    {copiedKey === 'gram' ? <Check size={16} /> : <Copy size={16} />}
                   </button>
                 )}
               </div>
@@ -1540,8 +1528,7 @@ export default function WalletHub({ user, storageKey }) {
                 <div className="crypto-pill-options">
                   {[
                     { id: 'usdt_bep20', label: 'USDT (BEP-20 / BSC)', net: 'evm' },
-                    { id: 'ton', label: 'TON Coin (شبکه تلگرام)', net: 'ton' },
-                    { id: 'gram', label: 'Gram Token (کوین گرام تلگرام)', net: 'ton' },
+                    { id: 'gram', label: 'Gram (کوین گرام تلگرام)', net: 'gram' },
                     { id: 'usdt_trc20', label: 'USDT (TRC-20 / Tron)', net: 'trx' },
                     { id: 'btc', label: 'Bitcoin (BTC)', net: 'btc' },
                     { id: 'sol', label: 'Solana (SOL)', net: 'sol' },
@@ -1570,7 +1557,7 @@ export default function WalletHub({ user, storageKey }) {
                     ? 'btc'
                     : selectedCrypto === 'sol'
                     ? 'sol'
-                    : 'ton';
+                    : 'gram';
                 const info = WORKSHOP_DEPOSIT_WALLETS[netKey];
                 return (
                   <div className="workshop-address-display">

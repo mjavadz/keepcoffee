@@ -385,25 +385,69 @@
 .info-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
-.info-form textarea {
+.info-form .auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.info-form .auth-field label {
+  color: var(--color-text-primary);
+  font-size: 0.92rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.info-form .auth-field input,
+.info-form .auth-field textarea {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-bg);
   width: 100%;
   color: var(--color-text-primary);
-  resize: vertical;
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-  padding: 12px 14px;
+  padding: 12px 16px;
   font-family: inherit;
   font-size: 0.95rem;
+  box-sizing: border-box;
 }
 
-.info-form textarea:focus {
+.info-form .auth-field input:focus,
+.info-form .auth-field textarea:focus {
   border-color: var(--color-accent);
   outline: none;
+  box-shadow: 0 0 0 3px rgba(222, 158, 72, 0.2);
+}
+
+.info-form .auth-field input:disabled,
+.info-form .auth-field input[readonly] {
+  background-color: rgba(255, 255, 255, 0.04);
+  color: var(--color-text-secondary);
+  border-color: rgba(255, 255, 255, 0.12);
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+[data-theme="light"] .info-form .auth-field input:disabled,
+[data-theme="light"] .info-form .auth-field input[readonly] {
+  background-color: rgba(0, 0, 0, 0.04);
+  color: var(--color-text-secondary);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.info-form .auth-hint {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.info-form textarea {
+  resize: vertical;
 }
 
 .info-save-msg {
