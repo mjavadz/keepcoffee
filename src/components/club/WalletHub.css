@@ -176,6 +176,8 @@
 .token-sym.eth  { background: rgba(98, 126, 234, 0.18);  color: #627EEA; }
 .token-sym.sol  { background: rgba(20, 241, 149, 0.18);  color: #14F195; }
 .token-sym.trx  { background: rgba(235, 0, 41, 0.18);   color: #EB0029; }
+.token-sym.ton  { background: rgba(0, 152, 234, 0.18);   color: #0098EA; }
+.token-sym.gram { background: rgba(36, 161, 222, 0.18);  color: #24A1DE; }
 
 .token-name {
   font-size: 0.84rem;
@@ -445,6 +447,7 @@
 .net-pill.btc { background: rgba(247, 147, 26, 0.18); color: #F7931A; border: 1px solid rgba(247, 147, 26, 0.3); }
 .net-pill.sol { background: rgba(20, 241, 149, 0.18); color: #14F195; border: 1px solid rgba(20, 241, 149, 0.3); }
 .net-pill.trx { background: rgba(235, 0, 41, 0.18); color: #EB0029; border: 1px solid rgba(235, 0, 41, 0.3); }
+.net-pill.ton { background: rgba(0, 152, 234, 0.18); color: #0098EA; border: 1px solid rgba(0, 152, 234, 0.3); }
 
 .net-tokens {
   font-size: 0.88rem;
@@ -818,7 +821,7 @@
 /* Providers Grid */
 .web3-providers-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 20px;
   margin-bottom: 28px;
 }
@@ -856,6 +859,7 @@
 .provider-icon-circle.evm { background: rgba(246, 133, 27, 0.15); border: 1px solid rgba(246, 133, 27, 0.3); }
 .provider-icon-circle.sol { background: rgba(171, 159, 242, 0.15); border: 1px solid rgba(171, 159, 242, 0.3); }
 .provider-icon-circle.trx { background: rgba(235, 0, 41, 0.15); border: 1px solid rgba(235, 0, 41, 0.3); }
+.provider-icon-circle.ton { background: rgba(0, 152, 234, 0.15); border: 1px solid rgba(0, 152, 234, 0.3); }
 
 .provider-card h4 {
   margin: 0;
@@ -888,6 +892,16 @@
   background: #EB0029;
   border-color: #EB0029;
   color: #FFFFFF;
+}
+
+.provider-btn.ton {
+  background: #0098EA;
+  border-color: #0098EA;
+  color: #FFFFFF;
+}
+
+.provider-btn.ton:hover {
+  background: #0084CC;
 }
 
 .mobile-dapp-note {
