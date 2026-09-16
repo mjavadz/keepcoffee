@@ -29,22 +29,22 @@ export const SUPPORTED_BANKS = [
 // Official Workshop Deposit Addresses for Top-Up
 export const WORKSHOP_DEPOSIT_WALLETS = {
   evm: {
-    address: '0x71C56dF97e14E1568A91E1A29D64a856a938F142',
+    address: '0x7e543a5aC5A1dDdfA5B3A6809a3f2F10f1eC93EC',
     networks: ['Ethereum (ERC-20)', 'Binance Smart Chain (BEP-20)'],
     tokens: ['USDT (BEP-20)', 'USDT (ERC-20)', 'ETH', 'BNB'],
   },
   btc: {
-    address: 'bc1qkeepcoffeeroasterytehran9982749218',
+    address: 'bc1q5gs297eqhgjet7eqkm5cdx7lzpjsvnz8ny5us9',
     networks: ['Bitcoin Network'],
     tokens: ['BTC'],
   },
   sol: {
-    address: 'KeepCfRoast69N7wU81B2T3P4Q5R6S7T8U9V1W2X3Y4Z',
+    address: '3hY5AZkErdBrWRjYypr9TUaH7Vo3SvVuft8Zm7hJjJQn',
     networks: ['Solana Network (SPL)'],
     tokens: ['SOL', 'USDT (SPL)'],
   },
   trx: {
-    address: 'TKeepCoffeeRoasteryTronNetwork109283746',
+    address: 'TJSpjmoz4F84kB4e3tvxJt3LFhhwVtiHQN',
     networks: ['Tron Network (TRC-20)'],
     tokens: ['TRX', 'USDT (TRC-20)'],
   },
@@ -1247,7 +1247,7 @@ export default function WalletHub({ user, storageKey }) {
                 <input
                   type="text"
                   dir="ltr"
-                  placeholder="0x71C56dF97e14E1568A91E1A29D64a856a938F142..."
+                  placeholder="0x7e543a5aC5A1dDdfA5B3A6809a3f2F10f1eC93EC..."
                   value={cryptoAddresses.evm}
                   onChange={(e) => setCryptoAddresses({ ...cryptoAddresses, evm: e.target.value })}
                 />
@@ -1277,7 +1277,7 @@ export default function WalletHub({ user, storageKey }) {
                 <input
                   type="text"
                   dir="ltr"
-                  placeholder="bc1qkeepcoffee9982749218..."
+                  placeholder="bc1q5gs297eqhgjet7eqkm5cdx7lzpjsvnz8ny5us9..."
                   value={cryptoAddresses.btc}
                   onChange={(e) => setCryptoAddresses({ ...cryptoAddresses, btc: e.target.value })}
                 />
@@ -1307,7 +1307,7 @@ export default function WalletHub({ user, storageKey }) {
                 <input
                   type="text"
                   dir="ltr"
-                  placeholder="KeepCfRoast69N7wU81B2T3P4Q5R6S7..."
+                  placeholder="3hY5AZkErdBrWRjYypr9TUaH7Vo3SvVuft8Zm7hJjJQn..."
                   value={cryptoAddresses.sol}
                   onChange={(e) => setCryptoAddresses({ ...cryptoAddresses, sol: e.target.value })}
                 />
@@ -1337,7 +1337,7 @@ export default function WalletHub({ user, storageKey }) {
                 <input
                   type="text"
                   dir="ltr"
-                  placeholder="TKeepCoffeeRoasteryTronNetwork1092..."
+                  placeholder="TJSpjmoz4F84kB4e3tvxJt3LFhhwVtiHQN..."
                   value={cryptoAddresses.trx}
                   onChange={(e) => setCryptoAddresses({ ...cryptoAddresses, trx: e.target.value })}
                 />
