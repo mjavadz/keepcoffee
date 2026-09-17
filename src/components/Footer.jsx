@@ -38,6 +38,18 @@ const TelegramIcon = () => (
   </svg>
 );
 
+const TwitterXIcon = () => (
+  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="social-svg">
+    {/* Clean vector circle background for X / Twitter */}
+    <circle cx="24" cy="24" r="23.5" fill="#000000" className="brand-bg x-bg" />
+    {/* Official X Logo Glyph */}
+    <path
+      d="M28.47 14h3.19l-6.97 7.97 8.2 10.84h-6.42l-5.03-6.58-5.76 6.58h-3.19l7.46-8.52L13.7 14h6.58l4.55 6.01L28.47 14zm-1.12 16.93h1.77L19.43 15.82h-1.9l9.82 15.11z"
+      className="x-glyph"
+    />
+  </svg>
+);
+
 export default function Footer() {
   return (
     <footer className="footer">
@@ -97,6 +109,16 @@ export default function Footer() {
                 title="کانال تلگرام کیپ کافی"
               >
                 <TelegramIcon />
+              </a>
+              <a
+                href={links.twitter()}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Twitter / X"
+                className="social-link social-twitter"
+                title="صفحه رسمی توییتر / X کیپ کافی"
+              >
+                <TwitterXIcon />
               </a>
             </div>
 

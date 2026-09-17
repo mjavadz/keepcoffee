@@ -21,6 +21,7 @@ export const site = {
   whatsapp: '989120142210',
   instagram: 'keepcoffeeroastery',
   telegram: 'keepcoffeeRoastery',
+  twitter: 'keepcoffee',
   email: 'info@keepcoffee.ir',
   address: 'تهران، کارگاه تخصصی برشته‌کاری کیپ کافی',
   hours: 'هر روز ۹ صبح تا ۹ شب',
@@ -44,6 +45,7 @@ export const links = {
   email: () => `mailto:${site.email}`,
   instagram: () => `https://instagram.com/${site.instagram}`,
   telegram: () => `https://t.me/${site.telegram}`,
+  twitter: () => `https://x.com/${site.twitter}`,
   whatsapp: (text, number = site.whatsapp) =>
     `https://wa.me/${number}${text ? `?text=${encodeURIComponent(text)}` : ''}`,
   telegramShare: (text) =>

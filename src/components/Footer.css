@@ -136,6 +136,25 @@
   fill: #FFFFFF;
 }
 
+.social-link .x-glyph {
+  fill: #FDFBF7;
+  transition: fill 0.25s ease;
+}
+
+.social-link.social-twitter:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 22px rgba(255, 255, 255, 0.25);
+}
+
+.social-link.social-twitter:hover .brand-bg {
+  opacity: 1;
+}
+
+.social-link.social-twitter:hover .x-glyph {
+  fill: #FFFFFF;
+}
+
 .footer-links ul {
   list-style: none;
   display: flex;
