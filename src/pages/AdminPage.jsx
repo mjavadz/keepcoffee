@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { api } from '../api';
+import { api, setCsrfToken } from '../api';
 import { products, grindOptions } from '../data/products';
 import { formatToman, formatNumber, toPersianDigits } from '../utils/format';
 import SEO from '../components/SEO';
@@ -8,18 +7,18 @@ import Loader from '../components/Loader';
 import './AdminPage.css';
 
 const STATUS_LABELS = {
-  pending: { label: 'در انتظار بررسی', class: 'status-pending' },
-  confirmed: { label: 'تأیید شده', class: 'status-confirmed' },
-  processing: { label: 'در حال آماده‌سازی', class: 'status-processing' },
-  shipped: { label: 'ارسال شده', class: 'status-shipped' },
-  completed: { label: 'تکمیل شده', class: 'status-completed' },
-  cancelled: { label: 'لغو شده', class: 'status-cancelled' },
+  pending: { label: 'در انتظار بررسی', class: 'badge-pending' },
+  confirmed: { label: 'تأیید شده', class: 'badge-confirmed' },
+  processing: { label: 'در حال آماده‌سازی', class: 'badge-processing' },
+  shipped: { label: 'ارسال شده', class: 'badge-shipped' },
+  completed: { label: 'تکمیل شده', class: 'badge-completed' },
+  cancelled: { label: 'لغو شده', class: 'badge-cancelled' },
 };
 
 const PAYMENT_LABELS = {
-  paid: { label: 'پرداخت شده', class: 'status-paid' },
-  unpaid: { label: 'در انتظار پرداخت', class: 'status-unpaid' },
-  refunded: { label: 'مرجوعی', class: 'status-refunded' },
+  paid: { label: 'پرداخت شده', class: 'badge-paid' },
+  unpaid: { label: 'در انتظار پرداخت', class: 'badge-unpaid' },
+  refunded: { label: 'مرجوعی', class: 'badge-refunded' },
 };
 
 const REASON_LABELS = {
@@ -32,7 +31,15 @@ const REASON_LABELS = {
 };
 
 export default function AdminPage() {
-  const { user } = useAuth();
+  // Auth state
+  const [isAdminAuthed, setIsAdminAuthed] = useState(false);
+  const [authChecking, setAuthChecking] = useState(true);
+  const [adminPassword, setAdminPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
+
+  // Active view
   const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
@@ -62,6 +69,13 @@ export default function AdminPage() {
   const [pointsDelta, setPointsDelta] = useState('');
   const [pointsReason, setPointsReason] = useState('');
 
+  // Password Change State
+  const [pwdChange, setPwdChange] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+
   // Manual Order Form State
   const [newOrder, setNewOrder] = useState({
     customerName: '',
@@ -78,6 +92,84 @@ export default function AdminPage() {
     setTimeout(() => setToast(null), 3500);
   };
 
+  // Check initial admin auth
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const res = await api.get('/admin/auth/check');
+        if (active && res.authenticated) {
+          setIsAdminAuthed(true);
+        }
+      } catch {
+        if (active) setIsAdminAuthed(false);
+      } finally {
+        if (active) setAuthChecking(false);
+      }
+    })();
+    return () => { active = false; };
+  }, []);
+
+  // Handle Admin Login Submit
+  const handleAdminLogin = async (e) => {
+    e.preventDefault();
+    if (!adminPassword) return;
+    try {
+      setLoginLoading(true);
+      setLoginError('');
+      const res = await api.post('/admin/auth/login', { password: adminPassword });
+      if (res.csrfToken) {
+        setCsrfToken(res.csrfToken);
+      }
+      setIsAdminAuthed(true);
+      setAdminPassword('');
+      showToast('با موفقیت وارد سامانه مدیریت شدید');
+    } catch (err) {
+      setLoginError(err.message || 'رمز عبور مدیریت نادرست است.');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  // Handle Admin Logout
+  const handleAdminLogout = async () => {
+    try {
+      await api.post('/admin/auth/logout');
+    } catch {
+    } finally {
+      setIsAdminAuthed(false);
+      setStats(null);
+      showToast('با موفقیت از سامانه مدیریت خارج شدید');
+    }
+  };
+
+  // Handle Password Change Submit
+  const handlePasswordChangeSubmit = async (e) => {
+    e.preventDefault();
+    if (pwdChange.newPassword !== pwdChange.confirmPassword) {
+      showToast('تکرار رمز عبور جدید مطابقت ندارد', 'error');
+      return;
+    }
+    if (pwdChange.newPassword.length < 6) {
+      showToast('رمز عبور جدید باید حداقل ۶ کاراکتر باشد', 'error');
+      return;
+    }
+    try {
+      setActionLoading(true);
+      await api.post('/admin/auth/change-password', {
+        currentPassword: pwdChange.currentPassword,
+        newPassword: pwdChange.newPassword,
+      });
+      showToast('رمز عبور مدیریت با موفقیت تغییر کرد');
+      setPwdChange({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setActiveTab('dashboard');
+    } catch (err) {
+      showToast(err.message || 'خطا در تغییر رمز عبور', 'error');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   // Fetch stats
   const fetchStats = useCallback(async () => {
     try {
@@ -85,6 +177,7 @@ export default function AdminPage() {
       const res = await api.get('/admin/stats');
       setStats(res.stats);
     } catch (err) {
+      if (err.status === 401) setIsAdminAuthed(false);
       showToast(err.message || 'خطا در دریافت آمار', 'error');
     } finally {
       setLoading(false);
@@ -105,6 +198,7 @@ export default function AdminPage() {
       setOrders(res.orders || []);
       setOrdersTotal(res.total || 0);
     } catch (err) {
+      if (err.status === 401) setIsAdminAuthed(false);
       showToast(err.message || 'خطا در دریافت سفارشات', 'error');
     } finally {
       setLoading(false);
@@ -124,6 +218,7 @@ export default function AdminPage() {
       setUsersList(res.users || []);
       setUsersTotal(res.total || 0);
     } catch (err) {
+      if (err.status === 401) setIsAdminAuthed(false);
       showToast(err.message || 'خطا در دریافت کاربران', 'error');
     } finally {
       setLoading(false);
@@ -143,6 +238,7 @@ export default function AdminPage() {
       setTransactions(res.transactions || []);
       setTxTotal(res.total || 0);
     } catch (err) {
+      if (err.status === 401) setIsAdminAuthed(false);
       showToast(err.message || 'خطا در دریافت تراکنش‌ها', 'error');
     } finally {
       setLoading(false);
@@ -151,11 +247,12 @@ export default function AdminPage() {
 
   // Tab change trigger
   useEffect(() => {
+    if (!isAdminAuthed) return;
     if (activeTab === 'dashboard') fetchStats();
     if (activeTab === 'orders') fetchOrders();
     if (activeTab === 'users') fetchUsers();
     if (activeTab === 'transactions') fetchTransactions();
-  }, [activeTab, fetchStats, fetchOrders, fetchUsers, fetchTransactions]);
+  }, [activeTab, isAdminAuthed, fetchStats, fetchOrders, fetchUsers, fetchTransactions]);
 
   // Update order status handler
   const handleUpdateOrderStatus = async (orderId, newStatus, newPaymentStatus) => {
@@ -268,7 +365,6 @@ export default function AdminPage() {
       });
       showToast(`سفارش جدید با شماره ${res.orderNumber} با موفقیت ثبت شد`);
       setActiveTab('orders');
-      // Reset form
       setNewOrder({
         customerName: '',
         customerPhone: '',
@@ -285,7 +381,6 @@ export default function AdminPage() {
     }
   };
 
-  // Helper to add item to manual order
   const addItemToNewOrder = () => {
     const firstProd = products[0];
     setNewOrder(prev => ({
@@ -319,151 +414,245 @@ export default function AdminPage() {
     return newOrder.items.reduce((sum, it) => sum + (it.quantity * it.unitPrice), 0);
   }, [newOrder.items]);
 
+  // Loading initial auth check
+  if (authChecking) {
+    return (
+      <div className="admin-login-screen">
+        <Loader minHeight="60vh" />
+      </div>
+    );
+  }
+
+  // =========================================================================
+  // Screen 1: Admin Password Login Gate (When not authenticated)
+  // =========================================================================
+  if (!isAdminAuthed) {
+    return (
+      <div className="admin-login-screen">
+        <SEO title="ورود به سامانه مدیریت | کیپ کافی" description="ورود به بخش مدیریت کارگاه برشته‌کاری کیپ کافی" />
+
+        <div className="admin-login-card">
+          <div className="admin-login-logo">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="M2 12h4"/><path d="m4.93 19.07 2.83-2.83"/><path d="M12 22v-4"/><path d="m19.07 19.07-2.83-2.83"/><path d="M22 12h-4"/><path d="m19.07 4.93-2.83 2.83"/>
+            </svg>
+          </div>
+
+          <h1 className="admin-login-title">سامانه مدیریت کیپ کافی</h1>
+          <p className="admin-login-desc">لطفاً جهت دسترسی به بخش‌های مدیریتی و سفارشات، رمز عبور اختصاصی مدیر را وارد کنید.</p>
+
+          {loginError && (
+            <div style={{ background: '#3b1717', border: '1px solid #7f1d1d', color: '#fca5a5', padding: '0.75rem', borderRadius: '8px', marginBottom: '1.25rem', fontSize: '0.85rem' }}>
+              {loginError}
+            </div>
+          )}
+
+          <form onSubmit={handleAdminLogin} className="admin-login-form">
+            <div className="admin-input-group">
+              <label className="admin-input-label">رمز عبور مدیر کارگاه:</label>
+              <div className="admin-password-field">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  placeholder="رمز عبور مدیریت…"
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  className="admin-input"
+                  dir="ltr"
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  className="admin-pwd-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                >
+                  {showPassword ? '👁️' : '🔒'}
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" disabled={loginLoading} className="admin-login-btn">
+              {loginLoading ? 'در حال بررسی…' : 'ورود به پنل مدیریت'}
+            </button>
+          </form>
+
+          <a href="/" className="admin-back-link">← بازگشت به وب‌سایت فروشگاه</a>
+        </div>
+      </div>
+    );
+  }
+
+  // =========================================================================
+  // Screen 2: Standalone Isolated Admin Workspace (Completely decoupled from site layout)
+  // =========================================================================
   return (
-    <div className="admin-page">
-      <SEO title="پنل مدیریت کارگاه کیپ کافی" description="سیستم مدیریت سفارشات، اعضا و باشگاه مشتریان کیپ کافی" />
+    <div className="admin-standalone-root">
+      <SEO title="سامانه مدیریت کارگاه | کیپ کافی" description="پنل مستقل مدیریت سفارشات و کاربران" />
 
       {toast && (
-        <div style={{
-          position: 'fixed',
-          top: '20px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          background: toast.type === 'error' ? '#ef4444' : '#10b981',
-          color: '#fff',
-          padding: '0.75rem 1.5rem',
-          borderRadius: '8px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          zIndex: 2000,
-          fontWeight: 600,
-          fontSize: '0.9rem'
-        }}>
+        <div className={`admin-toast ${toast.type}`}>
           {toast.msg}
         </div>
       )}
 
-      <div className="container">
-        {/* Admin Header */}
-        <header className="admin-header">
-          <div className="admin-title-wrap">
-            <h1 className="admin-title">پنل مدیریت کیپ کافی</h1>
-            <span className="admin-badge">مدیریت کل</span>
+      {/* Standalone Admin Top Navigation Bar */}
+      <header className="admin-standalone-topbar">
+        <div className="admin-topbar-brand">
+          <div className="admin-brand-icon">☕</div>
+          <div>
+            <span className="admin-brand-text">Keep Coffee Roastery</span>
+            <span className="admin-badge-tag">مدیریت کارگاه</span>
           </div>
+        </div>
 
-          <div className="admin-user-info">
-            <span>مدیر فعال: <strong>{user?.displayName || user?.email}</strong></span>
-            <button
-              onClick={() => {
-                if (activeTab === 'dashboard') fetchStats();
-                if (activeTab === 'orders') fetchOrders();
-                if (activeTab === 'users') fetchUsers();
-                if (activeTab === 'transactions') fetchTransactions();
-              }}
-              className="admin-refresh-btn"
-              title="تازه‌سازی اطلاعات"
-            >
-              🔄 به‌روزرسانی
-            </button>
-          </div>
-        </header>
-
-        {/* Navigation Tabs */}
-        <nav className="admin-tabs" aria-label="بخش‌های پنل مدیریت">
+        <div className="admin-topbar-actions">
           <button
-            className={`admin-tab ${activeTab === 'dashboard' ? 'is-active' : ''}`}
+            onClick={() => {
+              if (activeTab === 'dashboard') fetchStats();
+              if (activeTab === 'orders') fetchOrders();
+              if (activeTab === 'users') fetchUsers();
+              if (activeTab === 'transactions') fetchTransactions();
+              showToast('اطلاعات با موفقیت به‌روزرسانی شد');
+            }}
+            className="admin-action-link"
+            title="تازه‌سازی اطلاعات"
+          >
+            🔄 به‌روزرسانی داده‌ها
+          </button>
+          <a
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="admin-action-link"
+            title="مشاهده سایت در تب جدید"
+          >
+            🌐 مشاهده فروشگاه
+          </a>
+          <button
+            onClick={() => setActiveTab('settings')}
+            className={`admin-action-link ${activeTab === 'settings' ? 'active' : ''}`}
+            title="تغییر رمز عبور مدیریت"
+          >
+            🔐 تغییر رمز
+          </button>
+          <button
+            onClick={handleAdminLogout}
+            className="admin-action-link admin-action-logout"
+            title="خروج از حساب مدیریت"
+          >
+            🚪 خروج
+          </button>
+        </div>
+      </header>
+
+      {/* Standalone Admin Workspace */}
+      <main className="admin-workspace">
+        {/* Navigation Tabs */}
+        <nav className="admin-nav-tabs" aria-label="بخش‌های پنل">
+          <button
+            className={`admin-nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
             onClick={() => setActiveTab('dashboard')}
           >
             📊 داشبورد و آمار
           </button>
           <button
-            className={`admin-tab ${activeTab === 'orders' ? 'is-active' : ''}`}
+            className={`admin-nav-btn ${activeTab === 'orders' ? 'active' : ''}`}
             onClick={() => setActiveTab('orders')}
           >
             📦 سفارشات
             {stats?.pendingOrders > 0 && (
-              <span className="tab-badge badge-alert">{toPersianDigits(stats.pendingOrders)}</span>
+              <span className="admin-tab-pill pill-alert">{toPersianDigits(stats.pendingOrders)}</span>
             )}
           </button>
           <button
-            className={`admin-tab ${activeTab === 'users' ? 'is-active' : ''}`}
+            className={`admin-nav-btn ${activeTab === 'users' ? 'active' : ''}`}
             onClick={() => setActiveTab('users')}
           >
             👥 کاربران و اعضا
             {stats?.totalUsers > 0 && (
-              <span className="tab-badge">{toPersianDigits(stats.totalUsers)}</span>
+              <span className="admin-tab-pill">{toPersianDigits(stats.totalUsers)}</span>
             )}
           </button>
           <button
-            className={`admin-tab ${activeTab === 'transactions' ? 'is-active' : ''}`}
+            className={`admin-nav-btn ${activeTab === 'transactions' ? 'active' : ''}`}
             onClick={() => setActiveTab('transactions')}
           >
             📜 تراکنش‌ها و امتیازات
           </button>
           <button
-            className={`admin-tab ${activeTab === 'new_order' ? 'is-active' : ''}`}
+            className={`admin-nav-btn ${activeTab === 'new_order' ? 'active' : ''}`}
             onClick={() => setActiveTab('new_order')}
           >
             ➕ ثبت سفارش دستی
           </button>
+          <button
+            className={`admin-nav-btn ${activeTab === 'settings' ? 'active' : ''}`}
+            onClick={() => setActiveTab('settings')}
+          >
+            ⚙️ تنظیمات و تغییر رمز
+          </button>
         </nav>
 
-        {/* Tab 1: Dashboard */}
+        {/* ===================================================================
+            Tab 1: Dashboard
+            =================================================================== */}
         {activeTab === 'dashboard' && (
           <div>
             {loading && !stats ? (
               <Loader minHeight="40vh" />
             ) : (
               <>
-                <div className="admin-stats-grid">
-                  <div className="stat-card">
-                    <div className="stat-card-title">
-                      <span>کل سفارشات</span>
+                <div className="admin-metrics-grid">
+                  <div className="admin-metric-card">
+                    <div className="admin-metric-head">
+                      <span>کل سفارشات ثبت شده</span>
                       <span>📦</span>
                     </div>
-                    <div className="stat-card-val">{toPersianDigits(stats?.totalOrders || 0)}</div>
-                    <div className="stat-card-sub">
+                    <div className="admin-metric-val">{toPersianDigits(stats?.totalOrders || 0)}</div>
+                    <div className="admin-metric-sub">
                       {stats?.pendingOrders > 0
-                        ? `${toPersianDigits(stats.pendingOrders)} سفارش در انتظار تأیید`
-                        : 'همه سفارش‌ها رسیدگی شده'}
+                        ? `${toPersianDigits(stats.pendingOrders)} سفارش جدید نیازمند اقدام`
+                        : 'همه سفارش‌ها رسیدگی شده است'}
                     </div>
                   </div>
 
-                  <div className="stat-card">
-                    <div className="stat-card-title">
-                      <span>مجموع فروش</span>
+                  <div className="admin-metric-card">
+                    <div className="admin-metric-head">
+                      <span>مجموع فروش کارگاه</span>
                       <span>💰</span>
                     </div>
-                    <div className="stat-card-val">{formatToman(stats?.totalRevenue || 0)}</div>
-                    <div className="stat-card-sub">سفارشات قطعی کارگاه</div>
+                    <div className="admin-metric-val">{formatToman(stats?.totalRevenue || 0)}</div>
+                    <div className="admin-metric-sub">سفارشات قطعی و تسویه شده</div>
                   </div>
 
-                  <div className="stat-card">
-                    <div className="stat-card-title">
-                      <span>کاربران و اعضا</span>
+                  <div className="admin-metric-card">
+                    <div className="admin-metric-head">
+                      <span>اعضای ثبت‌نام شده</span>
                       <span>👥</span>
                     </div>
-                    <div className="stat-card-val">{toPersianDigits(stats?.totalUsers || 0)}</div>
-                    <div className="stat-card-sub">{toPersianDigits(stats?.totalCheckins || 0)} ثبت حضور روزانه</div>
+                    <div className="admin-metric-val">{toPersianDigits(stats?.totalUsers || 0)}</div>
+                    <div className="admin-metric-sub">{toPersianDigits(stats?.totalCheckins || 0)} حضور در باشگاه</div>
                   </div>
 
-                  <div className="stat-card">
-                    <div className="stat-card-title">
-                      <span>امتیازات در گردش</span>
+                  <div className="admin-metric-card">
+                    <div className="admin-metric-head">
+                      <span>امتیازات فعال باشگاه</span>
                       <span>⭐</span>
                     </div>
-                    <div className="stat-card-val">{formatNumber(stats?.totalPoints || 0)}</div>
-                    <div className="stat-card-sub">موجودی باشگاه مشتریان</div>
+                    <div className="admin-metric-val">{formatNumber(stats?.totalPoints || 0)}</div>
+                    <div className="admin-metric-sub">موجودی در دست اعضا</div>
                   </div>
                 </div>
 
-                {/* Quick Tables: Recent Orders & Recent Users */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
-                  <div className="admin-table-wrap">
-                    <div style={{ padding: '1rem', borderBottom: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700 }}>آخرین سفارشات</h3>
-                      <button className="admin-btn-sm" onClick={() => setActiveTab('orders')}>مشاهده همه</button>
+                {/* Quick Tables Grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem' }}>
+                  <div className="admin-dark-table-card">
+                    <div style={{ padding: '1rem', borderBottom: '1px solid #273b30', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#fff' }}>آخرین سفارشات کارگاه</h3>
+                      <button className="admin-dark-btn" onClick={() => setActiveTab('orders')}>مشاهده همه</button>
                     </div>
-                    <table className="admin-table">
+                    <table className="admin-dark-table">
                       <thead>
                         <tr>
                           <th>شماره</th>
@@ -480,25 +669,25 @@ export default function AdminPage() {
                               <td>{ord.customer_name}</td>
                               <td>{formatToman(ord.final_amount)}</td>
                               <td>
-                                <span className={`status-pill ${STATUS_LABELS[ord.status]?.class || ''}`}>
+                                <span className={`admin-status-badge ${STATUS_LABELS[ord.status]?.class || ''}`}>
                                   {STATUS_LABELS[ord.status]?.label || ord.status}
                                 </span>
                               </td>
                             </tr>
                           ))
                         ) : (
-                          <tr><td colSpan="4" style={{ textAlign: 'center', padding: '1.5rem' }}>سفارشی ثبت نشده است.</td></tr>
+                          <tr><td colSpan="4" style={{ textAlign: 'center', padding: '1.5rem', color: '#8da495' }}>سفارشی ثبت نشده است.</td></tr>
                         )}
                       </tbody>
                     </table>
                   </div>
 
-                  <div className="admin-table-wrap">
-                    <div style={{ padding: '1rem', borderBottom: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700 }}>کاربران جدید</h3>
-                      <button className="admin-btn-sm" onClick={() => setActiveTab('users')}>مشاهده همه</button>
+                  <div className="admin-dark-table-card">
+                    <div style={{ padding: '1rem', borderBottom: '1px solid #273b30', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#fff' }}>اعضای تازه ثبت‌نام شده</h3>
+                      <button className="admin-dark-btn" onClick={() => setActiveTab('users')}>مشاهده همه</button>
                     </div>
-                    <table className="admin-table">
+                    <table className="admin-dark-table">
                       <thead>
                         <tr>
                           <th>نام</th>
@@ -514,15 +703,15 @@ export default function AdminPage() {
                               <td>{u.display_name}</td>
                               <td dir="ltr" style={{ textAlign: 'right' }}>{u.email}</td>
                               <td>
-                                <span className={`status-pill ${u.role === 'admin' ? 'role-admin' : 'role-user'}`}>
-                                  {u.role === 'admin' ? 'مدیر' : 'کاربر'}
+                                <span className={`admin-status-badge ${u.role === 'admin' ? 'badge-role-admin' : 'badge-role-user'}`}>
+                                  {u.role === 'admin' ? 'مدیر کل' : 'کاربر'}
                                 </span>
                               </td>
                               <td>{toPersianDigits(u.points_balance)}</td>
                             </tr>
                           ))
                         ) : (
-                          <tr><td colSpan="4" style={{ textAlign: 'center', padding: '1.5rem' }}>کاربری یافت نشد.</td></tr>
+                          <tr><td colSpan="4" style={{ textAlign: 'center', padding: '1.5rem', color: '#8da495' }}>کاربری یافت نشد.</td></tr>
                         )}
                       </tbody>
                     </table>
@@ -533,28 +722,31 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Tab 2: Orders */}
+        {/* ===================================================================
+            Tab 2: Orders Management
+            =================================================================== */}
         {activeTab === 'orders' && (
           <div>
-            <div className="admin-toolbar">
-              <div className="admin-search-wrap">
+            <div className="admin-dark-toolbar">
+              <div style={{ display: 'flex', gap: '0.5rem', flex: 1, minWidth: '260px' }}>
                 <input
                   type="text"
                   placeholder="جستجو با شماره سفارش، نام خریدار یا تلفن…"
                   value={orderSearch}
                   onChange={(e) => setOrderSearch(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && fetchOrders()}
-                  className="admin-search-input"
+                  className="admin-input"
                 />
-                <button className="admin-btn-sm admin-btn-accent" onClick={fetchOrders}>جستجو</button>
+                <button className="admin-dark-btn admin-dark-btn-accent" onClick={fetchOrders}>جستجو</button>
               </div>
 
-              <div className="admin-filters">
-                <label className="admin-form-label" style={{ whiteSpace: 'nowrap' }}>وضعیت:</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <label style={{ fontSize: '0.85rem', color: '#8da495', whiteSpace: 'nowrap' }}>فیلتر وضعیت:</label>
                 <select
                   value={orderStatusFilter}
                   onChange={(e) => { setOrderStatusFilter(e.target.value); setOrdersPage(1); }}
-                  className="admin-select"
+                  className="admin-input"
+                  style={{ width: 'auto' }}
                 >
                   <option value="all">همه وضعیت‌ها</option>
                   <option value="pending">در انتظار بررسی</option>
@@ -571,16 +763,16 @@ export default function AdminPage() {
               <Loader minHeight="30vh" />
             ) : (
               <>
-                <div className="admin-table-wrap">
-                  <table className="admin-table">
+                <div className="admin-dark-table-card">
+                  <table className="admin-dark-table">
                     <thead>
                       <tr>
                         <th>شماره سفارش</th>
                         <th>مشتری</th>
-                        <th>تماس</th>
-                        <th>اقلام</th>
+                        <th>تلفن</th>
+                        <th>اقلام و آسیاب</th>
                         <th>مبلغ نهایی</th>
-                        <th>پرداخت</th>
+                        <th>وضعیت پرداخت</th>
                         <th>وضعیت سفارش</th>
                         <th>عملیات</th>
                       </tr>
@@ -589,7 +781,7 @@ export default function AdminPage() {
                       {orders.length ? (
                         orders.map(ord => (
                           <tr key={ord.id}>
-                            <td style={{ fontFamily: 'monospace', fontWeight: 700 }}>{ord.order_number}</td>
+                            <td style={{ fontFamily: 'monospace', fontWeight: 700, color: '#c88d4e' }}>{ord.order_number}</td>
                             <td>{ord.customer_name}</td>
                             <td dir="ltr" style={{ textAlign: 'right' }}>
                               {ord.customer_phone}
@@ -606,7 +798,7 @@ export default function AdminPage() {
                               )}
                             </td>
                             <td>
-                              <span style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)' }}>
+                              <span style={{ fontSize: '0.82rem', color: '#8da495' }}>
                                 {ord.items?.length
                                   ? ord.items.map(it => `${it.product_name} (${toPersianDigits(it.quantity)})`).join('، ')
                                   : '—'}
@@ -614,27 +806,25 @@ export default function AdminPage() {
                             </td>
                             <td style={{ fontWeight: 700 }}>{formatToman(ord.final_amount)}</td>
                             <td>
-                              <span className={`status-pill ${PAYMENT_LABELS[ord.payment_status]?.class || ''}`}>
+                              <span className={`admin-status-badge ${PAYMENT_LABELS[ord.payment_status]?.class || ''}`}>
                                 {PAYMENT_LABELS[ord.payment_status]?.label || ord.payment_status}
                               </span>
                             </td>
                             <td>
-                              <span className={`status-pill ${STATUS_LABELS[ord.status]?.class || ''}`}>
+                              <span className={`admin-status-badge ${STATUS_LABELS[ord.status]?.class || ''}`}>
                                 {STATUS_LABELS[ord.status]?.label || ord.status}
                               </span>
                             </td>
                             <td>
-                              <div className="admin-actions-cell">
-                                <button className="admin-btn-sm" onClick={() => setSelectedOrder(ord)}>
-                                  جزئیات و ویرایش
-                                </button>
-                              </div>
+                              <button className="admin-dark-btn" onClick={() => setSelectedOrder(ord)}>
+                                مشاهده و تغییر وضعیت
+                              </button>
                             </td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td colSpan="8" style={{ textAlign: 'center', padding: '2rem' }}>
+                          <td colSpan="8" style={{ textAlign: 'center', padding: '2.5rem', color: '#8da495' }}>
                             سفارشی با این مشخصات یافت نشد.
                           </td>
                         </tr>
@@ -643,11 +833,10 @@ export default function AdminPage() {
                   </table>
                 </div>
 
-                {/* Pagination */}
                 {ordersTotal > 15 && (
-                  <div className="admin-pagination">
+                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', marginTop: '1rem' }}>
                     <button
-                      className="admin-page-btn"
+                      className="admin-dark-btn"
                       disabled={ordersPage <= 1}
                       onClick={() => setOrdersPage(p => Math.max(1, p - 1))}
                     >
@@ -655,7 +844,7 @@ export default function AdminPage() {
                     </button>
                     <span>صفحه {toPersianDigits(ordersPage)} از {toPersianDigits(Math.ceil(ordersTotal / 15))}</span>
                     <button
-                      className="admin-page-btn"
+                      className="admin-dark-btn"
                       disabled={ordersPage >= Math.ceil(ordersTotal / 15)}
                       onClick={() => setOrdersPage(p => p + 1)}
                     >
@@ -668,20 +857,22 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Tab 3: Users */}
+        {/* ===================================================================
+            Tab 3: Users Management
+            =================================================================== */}
         {activeTab === 'users' && (
           <div>
-            <div className="admin-toolbar">
-              <div className="admin-search-wrap">
+            <div className="admin-dark-toolbar">
+              <div style={{ display: 'flex', gap: '0.5rem', flex: 1, minWidth: '260px' }}>
                 <input
                   type="text"
-                  placeholder="جستجو با نام، ایمیل یا شماره تماس…"
+                  placeholder="جستجو با نام، ایمیل یا شماره تماس کاربر…"
                   value={userSearch}
                   onChange={(e) => setUserSearch(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && fetchUsers()}
-                  className="admin-search-input"
+                  className="admin-input"
                 />
-                <button className="admin-btn-sm admin-btn-accent" onClick={fetchUsers}>جستجو</button>
+                <button className="admin-dark-btn admin-dark-btn-accent" onClick={fetchUsers}>جستجو</button>
               </div>
             </div>
 
@@ -689,8 +880,8 @@ export default function AdminPage() {
               <Loader minHeight="30vh" />
             ) : (
               <>
-                <div className="admin-table-wrap">
-                  <table className="admin-table">
+                <div className="admin-dark-table-card">
+                  <table className="admin-dark-table">
                     <thead>
                       <tr>
                         <th>شناسه</th>
@@ -700,7 +891,7 @@ export default function AdminPage() {
                         <th>نقش</th>
                         <th>وضعیت</th>
                         <th>امتیازات</th>
-                        <th>زنجیره</th>
+                        <th>رکورد حضور</th>
                         <th>عملیات</th>
                       </tr>
                     </thead>
@@ -713,50 +904,46 @@ export default function AdminPage() {
                             <td dir="ltr" style={{ textAlign: 'right' }}>{u.email}</td>
                             <td dir="ltr" style={{ textAlign: 'right' }}>{u.phone || '—'}</td>
                             <td>
-                              <span className={`status-pill ${u.role === 'admin' ? 'role-admin' : 'role-user'}`}>
+                              <span className={`admin-status-badge ${u.role === 'admin' ? 'badge-role-admin' : 'badge-role-user'}`}>
                                 {u.role === 'admin' ? 'مدیر کل' : 'کاربر'}
                               </span>
                             </td>
                             <td>
-                              <span className={u.status === 'active' ? 'status-active' : 'status-banned'}>
+                              <span style={{ color: u.status === 'active' ? '#4ade80' : '#f87171' }}>
                                 {u.status === 'active' ? '● فعال' : '■ مسدود'}
                               </span>
                             </td>
                             <td><strong>{toPersianDigits(u.points_balance)}</strong></td>
                             <td>{toPersianDigits(u.current_streak)} روز</td>
                             <td>
-                              <div className="admin-actions-cell">
+                              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                                 <button
-                                  className="admin-btn-sm"
+                                  className="admin-dark-btn"
                                   onClick={() => { setSelectedUserForPoints(u); setPointsDelta(''); setPointsReason(''); }}
                                   title="افزایش یا کسر امتیاز"
                                 >
                                   ⭐ امتیاز
                                 </button>
-                                {u.id !== user?.id && (
-                                  <>
-                                    <button
-                                      className="admin-btn-sm"
-                                      onClick={() => handleToggleUserRole(u)}
-                                      title="تغییر سطح دسترسی"
-                                    >
-                                      {u.role === 'admin' ? 'تبدیل به کاربر' : 'ارتقا به مدیر'}
-                                    </button>
-                                    <button
-                                      className={`admin-btn-sm ${u.status === 'active' ? 'admin-btn-danger' : ''}`}
-                                      onClick={() => handleToggleUserStatus(u)}
-                                    >
-                                      {u.status === 'active' ? 'مسدودسازی' : 'فعال‌سازی'}
-                                    </button>
-                                  </>
-                                )}
+                                <button
+                                  className="admin-dark-btn"
+                                  onClick={() => handleToggleUserRole(u)}
+                                  title="تغییر نقش"
+                                >
+                                  {u.role === 'admin' ? 'تبدیل به کاربر' : 'ارتقا به مدیر'}
+                                </button>
+                                <button
+                                  className={`admin-dark-btn ${u.status === 'active' ? 'admin-dark-btn-danger' : ''}`}
+                                  onClick={() => handleToggleUserStatus(u)}
+                                >
+                                  {u.status === 'active' ? 'مسدودسازی' : 'فعال‌سازی'}
+                                </button>
                               </div>
                             </td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td colSpan="9" style={{ textAlign: 'center', padding: '2rem' }}>
+                          <td colSpan="9" style={{ textAlign: 'center', padding: '2.5rem', color: '#8da495' }}>
                             کاربری با این مشخصات یافت نشد.
                           </td>
                         </tr>
@@ -765,11 +952,10 @@ export default function AdminPage() {
                   </table>
                 </div>
 
-                {/* Pagination */}
                 {usersTotal > 15 && (
-                  <div className="admin-pagination">
+                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', marginTop: '1rem' }}>
                     <button
-                      className="admin-page-btn"
+                      className="admin-dark-btn"
                       disabled={usersPage <= 1}
                       onClick={() => setUsersPage(p => Math.max(1, p - 1))}
                     >
@@ -777,7 +963,7 @@ export default function AdminPage() {
                     </button>
                     <span>صفحه {toPersianDigits(usersPage)} از {toPersianDigits(Math.ceil(usersTotal / 15))}</span>
                     <button
-                      className="admin-page-btn"
+                      className="admin-dark-btn"
                       disabled={usersPage >= Math.ceil(usersTotal / 15)}
                       onClick={() => setUsersPage(p => p + 1)}
                     >
@@ -790,16 +976,19 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Tab 4: Transactions */}
+        {/* ===================================================================
+            Tab 4: Transactions Ledger Audit
+            =================================================================== */}
         {activeTab === 'transactions' && (
           <div>
-            <div className="admin-toolbar">
-              <div className="admin-filters">
-                <label className="admin-form-label">نوع تراکنش:</label>
+            <div className="admin-dark-toolbar">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <label style={{ fontSize: '0.85rem', color: '#8da495' }}>نوع تراکنش:</label>
                 <select
                   value={txReasonFilter}
                   onChange={(e) => { setTxReasonFilter(e.target.value); setTxPage(1); }}
-                  className="admin-select"
+                  className="admin-input"
+                  style={{ width: 'auto' }}
                 >
                   <option value="all">همه تراکنش‌ها</option>
                   <option value="checkin">چک‌این روزانه</option>
@@ -814,8 +1003,8 @@ export default function AdminPage() {
             {loading ? (
               <Loader minHeight="30vh" />
             ) : (
-              <div className="admin-table-wrap">
-                <table className="admin-table">
+              <div className="admin-dark-table-card">
+                <table className="admin-dark-table">
                   <thead>
                     <tr>
                       <th>شناسه</th>
@@ -831,9 +1020,9 @@ export default function AdminPage() {
                       transactions.map(tx => (
                         <tr key={tx.id}>
                           <td>{toPersianDigits(tx.id)}</td>
-                          <td><strong>{tx.display_name}</strong> <span style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>({tx.email})</span></td>
+                          <td><strong>{tx.display_name}</strong> <span style={{ fontSize: '0.8rem', color: '#8da495' }}>({tx.email})</span></td>
                           <td>{REASON_LABELS[tx.reason] || tx.reason}</td>
-                          <td style={{ fontWeight: 700, color: tx.delta > 0 ? '#16a34a' : '#dc2626' }}>
+                          <td style={{ fontWeight: 700, color: tx.delta > 0 ? '#4ade80' : '#f87171' }}>
                             {tx.delta > 0 ? `+${toPersianDigits(tx.delta)}` : toPersianDigits(tx.delta)}
                           </td>
                           <td>{toPersianDigits(tx.balance_after)}</td>
@@ -842,7 +1031,7 @@ export default function AdminPage() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>
+                        <td colSpan="6" style={{ textAlign: 'center', padding: '2.5rem', color: '#8da495' }}>
                           هیچ تراکنشی یافت نشد.
                         </td>
                       </tr>
@@ -854,56 +1043,58 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Tab 5: Manual Order Creation */}
+        {/* ===================================================================
+            Tab 5: Manual Order Creation
+            =================================================================== */}
         {activeTab === 'new_order' && (
-          <div style={{ maxWidth: '800px', margin: '0 auto', background: 'var(--color-surface)', padding: '2rem', borderRadius: '16px', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-md)' }}>
-            <h2 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1.5rem', color: 'var(--color-text-primary)' }}>
-              ثبت دستی سفارش جدید (تلفنی / حضوری / کافه)
+          <div style={{ maxWidth: '820px', margin: '0 auto', background: '#17241d', padding: '2rem', borderRadius: '18px', border: '1px solid #273b30', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, marginBottom: '1.5rem', color: '#fff' }}>
+              ثبت دستی سفارش جدید (سفارش تلفنی / حضوری کافه)
             </h2>
             <form onSubmit={handleCreateOrderSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
-                <div className="admin-form-group">
-                  <label className="admin-form-label">نام و نام خانوادگی خریدار *</label>
+                <div className="admin-input-group">
+                  <label className="admin-input-label">نام و نام خانوادگی خریدار *</label>
                   <input
                     type="text"
                     required
                     value={newOrder.customerName}
                     onChange={(e) => setNewOrder({ ...newOrder, customerName: e.target.value })}
-                    className="admin-form-input"
+                    className="admin-input"
                     placeholder="مثال: محمد امینی"
                   />
                 </div>
-                <div className="admin-form-group">
-                  <label className="admin-form-label">شماره تماس مشتری *</label>
+                <div className="admin-input-group">
+                  <label className="admin-input-label">شماره تماس مشتری *</label>
                   <input
                     type="tel"
                     required
                     dir="ltr"
                     value={newOrder.customerPhone}
                     onChange={(e) => setNewOrder({ ...newOrder, customerPhone: e.target.value })}
-                    className="admin-form-input"
+                    className="admin-input"
                     placeholder="0912..."
                   />
                 </div>
               </div>
 
-              <div className="admin-form-group">
-                <label className="admin-form-label">آدرس تحویل</label>
+              <div className="admin-input-group">
+                <label className="admin-input-label">آدرس تحویل</label>
                 <textarea
                   rows={2}
                   value={newOrder.customerAddress}
                   onChange={(e) => setNewOrder({ ...newOrder, customerAddress: e.target.value })}
-                  className="admin-form-textarea"
+                  className="admin-input"
                   placeholder="تهران، خیابان..."
                 />
               </div>
 
-              {/* Order Items */}
-              <div style={{ border: '1px solid var(--color-border)', borderRadius: '10px', padding: '1rem', background: 'var(--color-bg)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                  <label className="admin-form-label" style={{ fontWeight: 700 }}>اقلام سفارش</label>
-                  <button type="button" onClick={addItemToNewOrder} className="admin-btn-sm admin-btn-accent">
-                    + افزودن محصول
+              {/* Items Section */}
+              <div style={{ border: '1px solid #273b30', borderRadius: '12px', padding: '1.25rem', background: '#121c17' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                  <label className="admin-input-label" style={{ fontWeight: 700, color: '#fff' }}>اقلام سفارش</label>
+                  <button type="button" onClick={addItemToNewOrder} className="admin-dark-btn admin-dark-btn-accent">
+                    + افزودن محصول دیگر
                   </button>
                 </div>
 
@@ -912,7 +1103,7 @@ export default function AdminPage() {
                     <select
                       value={item.productSlug}
                       onChange={(e) => updateNewOrderItem(idx, 'productSlug', e.target.value)}
-                      className="admin-form-select"
+                      className="admin-input"
                     >
                       {products.map(p => (
                         <option key={p.slug} value={p.slug}>{p.name} ({formatToman(p.price)})</option>
@@ -922,7 +1113,7 @@ export default function AdminPage() {
                     <select
                       value={item.grind}
                       onChange={(e) => updateNewOrderItem(idx, 'grind', e.target.value)}
-                      className="admin-form-select"
+                      className="admin-input"
                     >
                       {grindOptions.map(g => (
                         <option key={g.id} value={g.label}>{g.label}</option>
@@ -934,7 +1125,7 @@ export default function AdminPage() {
                       min="1"
                       value={item.quantity}
                       onChange={(e) => updateNewOrderItem(idx, 'quantity', parseInt(e.target.value, 10) || 1)}
-                      className="admin-form-input"
+                      className="admin-input"
                       title="تعداد / کیلو"
                     />
 
@@ -942,7 +1133,7 @@ export default function AdminPage() {
                       type="number"
                       value={item.unitPrice}
                       onChange={(e) => updateNewOrderItem(idx, 'unitPrice', parseInt(e.target.value, 10) || 0)}
-                      className="admin-form-input"
+                      className="admin-input"
                       title="قیمت واحد (تومان)"
                     />
 
@@ -950,7 +1141,7 @@ export default function AdminPage() {
                       <button
                         type="button"
                         onClick={() => removeItemFromNewOrder(idx)}
-                        className="admin-btn-sm admin-btn-danger"
+                        className="admin-dark-btn admin-dark-btn-danger"
                         title="حذف سطر"
                       >
                         ✕
@@ -959,95 +1150,161 @@ export default function AdminPage() {
                   </div>
                 ))}
 
-                <div style={{ textAlign: 'left', marginTop: '0.5rem', fontWeight: 800, color: 'var(--color-accent)' }}>
-                  جمع فاکتور: {formatToman(newOrderTotalPrice)}
+                <div style={{ textAlign: 'left', marginTop: '0.75rem', fontWeight: 800, color: '#c88d4e', fontSize: '1.05rem' }}>
+                  مجموع فاکتور: {formatToman(newOrderTotalPrice)}
                 </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                <div className="admin-form-group">
-                  <label className="admin-form-label">وضعیت پرداخت</label>
+                <div className="admin-input-group">
+                  <label className="admin-input-label">وضعیت پرداخت</label>
                   <select
                     value={newOrder.paymentStatus}
                     onChange={(e) => setNewOrder({ ...newOrder, paymentStatus: e.target.value })}
-                    className="admin-form-select"
+                    className="admin-input"
                   >
-                    <option value="paid">پرداخت شده (کارت به کارت/نقدی)</option>
+                    <option value="paid">پرداخت شده (کارت به کارت / نقدی)</option>
                     <option value="unpaid">در انتظار پرداخت</option>
                   </select>
                 </div>
-                <div className="admin-form-group">
-                  <label className="admin-form-label">روش سفارش</label>
+                <div className="admin-input-group">
+                  <label className="admin-input-label">روش ثبت سفارش</label>
                   <select
                     value={newOrder.paymentMethod}
                     onChange={(e) => setNewOrder({ ...newOrder, paymentMethod: e.target.value })}
-                    className="admin-form-select"
+                    className="admin-input"
                   >
                     <option value="phone">سفارش تلفنی کارگاه</option>
                     <option value="whatsapp">واتساپ</option>
                     <option value="telegram">تلگرام</option>
-                    <option value="in_person">حضوری کارگاه</option>
+                    <option value="in_person">حضوری در کارگاه</option>
                   </select>
                 </div>
               </div>
 
-              <div className="admin-form-group">
-                <label className="admin-form-label">یادداشت مدیر</label>
+              <div className="admin-input-group">
+                <label className="admin-input-label">یادداشت مدیر</label>
                 <textarea
                   rows={2}
                   value={newOrder.notes}
                   onChange={(e) => setNewOrder({ ...newOrder, notes: e.target.value })}
-                  className="admin-form-textarea"
-                  placeholder="توضیحات رست یا بسته بندی اختصاصی..."
+                  className="admin-input"
+                  placeholder="توضیحات مربوط به بسته بندی یا پروفایل رست..."
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={actionLoading}
-                className="btn btn-primary btn-lg"
-                style={{ width: '100%', marginTop: '0.5rem' }}
+                className="admin-login-btn"
               >
-                {actionLoading ? 'در حال ثبت…' : 'ثبت قطعی سفارش'}
+                {actionLoading ? 'در حال ثبت در دیتابیس…' : 'ثبت قطعی سفارش در دیتابیس'}
               </button>
             </form>
           </div>
         )}
 
-        {/* Modal: Order Details & Status Update */}
-        {selectedOrder && (
-          <div className="admin-modal-backdrop" onClick={() => setSelectedOrder(null)}>
-            <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
-              <div className="admin-modal-header">
-                <h3 className="admin-modal-title">جزئیات سفارش {selectedOrder.order_number}</h3>
-                <button className="admin-modal-close" onClick={() => setSelectedOrder(null)}>✕</button>
+        {/* ===================================================================
+            Tab 6: Admin Settings & Password Change
+            =================================================================== */}
+        {activeTab === 'settings' && (
+          <div style={{ maxWidth: '540px', margin: '0 auto', background: '#17241d', padding: '2.5rem 2rem', borderRadius: '18px', border: '1px solid #273b30', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, marginBottom: '0.75rem', color: '#fff' }}>
+              🔐 تنظیمات و تغییر رمز عبور مدیریت
+            </h2>
+            <p style={{ color: '#8da495', fontSize: '0.85rem', marginBottom: '2rem', lineHeight: 1.5 }}>
+              رمز عبور جدید بلافاصله در دیتابیس ذخیره شده و از این پس برای ورود به این پنل الزامی خواهد بود.
+            </p>
+
+            <form onSubmit={handlePasswordChangeSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <div className="admin-input-group">
+                <label className="admin-input-label">رمز عبور فعلی مدیریت *</label>
+                <input
+                  type="password"
+                  required
+                  placeholder="رمز عبور فعلی…"
+                  value={pwdChange.currentPassword}
+                  onChange={(e) => setPwdChange({ ...pwdChange, currentPassword: e.target.value })}
+                  className="admin-input"
+                  dir="ltr"
+                />
               </div>
-              <div className="admin-modal-body">
+
+              <div className="admin-input-group">
+                <label className="admin-input-label">رمز عبور جدید (حداقل ۶ کاراکتر) *</label>
+                <input
+                  type="password"
+                  required
+                  placeholder="رمز عبور جدید…"
+                  value={pwdChange.newPassword}
+                  onChange={(e) => setPwdChange({ ...pwdChange, newPassword: e.target.value })}
+                  className="admin-input"
+                  dir="ltr"
+                />
+              </div>
+
+              <div className="admin-input-group">
+                <label className="admin-input-label">تکرار رمز عبور جدید *</label>
+                <input
+                  type="password"
+                  required
+                  placeholder="تکرار رمز عبور جدید…"
+                  value={pwdChange.confirmPassword}
+                  onChange={(e) => setPwdChange({ ...pwdChange, confirmPassword: e.target.value })}
+                  className="admin-input"
+                  dir="ltr"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={actionLoading}
+                className="admin-login-btn"
+              >
+                {actionLoading ? 'در حال ذخیره‌سازی…' : 'ذخیره و به‌روزرسانی رمز عبور'}
+              </button>
+            </form>
+          </div>
+        )}
+
+        {/* ===================================================================
+            Modal: Order Details & Status Update
+            =================================================================== */}
+        {selectedOrder && (
+          <div className="admin-dark-modal-backdrop" onClick={() => setSelectedOrder(null)}>
+            <div className="admin-dark-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="admin-dark-modal-head">
+                <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#fff' }}>
+                  جزئیات سفارش <span style={{ color: '#c88d4e' }}>{selectedOrder.order_number}</span>
+                </h3>
+                <button style={{ background: 'none', border: 'none', color: '#8da495', fontSize: '1.4rem', cursor: 'pointer' }} onClick={() => setSelectedOrder(null)}>✕</button>
+              </div>
+
+              <div className="admin-dark-modal-body">
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>نام خریدار:</span>
+                    <span style={{ fontSize: '0.8rem', color: '#8da495' }}>نام خریدار:</span>
                     <div><strong>{selectedOrder.customer_name}</strong></div>
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>شماره تماس:</span>
+                    <span style={{ fontSize: '0.8rem', color: '#8da495' }}>شماره تماس:</span>
                     <div dir="ltr" style={{ textAlign: 'right' }}><strong>{selectedOrder.customer_phone}</strong></div>
                   </div>
                 </div>
 
                 {selectedOrder.customer_address && (
                   <div>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>آدرس تحویل:</span>
-                    <div style={{ background: 'var(--color-bg)', padding: '0.75rem', borderRadius: '8px', marginTop: '0.25rem' }}>
+                    <span style={{ fontSize: '0.8rem', color: '#8da495' }}>آدرس تحویل:</span>
+                    <div style={{ background: '#111b16', padding: '0.75rem', borderRadius: '8px', marginTop: '0.25rem' }}>
                       {selectedOrder.customer_address}
                     </div>
                   </div>
                 )}
 
-                {/* Items */}
                 <div>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>اقلام سفارش:</span>
-                  <div style={{ marginTop: '0.4rem', border: '1px solid var(--color-border)', borderRadius: '8px', overflow: 'hidden' }}>
-                    <table className="admin-table">
+                  <span style={{ fontSize: '0.8rem', color: '#8da495' }}>اقلام سفارش:</span>
+                  <div style={{ marginTop: '0.4rem', border: '1px solid #273b30', borderRadius: '8px', overflow: 'hidden' }}>
+                    <table className="admin-dark-table">
                       <thead>
                         <tr>
                           <th>محصول</th>
@@ -1070,19 +1327,18 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem', background: 'rgba(200, 141, 78, 0.08)', borderRadius: '8px', fontWeight: 800 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem 1rem', background: 'rgba(200, 141, 78, 0.12)', borderRadius: '8px', fontWeight: 800 }}>
                   <span>مبلغ قابل پرداخت فاکتور:</span>
-                  <span style={{ color: 'var(--color-accent)' }}>{formatToman(selectedOrder.final_amount)}</span>
+                  <span style={{ color: '#c88d4e' }}>{formatToman(selectedOrder.final_amount)}</span>
                 </div>
 
-                {/* Status changers */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                  <div className="admin-form-group">
-                    <label className="admin-form-label">وضعیت سفارش:</label>
+                  <div className="admin-input-group">
+                    <label className="admin-input-label">وضعیت سفارش:</label>
                     <select
                       value={selectedOrder.status}
                       onChange={(e) => handleUpdateOrderStatus(selectedOrder.id, e.target.value, null)}
-                      className="admin-form-select"
+                      className="admin-input"
                       disabled={actionLoading}
                     >
                       <option value="pending">در انتظار بررسی</option>
@@ -1094,12 +1350,12 @@ export default function AdminPage() {
                     </select>
                   </div>
 
-                  <div className="admin-form-group">
-                    <label className="admin-form-label">وضعیت پرداخت:</label>
+                  <div className="admin-input-group">
+                    <label className="admin-input-label">وضعیت پرداخت:</label>
                     <select
                       value={selectedOrder.payment_status}
                       onChange={(e) => handleUpdateOrderStatus(selectedOrder.id, null, e.target.value)}
-                      className="admin-form-select"
+                      className="admin-input"
                       disabled={actionLoading}
                     >
                       <option value="unpaid">در انتظار پرداخت</option>
@@ -1111,63 +1367,65 @@ export default function AdminPage() {
 
                 {selectedOrder.notes && (
                   <div>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>یادداشت:</span>
+                    <span style={{ fontSize: '0.8rem', color: '#8da495' }}>یادداشت:</span>
                     <p style={{ margin: '0.25rem 0 0', fontSize: '0.88rem' }}>{selectedOrder.notes}</p>
                   </div>
                 )}
               </div>
 
-              <div className="admin-modal-footer">
-                <button className="admin-btn-sm" onClick={() => setSelectedOrder(null)}>بستن</button>
+              <div className="admin-dark-modal-foot">
+                <button className="admin-dark-btn" onClick={() => setSelectedOrder(null)}>بستن</button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Modal: Adjust User Points */}
+        {/* ===================================================================
+            Modal: Adjust User Points
+            =================================================================== */}
         {selectedUserForPoints && (
-          <div className="admin-modal-backdrop" onClick={() => setSelectedUserForPoints(null)}>
-            <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
-              <div className="admin-modal-header">
-                <h3 className="admin-modal-title">تنظیم امتیاز کاربر</h3>
-                <button className="admin-modal-close" onClick={() => setSelectedUserForPoints(null)}>✕</button>
+          <div className="admin-dark-modal-backdrop" onClick={() => setSelectedUserForPoints(null)}>
+            <div className="admin-dark-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="admin-dark-modal-head">
+                <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#fff' }}>تنظیم امتیاز کاربر</h3>
+                <button style={{ background: 'none', border: 'none', color: '#8da495', fontSize: '1.4rem', cursor: 'pointer' }} onClick={() => setSelectedUserForPoints(null)}>✕</button>
               </div>
               <form onSubmit={handleAdjustPointsSubmit}>
-                <div className="admin-modal-body">
-                  <p>
+                <div className="admin-dark-modal-body">
+                  <p style={{ lineHeight: 1.6, color: '#e5ede7' }}>
                     کاربر: <strong>{selectedUserForPoints.display_name}</strong> ({selectedUserForPoints.email})
                     <br />
                     موجودی فعلی: <strong>{toPersianDigits(selectedUserForPoints.points_balance)} امتیاز</strong>
                   </p>
 
-                  <div className="admin-form-group">
-                    <label className="admin-form-label">مقدار تغییر امتیاز (مثبت برای افزایش، منفی برای کسر):</label>
+                  <div className="admin-input-group">
+                    <label className="admin-input-label">مقدار تغییر امتیاز (مثبت برای افزایش، منفی برای کسر):</label>
                     <input
                       type="number"
                       required
                       placeholder="مثال: 50 یا -20"
                       value={pointsDelta}
                       onChange={(e) => setPointsDelta(e.target.value)}
-                      className="admin-form-input"
+                      className="admin-input"
                       dir="ltr"
                     />
                   </div>
 
-                  <div className="admin-form-group">
-                    <label className="admin-form-label">دلیل تغییر امتیاز:</label>
+                  <div className="admin-input-group">
+                    <label className="admin-input-label">دلیل تغییر امتیاز:</label>
                     <input
                       type="text"
-                      placeholder="مثال: پاداش خرید عمده / اصلاح خطا"
+                      placeholder="مثال: پاداش خرید عمده / هدیه افتتاحیه"
                       value={pointsReason}
                       onChange={(e) => setPointsReason(e.target.value)}
-                      className="admin-form-input"
+                      className="admin-input"
                     />
                   </div>
                 </div>
 
-                <div className="admin-modal-footer">
-                  <button type="button" className="admin-btn-sm" onClick={() => setSelectedUserForPoints(null)}>انصراف</button>
-                  <button type="submit" disabled={actionLoading} className="admin-btn-sm admin-btn-accent">
+                <div className="admin-dark-modal-foot">
+                  <button type="button" className="admin-dark-btn" onClick={() => setSelectedUserForPoints(null)}>انصراف</button>
+                  <button type="submit" disabled={actionLoading} className="admin-dark-btn admin-dark-btn-accent">
                     {actionLoading ? 'در حال ثبت…' : 'اعمال تغییر امتیاز'}
                   </button>
                 </div>
@@ -1176,7 +1434,7 @@ export default function AdminPage() {
           </div>
         )}
 
-      </div>
+      </main>
     </div>
   );
 }

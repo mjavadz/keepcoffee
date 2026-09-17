@@ -35,33 +35,13 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
-function AdminRoute({ children }) {
-  const { user, loading } = useAuth();
-  const location = useLocation();
-
-  if (loading) {
-    return <Loader minHeight="70vh" />;
-  }
-  if (!user) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
-  }
-  if (user.role !== 'admin') {
-    return (
-      <div className="container" style={{ padding: '5rem 1rem', textAlign: 'center', minHeight: '60vh' }}>
-        <h2 style={{ color: '#ef4444', marginBottom: '1rem', fontSize: '1.5rem', fontWeight: 800 }}>عدم دسترسی به پنل مدیریت</h2>
-        <p style={{ color: 'var(--color-text-secondary)', marginBottom: '2rem' }}>
-          حساب کاربری شما ({user.displayName || user.email}) دسترسی سطح مدیریت ندارد.
-        </p>
-        <a href="/" className="btn btn-primary">بازگشت به صفحه اصلی</a>
-      </div>
-    );
-  }
-  return children;
-}
-
 export default function App() {
   return (
     <Routes>
+      {/* Standalone Admin Panel - completely isolated from store layout */}
+      <Route path="admin" element={<AdminPage />} />
+
+      {/* Public Store Layout */}
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
         <Route path="shop" element={<ShopPage />} />
@@ -79,14 +59,6 @@ export default function App() {
             <ProtectedRoute>
               <ProfilePage />
             </ProtectedRoute>
-          }
-        />
-        <Route
-          path="admin"
-          element={
-            <AdminRoute>
-              <AdminPage />
-            </AdminRoute>
           }
         />
         <Route path="wholesale" element={<WholesalePage />} />
