@@ -49,7 +49,7 @@ export const WORKSHOP_DEPOSIT_WALLETS = {
     tokens: ['TRX', 'USDT (TRC-20)'],
   },
   gram: {
-    address: 'UQDKeepCoffeeRoasteryTehranTonOfficialNetwork9982',
+    address: 'UQAzVbTDzh2sCc6854FjKI-c9x-jz_sjLlJa_SmF1SC1sIMS',
     networks: ['شبکه تلگرام (Telegram Network)'],
     tokens: ['GRAM', 'USDT (Telegram)'],
   },
@@ -1367,7 +1367,7 @@ export default function WalletHub({ user, storageKey }) {
                 <input
                   type="text"
                   dir="ltr"
-                  placeholder="UQDKeepCoffeeRoasteryTehranGramNetwork..."
+                  placeholder="UQAzVbTDzh2sCc6854FjKI-c9x-jz_sjLlJa_SmF1SC1sIMS..."
                   value={cryptoAddresses.gram || ''}
                   onChange={(e) => setCryptoAddresses({ ...cryptoAddresses, gram: e.target.value })}
                 />
