@@ -67,6 +67,15 @@ export default function Header() {
               {item.label}
             </NavLink>
           ))}
+          {user?.role === 'admin' && (
+            <NavLink
+              to="/admin"
+              className={({ isActive }) => (isActive ? 'is-active is-admin-tab' : 'is-admin-tab')}
+              style={{ color: 'var(--color-accent)', fontWeight: 700 }}
+            >
+              ⚙️ مدیریت
+            </NavLink>
+          )}
         </nav>
 
         <div className="header-actions">
@@ -123,6 +132,15 @@ export default function Header() {
               {item.label}
             </NavLink>
           ))}
+          {user?.role === 'admin' && (
+            <NavLink
+              to="/admin"
+              className={({ isActive }) => (isActive ? 'is-active' : '')}
+              style={{ color: 'var(--color-accent)', fontWeight: 700 }}
+            >
+              ⚙️ پنل مدیریت کارگاه
+            </NavLink>
+          )}
           <NavLink
             to={user ? '/profile' : '/login'}
             className={({ isActive }) => (isActive ? 'is-active' : '')}

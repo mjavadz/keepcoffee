@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Trash2, Send, Phone, Check, Coffee } from '../components/Icons';
 import SEO from '../components/SEO';
 import { useCart } from '../context/CartContext';
+import { api } from '../api';
 import { formatToman, toPersianDigits } from '../utils/format';
 import { site, links } from '../data/site';
 import './CartPage.css';
@@ -40,6 +41,24 @@ export default function CartPage() {
   });
 
   const orderText = buildOrderText(detailedItems, subtotal, customer);
+
+  const handleCheckoutClick = (method) => {
+    try {
+      api.post('/orders/checkout', {
+        customerName: customer.name || 'مشتری وب‌سایت',
+        customerPhone: customer.phone || '09000000000',
+        customerAddress: customer.address || '',
+        paymentMethod: method,
+        items: detailedItems.map((i) => ({
+          slug: i.slug,
+          name: i.name,
+          grind: i.grindLabel || null,
+          qty: i.qty,
+          price: i.price,
+        }))
+      }).catch(() => {});
+    } catch {}
+  };
 
   const breadcrumbs = [
     { name: 'خانه', url: '/' },
@@ -148,6 +167,7 @@ export default function CartPage() {
                   href={links.whatsapp(orderText)}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => handleCheckoutClick('whatsapp')}
                   className="btn btn-primary btn-lg cart-checkout btn-whatsapp"
                 >
                   <Send size={18} /> ارسال پیش‌فاکتور به واتساپ سفارشات
@@ -156,6 +176,7 @@ export default function CartPage() {
                   href={links.telegramShare(orderText)}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => handleCheckoutClick('telegram')}
                   className="btn btn-outline btn-lg cart-checkout btn-telegram"
                 >
                   <Send size={18} /> ارسال پیش‌فاکتور در تلگرام
