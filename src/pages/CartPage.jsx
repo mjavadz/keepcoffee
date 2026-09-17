@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Trash2, Send, Phone, Check, Coffee } from '../components/Icons';
+import { Trash2, Send, Phone, Check, Coffee, Truck, WhatsApp, Telegram, ArrowLeft } from '../components/Icons';
 import SEO from '../components/SEO';
 import { useCart } from '../context/CartContext';
 import { api } from '../api';
@@ -84,7 +84,7 @@ export default function CartPage() {
       <div className="container cart-wrap">
         {detailedItems.length === 0 ? (
           <div className="cart-empty">
-            <div className="cart-empty-icon">☕</div>
+            <div className="cart-empty-icon"><Coffee size={52} strokeWidth={1.5} /></div>
             <p>هنوز محصولی به سبد خرید خود اضافه نکرده‌اید.</p>
             <Link to="/shop" className="btn btn-primary btn-lg">مشاهده کاتالوگ قهوه‌ها</Link>
           </div>
@@ -129,7 +129,7 @@ export default function CartPage() {
               </div>
 
               <div className="cart-shipping-banner">
-                <span className="shipping-icon">🚚</span>
+                <span className="shipping-icon"><Truck size={20} /></span>
                 <span>ارسال رایگان در تمامی مناطق تهران برای سفارش‌های بالای ۲۰ کیلوگرم</span>
               </div>
 
@@ -170,7 +170,7 @@ export default function CartPage() {
                   onClick={() => handleCheckoutClick('whatsapp')}
                   className="btn btn-primary btn-lg cart-checkout btn-whatsapp"
                 >
-                  <Send size={18} /> ارسال پیش‌فاکتور به واتساپ سفارشات
+                  <WhatsApp size={20} /> ارسال پیش‌فاکتور به واتساپ سفارشات
                 </a>
                 <a
                   href={links.telegramShare(orderText)}
@@ -179,7 +179,7 @@ export default function CartPage() {
                   onClick={() => handleCheckoutClick('telegram')}
                   className="btn btn-outline btn-lg cart-checkout btn-telegram"
                 >
-                  <Send size={18} /> ارسال پیش‌فاکتور در تلگرام
+                  <Telegram size={20} /> ارسال پیش‌فاکتور در تلگرام
                 </a>
               </div>
 
@@ -187,7 +187,9 @@ export default function CartPage() {
                 <span>سفارش شما بلافاصله در کارگاه با دانه‌های تازه برشت آماده و با پیک اختصاصی ارسال می‌شود.</span>
               </div>
 
-              <Link to="/shop" className="cart-continue">← ادامه خرید و افزودن محصول دیگر</Link>
+              <Link to="/shop" className="cart-continue" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                <ArrowLeft size={16} /> ادامه خرید و افزودن محصول دیگر
+              </Link>
             </aside>
           </div>
         )}

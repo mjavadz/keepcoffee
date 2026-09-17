@@ -2,6 +2,26 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { api, setCsrfToken } from '../api';
 import { products, grindOptions } from '../data/products';
 import { formatToman, formatNumber, toPersianDigits } from '../utils/format';
+import {
+  RefreshCw,
+  Globe,
+  Key,
+  LogOut,
+  LayoutDashboard,
+  Package,
+  Users,
+  FileText,
+  PlusCircle,
+  Settings,
+  WhatsApp,
+  Star,
+  Coffee,
+  Eye,
+  EyeOff,
+  Coins,
+  ArrowLeft,
+  Plus
+} from '../components/Icons';
 import SEO from '../components/SEO';
 import Loader from '../components/Loader';
 import './AdminPage.css';
@@ -433,9 +453,7 @@ export default function AdminPage() {
 
         <div className="admin-login-card">
           <div className="admin-login-logo">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="M2 12h4"/><path d="m4.93 19.07 2.83-2.83"/><path d="M12 22v-4"/><path d="m19.07 19.07-2.83-2.83"/><path d="M22 12h-4"/><path d="m19.07 4.93-2.83 2.83"/>
-            </svg>
+            <Coffee size={32} strokeWidth={2} />
           </div>
 
           <h1 className="admin-login-title">سامانه مدیریت کیپ کافی</h1>
@@ -466,8 +484,9 @@ export default function AdminPage() {
                   className="admin-pwd-toggle"
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex={-1}
+                  aria-label="نمایش یا پنهان کردن رمز عبور"
                 >
-                  {showPassword ? '👁️' : '🔒'}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
@@ -477,7 +496,9 @@ export default function AdminPage() {
             </button>
           </form>
 
-          <a href="/" className="admin-back-link">← بازگشت به وب‌سایت فروشگاه</a>
+          <a href="/" className="admin-back-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+            <ArrowLeft size={16} /> <span>بازگشت به وب‌سایت فروشگاه</span>
+          </a>
         </div>
       </div>
     );
@@ -499,7 +520,7 @@ export default function AdminPage() {
       {/* Standalone Admin Top Navigation Bar */}
       <header className="admin-standalone-topbar">
         <div className="admin-topbar-brand">
-          <div className="admin-brand-icon">☕</div>
+          <div className="admin-brand-icon"><Coffee size={20} strokeWidth={2} /></div>
           <div>
             <span className="admin-brand-text">Keep Coffee Roastery</span>
             <span className="admin-badge-tag">مدیریت کارگاه</span>
@@ -518,7 +539,7 @@ export default function AdminPage() {
             className="admin-action-link"
             title="تازه‌سازی اطلاعات"
           >
-            🔄 به‌روزرسانی داده‌ها
+            <RefreshCw size={15} /> <span>به‌روزرسانی داده‌ها</span>
           </button>
           <a
             href="/"
@@ -527,21 +548,21 @@ export default function AdminPage() {
             className="admin-action-link"
             title="مشاهده سایت در تب جدید"
           >
-            🌐 مشاهده فروشگاه
+            <Globe size={15} /> <span>مشاهده فروشگاه</span>
           </a>
           <button
             onClick={() => setActiveTab('settings')}
             className={`admin-action-link ${activeTab === 'settings' ? 'active' : ''}`}
             title="تغییر رمز عبور مدیریت"
           >
-            🔐 تغییر رمز
+            <Key size={15} /> <span>تغییر رمز</span>
           </button>
           <button
             onClick={handleAdminLogout}
             className="admin-action-link admin-action-logout"
             title="خروج از حساب مدیریت"
           >
-            🚪 خروج
+            <LogOut size={15} /> <span>خروج</span>
           </button>
         </div>
       </header>
@@ -554,13 +575,13 @@ export default function AdminPage() {
             className={`admin-nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
             onClick={() => setActiveTab('dashboard')}
           >
-            📊 داشبورد و آمار
+            <LayoutDashboard size={18} /> <span>داشبورد و آمار</span>
           </button>
           <button
             className={`admin-nav-btn ${activeTab === 'orders' ? 'active' : ''}`}
             onClick={() => setActiveTab('orders')}
           >
-            📦 سفارشات
+            <Package size={18} /> <span>سفارشات</span>
             {stats?.pendingOrders > 0 && (
               <span className="admin-tab-pill pill-alert">{toPersianDigits(stats.pendingOrders)}</span>
             )}
@@ -569,7 +590,7 @@ export default function AdminPage() {
             className={`admin-nav-btn ${activeTab === 'users' ? 'active' : ''}`}
             onClick={() => setActiveTab('users')}
           >
-            👥 کاربران و اعضا
+            <Users size={18} /> <span>کاربران و اعضا</span>
             {stats?.totalUsers > 0 && (
               <span className="admin-tab-pill">{toPersianDigits(stats.totalUsers)}</span>
             )}
@@ -578,19 +599,19 @@ export default function AdminPage() {
             className={`admin-nav-btn ${activeTab === 'transactions' ? 'active' : ''}`}
             onClick={() => setActiveTab('transactions')}
           >
-            📜 تراکنش‌ها و امتیازات
+            <FileText size={18} /> <span>تراکنش‌ها و امتیازات</span>
           </button>
           <button
             className={`admin-nav-btn ${activeTab === 'new_order' ? 'active' : ''}`}
             onClick={() => setActiveTab('new_order')}
           >
-            ➕ ثبت سفارش دستی
+            <PlusCircle size={18} /> <span>ثبت سفارش دستی</span>
           </button>
           <button
             className={`admin-nav-btn ${activeTab === 'settings' ? 'active' : ''}`}
             onClick={() => setActiveTab('settings')}
           >
-            ⚙️ تنظیمات و تغییر رمز
+            <Settings size={18} /> <span>تنظیمات و تغییر رمز</span>
           </button>
         </nav>
 
@@ -607,7 +628,7 @@ export default function AdminPage() {
                   <div className="admin-metric-card">
                     <div className="admin-metric-head">
                       <span>کل سفارشات ثبت شده</span>
-                      <span>📦</span>
+                      <Package size={20} style={{ color: '#c88d4e' }} />
                     </div>
                     <div className="admin-metric-val">{toPersianDigits(stats?.totalOrders || 0)}</div>
                     <div className="admin-metric-sub">
@@ -620,7 +641,7 @@ export default function AdminPage() {
                   <div className="admin-metric-card">
                     <div className="admin-metric-head">
                       <span>مجموع فروش کارگاه</span>
-                      <span>💰</span>
+                      <Coins size={20} style={{ color: '#c88d4e' }} />
                     </div>
                     <div className="admin-metric-val">{formatToman(stats?.totalRevenue || 0)}</div>
                     <div className="admin-metric-sub">سفارشات قطعی و تسویه شده</div>
@@ -629,7 +650,7 @@ export default function AdminPage() {
                   <div className="admin-metric-card">
                     <div className="admin-metric-head">
                       <span>اعضای ثبت‌نام شده</span>
-                      <span>👥</span>
+                      <Users size={20} style={{ color: '#c88d4e' }} />
                     </div>
                     <div className="admin-metric-val">{toPersianDigits(stats?.totalUsers || 0)}</div>
                     <div className="admin-metric-sub">{toPersianDigits(stats?.totalCheckins || 0)} حضور در باشگاه</div>
@@ -638,7 +659,7 @@ export default function AdminPage() {
                   <div className="admin-metric-card">
                     <div className="admin-metric-head">
                       <span>امتیازات فعال باشگاه</span>
-                      <span>⭐</span>
+                      <Star size={20} style={{ color: '#c88d4e' }} />
                     </div>
                     <div className="admin-metric-val">{formatNumber(stats?.totalPoints || 0)}</div>
                     <div className="admin-metric-sub">موجودی در دست اعضا</div>
@@ -790,10 +811,10 @@ export default function AdminPage() {
                                   href={`https://wa.me/${ord.customer_phone.replace(/^0/, '98')}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  style={{ marginRight: '0.4rem', textDecoration: 'none' }}
-                                  title="پیام در واتساپ"
+                                  style={{ marginRight: '0.4rem', textDecoration: 'none', color: '#25D366', display: 'inline-flex', verticalAlign: 'middle' }}
+                                  title="ارسال پیام در واتساپ"
                                 >
-                                  💬
+                                  <WhatsApp size={16} />
                                 </a>
                               )}
                             </td>
@@ -919,10 +940,11 @@ export default function AdminPage() {
                               <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                                 <button
                                   className="admin-dark-btn"
+                                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
                                   onClick={() => { setSelectedUserForPoints(u); setPointsDelta(''); setPointsReason(''); }}
                                   title="افزایش یا کسر امتیاز"
                                 >
-                                  ⭐ امتیاز
+                                  <Star size={14} style={{ color: '#c88d4e' }} /> <span>امتیاز</span>
                                 </button>
                                 <button
                                   className="admin-dark-btn"
@@ -1093,8 +1115,13 @@ export default function AdminPage() {
               <div style={{ border: '1px solid #273b30', borderRadius: '12px', padding: '1.25rem', background: '#121c17' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                   <label className="admin-input-label" style={{ fontWeight: 700, color: '#fff' }}>اقلام سفارش</label>
-                  <button type="button" onClick={addItemToNewOrder} className="admin-dark-btn admin-dark-btn-accent">
-                    + افزودن محصول دیگر
+                  <button
+                    type="button"
+                    onClick={addItemToNewOrder}
+                    className="admin-dark-btn admin-dark-btn-accent"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                  >
+                    <Plus size={16} /> <span>افزودن محصول دیگر</span>
                   </button>
                 </div>
 
@@ -1209,8 +1236,9 @@ export default function AdminPage() {
             =================================================================== */}
         {activeTab === 'settings' && (
           <div style={{ maxWidth: '540px', margin: '0 auto', background: '#17241d', padding: '2.5rem 2rem', borderRadius: '18px', border: '1px solid #273b30', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
-            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, marginBottom: '0.75rem', color: '#fff' }}>
-              🔐 تنظیمات و تغییر رمز عبور مدیریت
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, marginBottom: '0.75rem', color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Key size={22} style={{ color: '#c88d4e' }} />
+              <span>تنظیمات و تغییر رمز عبور مدیریت</span>
             </h2>
             <p style={{ color: '#8da495', fontSize: '0.85rem', marginBottom: '2rem', lineHeight: 1.5 }}>
               رمز عبور جدید بلافاصله در دیتابیس ذخیره شده و از این پس برای ورود به این پنل الزامی خواهد بود.

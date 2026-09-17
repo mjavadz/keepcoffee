@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Phone, MessageCircle, X, Send } from './Icons';
+import { Phone, MessageCircle, X, Send, WhatsApp, Telegram } from './Icons';
 import { site, links } from '../data/site';
 import './FloatingContact.css';
 
@@ -32,7 +32,7 @@ export default function FloatingContact() {
               rel="noopener noreferrer"
               className="floating-link-item whatsapp"
             >
-              <div className="fli-icon"><MessageCircle size={18} /></div>
+              <div className="fli-icon"><WhatsApp size={20} /></div>
               <div className="fli-text">
                 <span className="fli-title">چت در واتساپ کارگاه</span>
                 <span className="fli-sub">پاسخگویی سریع و سفارش آنلاین</span>
@@ -56,7 +56,7 @@ export default function FloatingContact() {
               rel="noopener noreferrer"
               className="floating-link-item telegram"
             >
-              <div className="fli-icon"><Send size={18} /></div>
+              <div className="fli-icon"><Telegram size={20} /></div>
               <div className="fli-text">
                 <span className="fli-title">کانال تلگرام کارگاه</span>
                 <span className="fli-sub">@keepcoffeeRoastery</span>
