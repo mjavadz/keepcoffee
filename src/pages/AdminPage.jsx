@@ -20,7 +20,9 @@ import {
   EyeOff,
   Coins,
   ArrowLeft,
-  Plus
+  Plus,
+  Download,
+  Edit2
 } from '../components/Icons';
 import SEO from '../components/SEO';
 import Loader from '../components/Loader';
@@ -33,6 +35,18 @@ const STATUS_LABELS = {
   shipped: { label: 'ارسال شده', class: 'badge-shipped' },
   completed: { label: 'تکمیل شده', class: 'badge-completed' },
   cancelled: { label: 'لغو شده', class: 'badge-cancelled' },
+};
+
+const STOCK_LABELS = {
+  in_stock: { label: 'موجود در انبار', class: 'stock-in_stock' },
+  low_stock: { label: 'رو به اتمام', class: 'stock-low_stock' },
+  out_of_stock: { label: 'ناموجود', class: 'stock-out_of_stock' },
+};
+
+const CATEGORY_NAMES = {
+  beans: 'دانه‌های قهوه',
+  equipment: 'تجهیزات دم‌آوری',
+  accessories: 'لوازم جانبی',
 };
 
 const PAYMENT_LABELS = {
@@ -82,6 +96,29 @@ export default function AdminPage() {
   const [txTotal, setTxTotal] = useState(0);
   const [txPage, setTxPage] = useState(1);
   const [txReasonFilter, setTxReasonFilter] = useState('all');
+
+  // Products / Inventory State
+  const [catalog, setCatalog] = useState([]);
+  const [catalogCategory, setCatalogCategory] = useState('all');
+  const [catalogSearch, setCatalogSearch] = useState('');
+  const [editingPriceId, setEditingPriceId] = useState(null);
+  const [editingPriceVal, setEditingPriceVal] = useState('');
+  const [selectedProductForEdit, setSelectedProductForEdit] = useState(null);
+  const [isAddingProduct, setIsAddingProduct] = useState(false);
+  const [newProd, setNewProd] = useState({
+    name: '',
+    slug: '',
+    price: '',
+    category: 'beans',
+    unit: 'کیلوگرم',
+    stockStatus: 'in_stock',
+    inventoryQty: 50,
+    badge: '',
+    roast: 'مدیوم',
+    notes: '',
+    description: '',
+    image: '/images/photo-1509042239860-500.webp',
+  });
 
   // Modals
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -265,14 +302,140 @@ export default function AdminPage() {
     }
   }, [txPage, txReasonFilter]);
 
+  // Fetch catalog
+  const fetchCatalog = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await api.get('/admin/products');
+      setCatalog(res.products || []);
+    } catch (err) {
+      if (err.status === 401) setIsAdminAuthed(false);
+      showToast(err.message || 'خطا در دریافت محصولات', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   // Tab change trigger
   useEffect(() => {
     if (!isAdminAuthed) return;
     if (activeTab === 'dashboard') fetchStats();
     if (activeTab === 'orders') fetchOrders();
+    if (activeTab === 'products') fetchCatalog();
     if (activeTab === 'users') fetchUsers();
     if (activeTab === 'transactions') fetchTransactions();
-  }, [activeTab, isAdminAuthed, fetchStats, fetchOrders, fetchUsers, fetchTransactions]);
+  }, [activeTab, isAdminAuthed, fetchStats, fetchOrders, fetchCatalog, fetchUsers, fetchTransactions]);
+
+  // Update product quick fields (price, stock_status, inventory_qty, is_active)
+  const handleQuickUpdateProduct = async (id, fields) => {
+    try {
+      setActionLoading(true);
+      await api.post('/admin/products/update', { id, ...fields });
+      showToast('مشخصات محصول با موفقیت ذخیره شد');
+      setEditingPriceId(null);
+      fetchCatalog();
+    } catch (err) {
+      showToast(err.message || 'خطا در به‌روزرسانی محصول', 'error');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // Full product edit submit
+  const handleSaveProductDetails = async (e) => {
+    e.preventDefault();
+    if (!selectedProductForEdit) return;
+    try {
+      setActionLoading(true);
+      await api.post('/admin/products/update', {
+        id: selectedProductForEdit.id,
+        name: selectedProductForEdit.name,
+        price: parseInt(selectedProductForEdit.price, 10) || 0,
+        stockStatus: selectedProductForEdit.stock_status,
+        inventoryQty: parseInt(selectedProductForEdit.inventory_qty, 10) || 0,
+        badge: selectedProductForEdit.badge,
+        roast: selectedProductForEdit.roast,
+        notes: selectedProductForEdit.notes,
+        description: selectedProductForEdit.description,
+        isActive: selectedProductForEdit.is_active ? 1 : 0,
+      });
+      showToast('تغییرات محصول در دیتابیس ثبت شد');
+      setSelectedProductForEdit(null);
+      fetchCatalog();
+    } catch (err) {
+      showToast(err.message || 'خطا در ذخیره مشخصات محصول', 'error');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // Add new product submit
+  const handleCreateProductSubmit = async (e) => {
+    e.preventDefault();
+    if (!newProd.name.trim()) {
+      showToast('نام محصول الزامی است', 'error');
+      return;
+    }
+    try {
+      setActionLoading(true);
+      await api.post('/admin/products/create', {
+        ...newProd,
+        price: parseInt(newProd.price, 10) || 0,
+        inventoryQty: parseInt(newProd.inventoryQty, 10) || 0,
+      });
+      showToast('محصول جدید با موفقیت به کاتالوگ اضافه شد');
+      setIsAddingProduct(false);
+      setNewProd({
+        name: '',
+        slug: '',
+        price: '',
+        category: 'beans',
+        unit: 'کیلوگرم',
+        stockStatus: 'in_stock',
+        inventoryQty: 50,
+        badge: '',
+        roast: 'مدیوم',
+        notes: '',
+        description: '',
+        image: '/images/photo-1509042239860-500.webp',
+      });
+      fetchCatalog();
+    } catch (err) {
+      showToast(err.message || 'خطا در افزودن محصول جدید', 'error');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // Export orders to CSV
+  const handleExportOrdersCsv = () => {
+    if (!orders.length) {
+      showToast('سفارشی برای خروجی اکسل یافت نشد', 'error');
+      return;
+    }
+    const headers = ['شماره سفارش', 'نام خریدار', 'شماره تماس', 'آدرس تحویل', 'اقلام سفارش', 'مبلغ نهایی (تومان)', 'وضعیت پرداخت', 'وضعیت سفارش', 'تاریخ ثبت'];
+    const rows = orders.map(o => [
+      o.order_number,
+      `"${(o.customer_name || '').replace(/"/g, '""')}"`,
+      `"${(o.customer_phone || '').replace(/"/g, '""')}"`,
+      `"${(o.customer_address || '').replace(/"/g, '""')}"`,
+      `"${(o.items?.map(i => `${i.product_name} (${toPersianDigits(i.quantity)})`).join(' | ') || '').replace(/"/g, '""')}"`,
+      o.final_amount,
+      PAYMENT_LABELS[o.payment_status]?.label || o.payment_status,
+      STATUS_LABELS[o.status]?.label || o.status,
+      o.created_at
+    ]);
+    const csvContent = "\\uFEFF" + [headers.join(','), ...rows.map(r => r.join(','))].join('\\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `keepcoffee-orders-${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('فایل اکسل سفارشات با موفقیت دانلود شد');
+  };
 
   // Update order status handler
   const handleUpdateOrderStatus = async (orderId, newStatus, newPaymentStatus) => {
@@ -587,6 +750,15 @@ export default function AdminPage() {
             )}
           </button>
           <button
+            className={`admin-nav-btn ${activeTab === 'products' ? 'active' : ''}`}
+            onClick={() => setActiveTab('products')}
+          >
+            <Coffee size={18} /> <span>محصولات و انبار</span>
+            {catalog.length > 0 && (
+              <span className="admin-tab-pill">{toPersianDigits(catalog.length)}</span>
+            )}
+          </button>
+          <button
             className={`admin-nav-btn ${activeTab === 'users' ? 'active' : ''}`}
             onClick={() => setActiveTab('users')}
           >
@@ -761,22 +933,33 @@ export default function AdminPage() {
                 <button className="admin-dark-btn admin-dark-btn-accent" onClick={fetchOrders}>جستجو</button>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <label style={{ fontSize: '0.85rem', color: '#8da495', whiteSpace: 'nowrap' }}>فیلتر وضعیت:</label>
-                <select
-                  value={orderStatusFilter}
-                  onChange={(e) => { setOrderStatusFilter(e.target.value); setOrdersPage(1); }}
-                  className="admin-input"
-                  style={{ width: 'auto' }}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <button
+                  className="admin-dark-btn"
+                  onClick={handleExportOrdersCsv}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                  title="دانلود لیست سفارشات با فرمت اکسل CSV"
                 >
-                  <option value="all">همه وضعیت‌ها</option>
-                  <option value="pending">در انتظار بررسی</option>
-                  <option value="confirmed">تأیید شده</option>
-                  <option value="processing">در حال آماده‌سازی</option>
-                  <option value="shipped">ارسال شده</option>
-                  <option value="completed">تکمیل شده</option>
-                  <option value="cancelled">لغو شده</option>
-                </select>
+                  <Download size={16} /> <span>خروجی اکسل (CSV)</span>
+                </button>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <label style={{ fontSize: '0.85rem', color: '#8da495', whiteSpace: 'nowrap' }}>فیلتر وضعیت:</label>
+                  <select
+                    value={orderStatusFilter}
+                    onChange={(e) => { setOrderStatusFilter(e.target.value); setOrdersPage(1); }}
+                    className="admin-input"
+                    style={{ width: 'auto' }}
+                  >
+                    <option value="all">همه وضعیت‌ها</option>
+                    <option value="pending">در انتظار بررسی</option>
+                    <option value="confirmed">تأیید شده</option>
+                    <option value="processing">در حال آماده‌سازی</option>
+                    <option value="shipped">ارسال شده</option>
+                    <option value="completed">تکمیل شده</option>
+                    <option value="cancelled">لغو شده</option>
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -874,6 +1057,179 @@ export default function AdminPage() {
                   </div>
                 )}
               </>
+            )}
+          </div>
+        )}
+
+        {/* ===================================================================
+            Tab: Products & Inventory Management
+            =================================================================== */}
+        {activeTab === 'products' && (
+          <div>
+            <div className="admin-dark-toolbar">
+              <div style={{ display: 'flex', gap: '0.5rem', flex: 1, minWidth: '260px' }}>
+                <input
+                  type="text"
+                  placeholder="جستجو در نام محصول یا ترکیبات…"
+                  value={catalogSearch}
+                  onChange={(e) => setCatalogSearch(e.target.value)}
+                  className="admin-input"
+                />
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <button
+                  className="admin-dark-btn admin-dark-btn-accent"
+                  onClick={() => setIsAddingProduct(true)}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                >
+                  <Plus size={16} /> <span>افزودن محصول جدید</span>
+                </button>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <label style={{ fontSize: '0.85rem', color: '#8da495' }}>دسته‌بندی:</label>
+                  <select
+                    value={catalogCategory}
+                    onChange={(e) => setCatalogCategory(e.target.value)}
+                    className="admin-input"
+                    style={{ width: 'auto' }}
+                  >
+                    <option value="all">همه محصولات</option>
+                    <option value="beans">دانه‌های قهوه</option>
+                    <option value="equipment">تجهیزات دم‌آوری</option>
+                    <option value="accessories">لوازم جانبی</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {loading ? (
+              <Loader minHeight="30vh" />
+            ) : (
+              <div className="admin-dark-table-card">
+                <table className="admin-dark-table">
+                  <thead>
+                    <tr>
+                      <th>محصول</th>
+                      <th>دسته</th>
+                      <th>قیمت (تومان / واحد)</th>
+                      <th>وضعیت موجودی</th>
+                      <th>موجودی انبار</th>
+                      <th>نمایش در سایت</th>
+                      <th>عملیات</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {catalog
+                      .filter(p => catalogCategory === 'all' || p.category === catalogCategory)
+                      .filter(p => !catalogSearch.trim() || p.name.includes(catalogSearch.trim()) || (p.notes && p.notes.includes(catalogSearch.trim())))
+                      .map(p => (
+                        <tr key={p.id}>
+                          <td>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                              <img
+                                src={p.image || '/images/photo-1509042239860-500.webp'}
+                                alt={p.name}
+                                style={{ width: '42px', height: '42px', borderRadius: '8px', objectFit: 'cover', border: '1px solid #273b30' }}
+                              />
+                              <div>
+                                <div style={{ fontWeight: 700, color: '#fff' }}>{p.name}</div>
+                                <span style={{ fontSize: '0.78rem', color: '#8da495', fontFamily: 'monospace' }}>{p.slug}</span>
+                                {p.badge && (
+                                  <span style={{ marginRight: '0.5rem', fontSize: '0.72rem', background: '#3b2814', color: '#f59e0b', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
+                                    {p.badge}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <span style={{ fontSize: '0.82rem', color: '#b5c7bc' }}>
+                              {CATEGORY_NAMES[p.category] || p.category}
+                            </span>
+                          </td>
+                          <td>
+                            {editingPriceId === p.id ? (
+                              <div className="inline-price-box">
+                                <input
+                                  type="number"
+                                  className="inline-price-input"
+                                  value={editingPriceVal}
+                                  onChange={(e) => setEditingPriceVal(e.target.value)}
+                                  autoFocus
+                                />
+                                <button
+                                  className="admin-dark-btn admin-dark-btn-accent"
+                                  style={{ padding: '0.25rem 0.6rem', fontSize: '0.78rem' }}
+                                  onClick={() => handleQuickUpdateProduct(p.id, { price: parseInt(editingPriceVal, 10) || 0 })}
+                                  disabled={actionLoading}
+                                >
+                                  ذخیره
+                                </button>
+                                <button
+                                  className="admin-dark-btn"
+                                  style={{ padding: '0.25rem 0.5rem', fontSize: '0.78rem' }}
+                                  onClick={() => setEditingPriceId(null)}
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                            ) : (
+                              <div
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
+                                onClick={() => { setEditingPriceId(p.id); setEditingPriceVal(p.price || ''); }}
+                                title="کلیک برای ویرایش سریع قیمت"
+                              >
+                                <strong style={{ color: p.price ? '#c88d4e' : '#8da495' }}>
+                                  {p.price ? `${formatToman(p.price)} / ${p.unit || 'کیلو'}` : 'استعلام قیمت'}
+                                </strong>
+                                <Edit2 size={13} style={{ color: '#8da495', opacity: 0.7 }} />
+                              </div>
+                            )}
+                          </td>
+                          <td>
+                            <select
+                              value={p.stock_status || 'in_stock'}
+                              onChange={(e) => handleQuickUpdateProduct(p.id, { stockStatus: e.target.value })}
+                              className="admin-input"
+                              style={{ width: 'auto', padding: '0.25rem 0.5rem', fontSize: '0.8rem', background: '#121b16' }}
+                              disabled={actionLoading}
+                            >
+                              <option value="in_stock">🟢 موجود در انبار</option>
+                              <option value="low_stock">🟡 رو به اتمام</option>
+                              <option value="out_of_stock">🔴 ناموجود</option>
+                            </select>
+                          </td>
+                          <td>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                              <span>{toPersianDigits(p.inventory_qty ?? 0)}</span>
+                              <span style={{ fontSize: '0.78rem', color: '#8da495' }}>{p.unit || 'کیلوگرم'}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <button
+                              className={`admin-dark-btn ${p.is_active ? '' : 'admin-dark-btn-danger'}`}
+                              style={{ padding: '0.25rem 0.65rem', fontSize: '0.78rem' }}
+                              onClick={() => handleQuickUpdateProduct(p.id, { isActive: p.is_active ? 0 : 1 })}
+                              disabled={actionLoading}
+                            >
+                              {p.is_active ? 'نمایش در سایت' : 'مخفی شده'}
+                            </button>
+                          </td>
+                          <td>
+                            <button
+                              className="admin-dark-btn"
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+                              onClick={() => setSelectedProductForEdit(p)}
+                            >
+                              <Edit2 size={14} /> <span>ویرایش کامل</span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
         )}
@@ -1455,6 +1811,290 @@ export default function AdminPage() {
                   <button type="button" className="admin-dark-btn" onClick={() => setSelectedUserForPoints(null)}>انصراف</button>
                   <button type="submit" disabled={actionLoading} className="admin-dark-btn admin-dark-btn-accent">
                     {actionLoading ? 'در حال ثبت…' : 'اعمال تغییر امتیاز'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ===================================================================
+            Modal: Full Edit Product Details
+            =================================================================== */}
+        {selectedProductForEdit && (
+          <div className="admin-dark-modal-backdrop" onClick={() => setSelectedProductForEdit(null)}>
+            <div className="admin-dark-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="admin-dark-modal-head">
+                <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#fff' }}>
+                  ویرایش مشخصات محصول <span style={{ color: '#c88d4e' }}>{selectedProductForEdit.name}</span>
+                </h3>
+                <button style={{ background: 'none', border: 'none', color: '#8da495', fontSize: '1.4rem', cursor: 'pointer' }} onClick={() => setSelectedProductForEdit(null)}>✕</button>
+              </div>
+
+              <form onSubmit={handleSaveProductDetails}>
+                <div className="admin-dark-modal-body">
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+                    <div className="admin-input-group">
+                      <label className="admin-input-label">نام محصول *</label>
+                      <input
+                        type="text"
+                        required
+                        value={selectedProductForEdit.name}
+                        onChange={(e) => setSelectedProductForEdit({ ...selectedProductForEdit, name: e.target.value })}
+                        className="admin-input"
+                      />
+                    </div>
+
+                    <div className="admin-input-group">
+                      <label className="admin-input-label">قیمت هر واحد (تومان - ۰ برای استعلام)</label>
+                      <input
+                        type="number"
+                        dir="ltr"
+                        value={selectedProductForEdit.price || ''}
+                        onChange={(e) => setSelectedProductForEdit({ ...selectedProductForEdit, price: e.target.value })}
+                        className="admin-input"
+                        placeholder="مثال: 2200000"
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+                    <div className="admin-input-group">
+                      <label className="admin-input-label">وضعیت موجودی</label>
+                      <select
+                        value={selectedProductForEdit.stock_status || 'in_stock'}
+                        onChange={(e) => setSelectedProductForEdit({ ...selectedProductForEdit, stock_status: e.target.value })}
+                        className="admin-input"
+                      >
+                        <option value="in_stock">موجود در انبار</option>
+                        <option value="low_stock">رو به اتمام</option>
+                        <option value="out_of_stock">ناموجود</option>
+                      </select>
+                    </div>
+
+                    <div className="admin-input-group">
+                      <label className="admin-input-label">موجودی عددی / وزنی</label>
+                      <input
+                        type="number"
+                        dir="ltr"
+                        value={selectedProductForEdit.inventory_qty ?? 50}
+                        onChange={(e) => setSelectedProductForEdit({ ...selectedProductForEdit, inventory_qty: e.target.value })}
+                        className="admin-input"
+                      />
+                    </div>
+
+                    <div className="admin-input-group">
+                      <label className="admin-input-label">بج / نشان روی کارت</label>
+                      <input
+                        type="text"
+                        placeholder="مثال: پرفروش / ویژه / تخفیف"
+                        value={selectedProductForEdit.badge || ''}
+                        onChange={(e) => setSelectedProductForEdit({ ...selectedProductForEdit, badge: e.target.value })}
+                        className="admin-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div className="admin-input-group">
+                      <label className="admin-input-label">درجه برشتگی (رست)</label>
+                      <input
+                        type="text"
+                        placeholder="مثال: مدیوم / دارک / مدیوم-دارک"
+                        value={selectedProductForEdit.roast || ''}
+                        onChange={(e) => setSelectedProductForEdit({ ...selectedProductForEdit, roast: e.target.value })}
+                        className="admin-input"
+                      />
+                    </div>
+
+                    <div className="admin-input-group">
+                      <label className="admin-input-label">وضعیت انتشار</label>
+                      <select
+                        value={selectedProductForEdit.is_active ? '1' : '0'}
+                        onChange={(e) => setSelectedProductForEdit({ ...selectedProductForEdit, is_active: e.target.value === '1' })}
+                        className="admin-input"
+                      >
+                        <option value="1">فعال و قابل نمایش در فروشگاه</option>
+                        <option value="0">مخفی شده (غیرفعال)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="admin-input-group">
+                    <label className="admin-input-label">طعم‌یادها (با ویرگول جدا کنید)</label>
+                    <input
+                      type="text"
+                      placeholder="مثال: شکلات تلخ، کارامل، فندق"
+                      value={selectedProductForEdit.notes || ''}
+                      onChange={(e) => setSelectedProductForEdit({ ...selectedProductForEdit, notes: e.target.value })}
+                      className="admin-input"
+                    />
+                  </div>
+
+                  <div className="admin-input-group">
+                    <label className="admin-input-label">توضیحات و داستان محصول</label>
+                    <textarea
+                      rows={3}
+                      value={selectedProductForEdit.description || ''}
+                      onChange={(e) => setSelectedProductForEdit({ ...selectedProductForEdit, description: e.target.value })}
+                      className="admin-input"
+                    />
+                  </div>
+                </div>
+
+                <div className="admin-dark-modal-foot">
+                  <button type="button" className="admin-dark-btn" onClick={() => setSelectedProductForEdit(null)}>انصراف</button>
+                  <button type="submit" disabled={actionLoading} className="admin-dark-btn admin-dark-btn-accent">
+                    {actionLoading ? 'در حال ذخیره…' : 'ذخیره تغییرات در دیتابیس'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ===================================================================
+            Modal: Create New Product
+            =================================================================== */}
+        {isAddingProduct && (
+          <div className="admin-dark-modal-backdrop" onClick={() => setIsAddingProduct(false)}>
+            <div className="admin-dark-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="admin-dark-modal-head">
+                <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#fff' }}>
+                  افزودن محصول جدید به کارگاه کیپ کافی
+                </h3>
+                <button style={{ background: 'none', border: 'none', color: '#8da495', fontSize: '1.4rem', cursor: 'pointer' }} onClick={() => setIsAddingProduct(false)}>✕</button>
+              </div>
+
+              <form onSubmit={handleCreateProductSubmit}>
+                <div className="admin-dark-modal-body">
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+                    <div className="admin-input-group">
+                      <label className="admin-input-label">نام محصول *</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="مثال: میکس ۶۰/۴۰ روبوستا پرمیوم"
+                        value={newProd.name}
+                        onChange={(e) => setNewProd({ ...newProd, name: e.target.value })}
+                        className="admin-input"
+                      />
+                    </div>
+
+                    <div className="admin-input-group">
+                      <label className="admin-input-label">شناسه انگلیسی (slug)</label>
+                      <input
+                        type="text"
+                        dir="ltr"
+                        placeholder="مثال: mix-60-40-robusta"
+                        value={newProd.slug}
+                        onChange={(e) => setNewProd({ ...newProd, slug: e.target.value })}
+                        className="admin-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+                    <div className="admin-input-group">
+                      <label className="admin-input-label">دسته‌بندی</label>
+                      <select
+                        value={newProd.category}
+                        onChange={(e) => setNewProd({ ...newProd, category: e.target.value })}
+                        className="admin-input"
+                      >
+                        <option value="beans">دانه‌های قهوه</option>
+                        <option value="equipment">تجهیزات دم‌آوری</option>
+                        <option value="accessories">لوازم جانبی</option>
+                      </select>
+                    </div>
+
+                    <div className="admin-input-group">
+                      <label className="admin-input-label">قیمت (تومان - ۰ برای استعلام)</label>
+                      <input
+                        type="number"
+                        dir="ltr"
+                        placeholder="مثال: 2500000"
+                        value={newProd.price}
+                        onChange={(e) => setNewProd({ ...newProd, price: e.target.value })}
+                        className="admin-input"
+                      />
+                    </div>
+
+                    <div className="admin-input-group">
+                      <label className="admin-input-label">واحد سنجش</label>
+                      <input
+                        type="text"
+                        value={newProd.unit}
+                        onChange={(e) => setNewProd({ ...newProd, unit: e.target.value })}
+                        className="admin-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+                    <div className="admin-input-group">
+                      <label className="admin-input-label">وضعیت موجودی</label>
+                      <select
+                        value={newProd.stockStatus}
+                        onChange={(e) => setNewProd({ ...newProd, stockStatus: e.target.value })}
+                        className="admin-input"
+                      >
+                        <option value="in_stock">موجود در انبار</option>
+                        <option value="low_stock">رو به اتمام</option>
+                        <option value="out_of_stock">ناموجود</option>
+                      </select>
+                    </div>
+
+                    <div className="admin-input-group">
+                      <label className="admin-input-label">موجودی اولیه</label>
+                      <input
+                        type="number"
+                        dir="ltr"
+                        value={newProd.inventoryQty}
+                        onChange={(e) => setNewProd({ ...newProd, inventoryQty: e.target.value })}
+                        className="admin-input"
+                      />
+                    </div>
+
+                    <div className="admin-input-group">
+                      <label className="admin-input-label">نشان / بج روی محصول</label>
+                      <input
+                        type="text"
+                        placeholder="مثال: جدید / پرفروش"
+                        value={newProd.badge}
+                        onChange={(e) => setNewProd({ ...newProd, badge: e.target.value })}
+                        className="admin-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="admin-input-group">
+                    <label className="admin-input-label">طعم‌یادها (اختیاری)</label>
+                    <input
+                      type="text"
+                      placeholder="مثال: شکلات، کارامل، فندق"
+                      value={newProd.notes}
+                      onChange={(e) => setNewProd({ ...newProd, notes: e.target.value })}
+                      className="admin-input"
+                    />
+                  </div>
+
+                  <div className="admin-input-group">
+                    <label className="admin-input-label">توضیحات کوتاه محصول</label>
+                    <textarea
+                      rows={2}
+                      placeholder="توضیحات و ویژگی‌های برجسته محصول..."
+                      value={newProd.description}
+                      onChange={(e) => setNewProd({ ...newProd, description: e.target.value })}
+                      className="admin-input"
+                    />
+                  </div>
+                </div>
+
+                <div className="admin-dark-modal-foot">
+                  <button type="button" className="admin-dark-btn" onClick={() => setIsAddingProduct(false)}>انصراف</button>
+                  <button type="submit" disabled={actionLoading} className="admin-dark-btn admin-dark-btn-accent">
+                    {actionLoading ? 'در حال ثبت…' : 'ایجاد و انتشار محصول'}
                   </button>
                 </div>
               </form>

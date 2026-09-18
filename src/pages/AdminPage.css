@@ -443,6 +443,34 @@
 .badge-unpaid { background: #3d2c0b; color: #fbbf24; }
 .badge-refunded { background: #262e29; color: #94a3b8; }
 
+.stock-in_stock { background: #0f3922; color: #4ade80; border: 1px solid #14532d; }
+.stock-low_stock { background: #3d2c0b; color: #fbbf24; border: 1px solid #78350f; }
+.stock-out_of_stock { background: #3e1616; color: #f87171; border: 1px solid #7f1d1d; }
+
+.inline-price-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.inline-price-input {
+  width: 115px;
+  padding: 0.3rem 0.5rem;
+  background: #0f1813;
+  border: 1px solid #2d4537;
+  color: #fff;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  text-align: left;
+  direction: ltr;
+}
+
+.inline-price-input:focus {
+  outline: none;
+  border-color: #c88d4e;
+}
+
 .badge-role-admin { background: #452a0a; color: #f59e0b; border: 1px solid #b45309; }
 .badge-role-user { background: #1a2720; color: #94a3b8; border: 1px solid #2c4236; }
 
