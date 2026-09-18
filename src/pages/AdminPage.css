@@ -122,6 +122,34 @@
   box-shadow: 0 0 0 3px rgba(200, 141, 78, 0.15);
 }
 
+/* Custom chevron for all select dropdowns in admin panel */
+select.admin-input,
+.admin-select,
+.admin-form-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238da495' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 0.85rem center;
+  background-size: 14px 14px;
+  padding-left: 2.35rem !important;
+  padding-right: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background-image 0.2s, box-shadow 0.2s;
+}
+
+select.admin-input:hover,
+select.admin-input:focus,
+.admin-select:hover,
+.admin-select:focus,
+.admin-form-select:hover,
+.admin-form-select:focus {
+  border-color: #c88d4e;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23C88D4E' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  box-shadow: 0 0 0 3px rgba(200, 141, 78, 0.15);
+}
+
 .admin-pwd-toggle {
   position: absolute;
   left: 0.75rem;
@@ -443,9 +471,65 @@
 .badge-unpaid { background: #3d2c0b; color: #fbbf24; }
 .badge-refunded { background: #262e29; color: #94a3b8; }
 
-.stock-in_stock { background: #0f3922; color: #4ade80; border: 1px solid #14532d; }
-.stock-low_stock { background: #3d2c0b; color: #fbbf24; border: 1px solid #78350f; }
-.stock-out_of_stock { background: #3e1616; color: #f87171; border: 1px solid #7f1d1d; }
+/* Refined Roastery Stock Badges & Status Selector */
+.admin-stock-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-repeat: no-repeat;
+  background-position: left 0.75rem center;
+  background-size: 13px 13px;
+  padding: 0.35rem 0.85rem 0.35rem 2.25rem !important;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+/* In Stock: Deep Roastery Forest Emerald */
+.stock-in_stock,
+.admin-stock-select.stock-in_stock {
+  background-color: #12281c;
+  border: 1px solid #1f5033;
+  color: #6ee7b7;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236ee7b7' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+.admin-stock-select.stock-in_stock:hover,
+.admin-stock-select.stock-in_stock:focus {
+  border-color: #34d399;
+  box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.25);
+}
+
+/* Low Stock: Warm Roasted Caramel Amber */
+.stock-low_stock,
+.admin-stock-select.stock-low_stock {
+  background-color: #2b1f11;
+  border: 1px solid #63431d;
+  color: #fcd34d;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23fcd34d' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+.admin-stock-select.stock-low_stock:hover,
+.admin-stock-select.stock-low_stock:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
+}
+
+/* Out of Stock: Muted Terracotta Rosewood */
+.stock-out_of_stock,
+.admin-stock-select.stock-out_of_stock {
+  background-color: #291515;
+  border: 1px solid #572525;
+  color: #fca5a5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23fca5a5' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+.admin-stock-select.stock-out_of_stock:hover,
+.admin-stock-select.stock-out_of_stock:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.25);
+}
 
 .inline-price-box {
   display: inline-flex;

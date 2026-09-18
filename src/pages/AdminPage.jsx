@@ -1191,13 +1191,12 @@ export default function AdminPage() {
                             <select
                               value={p.stock_status || 'in_stock'}
                               onChange={(e) => handleQuickUpdateProduct(p.id, { stockStatus: e.target.value })}
-                              className="admin-input"
-                              style={{ width: 'auto', padding: '0.25rem 0.5rem', fontSize: '0.8rem', background: '#121b16' }}
+                              className={`admin-stock-select stock-${p.stock_status || 'in_stock'}`}
                               disabled={actionLoading}
                             >
-                              <option value="in_stock">🟢 موجود در انبار</option>
-                              <option value="low_stock">🟡 رو به اتمام</option>
-                              <option value="out_of_stock">🔴 ناموجود</option>
+                              <option value="in_stock">موجود در کارگاه</option>
+                              <option value="low_stock">رو به اتمام</option>
+                              <option value="out_of_stock">ناموجود</option>
                             </select>
                           </td>
                           <td>

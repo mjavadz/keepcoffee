@@ -46,22 +46,57 @@
   gap: 12px;
 }
 
-.shop-search,
-.shop-sort {
-  padding: 10px 16px;
+.shop-search {
+  padding: 10px 18px;
   border-radius: var(--radius-full);
   border: 1px solid var(--color-border);
   background-color: var(--color-surface);
   color: var(--color-text-primary);
   font-family: var(--font-family);
   font-size: 0.9rem;
+  transition: all var(--transition-fast);
 }
 
-.shop-search:focus,
+.shop-sort {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234E6355' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 1rem center;
+  background-size: 14px 14px;
+  padding: 10px 18px 10px 38px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.shop-search:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(200, 141, 78, 0.15);
+}
+
+.shop-sort:hover,
 .shop-sort:focus {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 1px;
-  border-color: transparent;
+  outline: none;
+  border-color: var(--color-accent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23C88D4E' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  box-shadow: 0 0 0 3px rgba(200, 141, 78, 0.15);
+}
+
+[data-theme='dark'] .shop-sort {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238da495' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+[data-theme='dark'] .shop-sort:hover,
+[data-theme='dark'] .shop-sort:focus {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23C88D4E' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
 }
 
 .shop-count {
