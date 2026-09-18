@@ -1,6 +1,39 @@
 import React from 'react';
-import { MapPin, Flame, CupSoda } from './Icons';
+import { MapPin, Flame, Coffee } from './Icons';
 import './OurStory.css';
+
+const storySteps = [
+  {
+    step: '۱',
+    stepLabel: 'مرحله اول',
+    title: 'خاستگاه و دست‌چین دانه‌های سبز',
+    desc: 'دانه‌های سبز ما با وسواس فراوان و به‌صورت مستقیم از مزارع برتر ارتفاعات آمریکای لاتین و آفریقا انتخاب می‌شوند؛ با کنترل دقیق رطوبت، چگالی استاندارد و سورتینگ دستی در مبدأ.',
+    image: '/images/photo-1524350876685-500.webp',
+    imageAlt: 'مزارع تخصصی کشت قهوه',
+    icon: MapPin,
+    tag: 'دست‌چین مزارع مرتفع',
+  },
+  {
+    step: '۲',
+    stepLabel: 'مرحله دوم',
+    title: 'برشته‌کاری تخصصی در کارگاه تهران',
+    desc: 'هر ترکیب و خاستگاه در کارگاه کیپ کافی با پروفایل حرارتی اختصاصی و نظارت دقیق برشته می‌شود. فرآیند رست هفتگی تضمین می‌کند که عطر و گاززدایی طبیعی دانه‌ها در بالاترین سطح به دست شما برسد.',
+    image: '/images/photo-1599639957043-500.webp',
+    imageAlt: 'کارگاه برشته‌کاری تخصصی کیپ کافی',
+    icon: Flame,
+    tag: 'رست تازه هفتگی کارگاهی',
+  },
+  {
+    step: '۳',
+    stepLabel: 'مرحله سوم',
+    title: 'عصاره‌گیری شفاف و فنجان بی‌نقص',
+    desc: 'از کرمای متراکم و ماندگار اسپرسوی صبحگاهی تا فنجانی شفاف و آروماتیک در ادوات دمی؛ دانه‌های تازه به شما اجازه می‌دهند در کافه یا خانه، اصالت یک فنجان قهوه تخصصی را بدون نقص لمس کنید.',
+    image: '/images/photo-1497935586351-500.webp',
+    imageAlt: 'عصاره‌گیری قهوه تخصصی',
+    icon: Coffee,
+    tag: 'طعم‌یادهای شفاف و زنده',
+  },
+];
 
 export default function OurStory() {
   return (
@@ -15,44 +48,51 @@ export default function OurStory() {
         </div>
 
         <div className="story-timeline">
-          <div className="timeline-item">
-            <div className="timeline-image">
-              <div className="timeline-frame">
-                <img src="/images/photo-1524350876685-500.webp" alt="مزارع قهوه" loading="lazy" />
-              </div>
-              <div className="timeline-icon"><MapPin size={24} /></div>
-            </div>
-            <div className="timeline-content">
-              <h3>۱. خواستگاه و دست‌چین</h3>
-              <p>دانه‌های سبز ما با وسواس فراوان و به صورت مستقیم از کشاورزان محلی در آفریقا و آمریکای لاتین تهیه می‌شوند.</p>
-            </div>
-          </div>
+          {storySteps.map((item, idx) => {
+            const IconComponent = item.icon;
+            const isReversed = idx % 2 === 1;
+            return (
+              <div
+                key={item.step}
+                className={`timeline-card-item ${isReversed ? 'is-reversed' : ''}`}
+              >
+                {/* Central / Lateral Timeline Step Node */}
+                <div className="timeline-marker" aria-hidden="true">
+                  <div className="timeline-marker-circle">
+                    <span className="marker-num">{item.step}</span>
+                    <IconComponent size={18} className="marker-icon" />
+                  </div>
+                </div>
 
-          <div className="timeline-item reversed">
-            <div className="timeline-image">
-              <div className="timeline-frame">
-                <img src="/images/photo-1599639957043-500.webp" alt="برشته کاری قهوه" loading="lazy" />
-              </div>
-              <div className="timeline-icon"><Flame size={24} /></div>
-            </div>
-            <div className="timeline-content">
-              <h3>۲. برشته‌کاری تخصصی</h3>
-              <p>ما هر خواستگاه را با پروفایل حرارتی مختص به خود برشته می‌کنیم تا پتانسیل طعمی واقعی دانه‌ها آزاد شود.</p>
-            </div>
-          </div>
+                {/* Optimized Media Card */}
+                <div className="timeline-image-wrap">
+                  <div className="timeline-img-box">
+                    <img
+                      src={item.image}
+                      alt={item.imageAlt}
+                      loading="lazy"
+                      width="500"
+                      height="330"
+                    />
+                    <div className="timeline-img-overlay" />
+                    <span className="timeline-img-badge">{item.tag}</span>
+                  </div>
+                </div>
 
-          <div className="timeline-item">
-            <div className="timeline-image">
-              <div className="timeline-frame">
-                <img src="/images/photo-1497935586351-500.webp" alt="عصاره گیری" loading="lazy" />
+                {/* Content Card */}
+                <div className="timeline-content-card">
+                  <div className="timeline-step-header">
+                    <span className="step-tag-pill">
+                      <strong className="step-digit">{item.step}</strong>
+                      <span className="step-name">{item.stepLabel}</span>
+                    </span>
+                  </div>
+                  <h3 className="timeline-card-title">{item.title}</h3>
+                  <p className="timeline-card-desc">{item.desc}</p>
+                </div>
               </div>
-              <div className="timeline-icon"><CupSoda size={24} /></div>
-            </div>
-            <div className="timeline-content">
-              <h3>۳. عصاره‌گیری بی‌نقص</h3>
-              <p>در نهایت، دانه‌های تازه برشته شده به دست شما می‌رسد تا با دستورالعمل‌های استاندارد، یک فنجان قهوه استثنایی خلق کنید.</p>
-            </div>
-          </div>
+            );
+          })}
         </div>
       </div>
     </section>

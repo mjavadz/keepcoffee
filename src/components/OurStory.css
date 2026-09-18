@@ -1,186 +1,390 @@
+/* ==========================================================================
+   OurStory Component - Keep Coffee Roastery
+   Modern, responsive 3-step timeline (Farm to Cup) with dedicated mobile styling
+   ========================================================================== */
+
 .our-story-section {
-  padding: 100px 0;
+  padding: 90px 0 110px;
   background-color: var(--color-bg);
+  position: relative;
   overflow: hidden;
 }
 
 .story-header {
-  max-width: 700px;
-  margin: 0 auto 64px auto;
+  max-width: 720px;
+  margin: 0 auto 60px auto;
   text-align: center;
 }
 
 .story-subtitle {
-  color: var(--color-primary);
+  color: var(--color-accent);
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  display: block;
-  margin-bottom: 12px;
-  font-size: 0.9rem;
+  letter-spacing: 1.5px;
+  display: inline-block;
+  margin-bottom: 10px;
+  font-size: 0.92rem;
+  background: rgba(200, 141, 78, 0.12);
+  padding: 0.25rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(200, 141, 78, 0.25);
 }
 
 .story-title {
-  font-size: 2.5rem;
+  font-size: 2.3rem;
+  font-weight: 800;
   color: var(--color-text-primary);
-  margin-bottom: 24px;
+  margin-bottom: 18px;
+  line-height: 1.35;
 }
 
 .story-desc {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   color: var(--color-text-secondary);
-  line-height: 1.8;
+  line-height: 1.85;
+  margin: 0;
 }
 
+/* ==========================================================================
+   Desktop Timeline Architecture (>= 992px)
+   ========================================================================== */
 .story-timeline {
   display: flex;
   flex-direction: column;
-  gap: 80px;
+  gap: 70px;
   position: relative;
+  max-width: 1060px;
+  margin: 0 auto;
 }
 
-/* Vertical dashed line connecting the items */
+/* Elegant vertical connecting spine */
 .story-timeline::before {
   content: '';
   position: absolute;
-  top: 0;
-  bottom: 0;
+  top: 40px;
+  bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
   width: 2px;
-  background: repeating-linear-gradient(to bottom, var(--color-primary) 0, var(--color-primary) 10px, transparent 10px, transparent 20px);
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--color-accent) 15%,
+    var(--color-accent) 85%,
+    transparent
+  );
+  opacity: 0.35;
   z-index: 0;
-  opacity: 0.3;
 }
 
-.timeline-item {
+.timeline-card-item {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 64px;
+  justify-content: space-between;
+  gap: 50px;
   position: relative;
   z-index: 1;
 }
 
-.timeline-item.reversed {
+.timeline-card-item.is-reversed {
   flex-direction: row-reverse;
 }
 
-.timeline-image {
+/* Central Step Node */
+.timeline-marker {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+
+.timeline-marker-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  border: 2px solid var(--color-accent);
+  box-shadow: 0 8px 24px rgba(200, 141, 78, 0.25), 0 2px 6px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+  transition: all 0.3s ease;
+}
+
+.timeline-card-item:hover .timeline-marker-circle {
+  background: var(--color-accent);
+  color: #fff;
+  transform: scale(1.1);
+  box-shadow: 0 12px 30px rgba(200, 141, 78, 0.4);
+}
+
+.marker-num {
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1;
+  display: none; /* Shown on mobile */
+}
+
+.marker-icon {
+  display: block;
+}
+
+/* Image Card Box */
+.timeline-image-wrap {
   flex: 1;
-  max-width: 500px;
+  max-width: 470px;
+}
+
+.timeline-img-box {
   position: relative;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-}
-
-/* Inner frame clips the image (and its hover zoom) while letting the
-   timeline icon overhang the edge without being cut off. */
-.timeline-frame {
-  border-radius: var(--radius-lg);
+  border-radius: 16px;
   overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+  aspect-ratio: 16 / 10;
+  background: #17241d;
 }
 
-.timeline-image img {
+.timeline-img-box img {
   width: 100%;
-  height: 350px;
+  height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.6s ease;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.timeline-item:hover .timeline-image img {
+.timeline-card-item:hover .timeline-img-box img {
   transform: scale(1.05);
 }
 
-.timeline-icon {
+.timeline-img-overlay {
   position: absolute;
-  bottom: -24px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 56px;
-  height: 56px;
-  background-color: var(--color-primary);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 20px rgba(193, 154, 107, 0.4);
+  inset: 0;
+  background: linear-gradient(to top, rgba(18, 27, 22, 0.6) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.timeline-img-badge {
+  position: absolute;
+  bottom: 12px;
+  right: 14px;
+  background: rgba(18, 27, 22, 0.85);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   z-index: 2;
 }
 
-.timeline-content {
+/* Content Card */
+.timeline-content-card {
   flex: 1;
-  max-width: 400px;
-  background-color: var(--color-surface);
-  padding: 40px;
-  border-radius: var(--radius-md);
+  max-width: 440px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 32px 30px;
   box-shadow: var(--shadow-sm);
-  position: relative;
-}
-
-.timeline-item:not(.reversed) .timeline-content {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   text-align: right;
 }
 
-.timeline-item.reversed .timeline-content {
-  text-align: right; /* Keep RTL text readable */
+.timeline-card-item:hover .timeline-content-card {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
 }
 
-.timeline-content h3 {
-  font-size: 1.6rem;
+.timeline-step-header {
+  margin-bottom: 12px;
+}
+
+.step-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(200, 141, 78, 0.1);
+  color: var(--color-accent);
+  border: 1px solid rgba(200, 141, 78, 0.25);
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+
+.step-digit {
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.step-name {
+  font-weight: 600;
+}
+
+.timeline-card-title {
+  font-size: 1.45rem;
+  font-weight: 800;
   color: var(--color-text-primary);
-  margin-bottom: 16px;
+  margin: 0 0 12px 0;
+  line-height: 1.4;
 }
 
-.timeline-content p {
-  font-size: 1.05rem;
+.timeline-card-desc {
+  font-size: 0.98rem;
   color: var(--color-text-secondary);
   line-height: 1.8;
+  margin: 0;
 }
 
+/* ==========================================================================
+   Responsive Breakpoints - Tablet & Mobile Optimization
+   ========================================================================== */
 @media (max-width: 992px) {
+  .our-story-section {
+    padding: 70px 0 90px;
+  }
+
+  .story-title {
+    font-size: 1.95rem;
+  }
+
+  .story-header {
+    margin-bottom: 45px;
+  }
+
+  .story-timeline {
+    gap: 45px;
+  }
+
+  /* Move the vertical timeline spine cleanly to the RIGHT edge (RTL) */
   .story-timeline::before {
-    left: 28px;
+    left: auto;
+    right: 23px;
+    transform: none;
   }
-  
-  .timeline-item, 
-  .timeline-item.reversed {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 40px;
+
+  .timeline-card-item,
+  .timeline-card-item.is-reversed {
+    flex-direction: column !important;
+    align-items: stretch;
+    gap: 16px;
+    padding-right: 60px; /* Generous space for right timeline line + markers */
+    padding-left: 0;
+    margin: 0;
   }
-  
-  .timeline-image {
+
+  /* Node positioned directly on the right spine */
+  .timeline-marker {
+    left: auto;
+    right: 0;
+    top: 14px;
+    transform: none;
+  }
+
+  .timeline-marker-circle {
+    width: 48px;
+    height: 48px;
+  }
+
+  .timeline-image-wrap {
     max-width: 100%;
     width: 100%;
-    margin-right: 56px;
   }
-  
-  .timeline-icon {
-    left: -28px;
-    bottom: auto;
-    top: 50%;
-    transform: translateY(-50%);
+
+  .timeline-img-box {
+    aspect-ratio: 16 / 9;
+    border-radius: 14px;
   }
-  
-  .timeline-content {
+
+  .timeline-content-card {
     max-width: 100%;
-    margin-right: 56px;
+    width: 100%;
+    padding: 22px 20px;
+    border-radius: 14px;
+  }
+
+  .timeline-card-title {
+    font-size: 1.25rem;
+  }
+
+  .timeline-card-desc {
+    font-size: 0.92rem;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 576px) {
   .our-story-section {
-    padding: 60px 0;
+    padding: 50px 0 70px;
   }
-  
+
   .story-title {
-    font-size: 2rem;
+    font-size: 1.65rem;
+    margin-bottom: 12px;
   }
-  
-  .timeline-image img {
-    height: 250px;
+
+  .story-desc {
+    font-size: 0.95rem;
+  }
+
+  .story-timeline {
+    gap: 36px;
+  }
+
+  /* Compact spine for small phone screens */
+  .story-timeline::before {
+    right: 17px;
+  }
+
+  .timeline-card-item,
+  .timeline-card-item.is-reversed {
+    padding-right: 48px;
+    gap: 12px;
+  }
+
+  .timeline-marker {
+    right: -2px;
+    top: 8px;
+  }
+
+  .timeline-marker-circle {
+    width: 40px;
+    height: 40px;
+    border-width: 1.5px;
+  }
+
+  .timeline-marker-circle svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .timeline-img-box {
+    aspect-ratio: 16 / 9.5;
+    border-radius: 12px;
+  }
+
+  .timeline-img-badge {
+    bottom: 8px;
+    right: 10px;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.55rem;
+  }
+
+  .timeline-content-card {
+    padding: 16px 14px;
+    border-radius: 12px;
+  }
+
+  .timeline-card-title {
+    font-size: 1.15rem;
+    margin-bottom: 8px;
+  }
+
+  .timeline-card-desc {
+    font-size: 0.88rem;
+    line-height: 1.7;
   }
 }
