@@ -83,6 +83,7 @@
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .admin-input {
@@ -94,25 +95,54 @@
   color: #fff;
   font-family: inherit;
   font-size: 0.95rem;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
   box-sizing: border-box;
+}
+
+.admin-input::placeholder {
+  color: #647f70;
+  direction: rtl;
+  text-align: right;
+  font-family: inherit;
+}
+
+.admin-password-field .admin-input {
+  padding-left: 2.85rem;
+  padding-right: 1rem;
+}
+
+.admin-input::-ms-reveal,
+.admin-input::-ms-clear {
+  display: none;
 }
 
 .admin-input:focus {
   outline: none;
   border-color: #c88d4e;
+  box-shadow: 0 0 0 3px rgba(200, 141, 78, 0.15);
 }
 
 .admin-pwd-toggle {
   position: absolute;
   left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
   background: none;
   border: none;
   color: #8da495;
   cursor: pointer;
-  padding: 0.25rem;
+  padding: 0.3rem;
   display: flex;
   align-items: center;
+  justify-content: center;
+  z-index: 3;
+  border-radius: 6px;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.admin-pwd-toggle:hover {
+  color: #c88d4e;
+  background-color: rgba(200, 141, 78, 0.1);
 }
 
 .admin-login-btn {
