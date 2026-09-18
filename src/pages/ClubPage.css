@@ -54,6 +54,10 @@
     grid-template-columns: 1fr;
     gap: 40px;
   }
+  .vip-digital-card {
+    transform: none !important;
+    max-width: 420px;
+  }
 }
 
 .club-badge-glow {
@@ -125,6 +129,17 @@
     gap: 12px;
     padding: 14px 16px;
   }
+  .vip-digital-card {
+    padding: 20px 18px 16px;
+    border-radius: 16px;
+  }
+  .card-brand-name {
+    font-size: 1rem;
+  }
+  .card-cardnumber-display {
+    font-size: 0.85rem;
+    gap: 8px;
+  }
 }
 
 .stat-pill {
@@ -159,6 +174,22 @@
   gap: 16px;
 }
 
+/* Fix light theme readability bug: ensures outline buttons inside dark hero are always crisp & high-contrast */
+.club-hero-actions .btn-outline {
+  color: #F7F3EC !important;
+  border: 1.5px solid rgba(247, 243, 236, 0.45) !important;
+  background: rgba(24, 38, 30, 0.55) !important;
+  backdrop-filter: blur(10px);
+  transition: all 0.25s ease;
+}
+
+.club-hero-actions .btn-outline:hover {
+  color: #DE9E48 !important;
+  border-color: #DE9E48 !important;
+  background: rgba(222, 158, 72, 0.18) !important;
+  box-shadow: 0 4px 20px rgba(222, 158, 72, 0.25);
+}
+
 .pulse-btn {
   box-shadow: 0 6px 24px rgba(222, 158, 72, 0.35);
   position: relative;
@@ -175,25 +206,31 @@
 
 .vip-digital-card {
   width: 100%;
-  max-width: 420px;
+  max-width: 440px;
   aspect-ratio: 1.58 / 1;
-  background: linear-gradient(135deg, #1E2E25 0%, #111A15 50%, #0A110E 100%);
-  border: 1px solid rgba(222, 158, 72, 0.45);
+  background: linear-gradient(140deg, #22352b 0%, #131f18 45%, #0b130f 100%);
+  border: 1.5px solid rgba(222, 158, 72, 0.6);
   border-radius: 22px;
-  padding: 28px 28px 24px;
+  padding: 26px 26px 22px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(222, 158, 72, 0.15);
+  box-shadow: 
+    0 24px 60px rgba(0, 0, 0, 0.65), 
+    0 0 35px rgba(222, 158, 72, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15);
   position: relative;
   overflow: hidden;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
   transform: rotate(-2deg);
 }
 
 .vip-digital-card:hover {
-  transform: rotate(0deg) scale(1.02);
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7), 0 0 45px rgba(222, 158, 72, 0.3);
+  transform: rotate(0deg) scale(1.03);
+  box-shadow: 
+    0 30px 75px rgba(0, 0, 0, 0.75), 
+    0 0 50px rgba(222, 158, 72, 0.35),
+    inset 0 1px 2px rgba(255, 255, 255, 0.25);
 }
 
 .card-texture {
@@ -202,7 +239,9 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 80% 20%, rgba(222, 158, 72, 0.15) 0%, transparent 60%);
+  background: 
+    radial-gradient(circle at 85% 15%, rgba(222, 158, 72, 0.25) 0%, transparent 55%),
+    linear-gradient(115deg, transparent 20%, rgba(255, 255, 255, 0.05) 45%, transparent 60%);
   pointer-events: none;
 }
 
@@ -241,21 +280,48 @@
 .card-chip-gold {
   width: 44px;
   height: 32px;
-  border-radius: 6px;
-  background: linear-gradient(135deg, #DE9E48 0%, #F5CE93 50%, #C88D4E 100%);
+  border-radius: 7px;
+  background: linear-gradient(135deg, #DE9E48 0%, #fae2be 45%, #c88d4e 100%);
   border: 1px solid #FFE7B8;
   position: relative;
-  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.6), 0 2px 8px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
 }
 
-.card-chip-gold::after {
-  content: '';
+.card-chip-gold .chip-line {
   position: absolute;
+  background: rgba(90, 55, 15, 0.45);
+}
+
+.card-chip-gold .line-h {
   top: 50%;
-  left: 10%;
-  right: 10%;
+  left: 0;
+  right: 0;
   height: 1px;
-  background: rgba(0, 0, 0, 0.25);
+  transform: translateY(-50%);
+}
+
+.card-chip-gold .line-v {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-50%);
+}
+
+.card-cardnumber-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 1rem;
+  letter-spacing: 2px;
+  color: rgba(247, 243, 236, 0.85);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 2;
+  margin: 6px 0;
+  direction: ltr;
 }
 
 .card-tier-badge {

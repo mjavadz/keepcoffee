@@ -184,7 +184,10 @@ export default function ClubPage() {
                   <span className="card-brand-name">KEEP COFFEE</span>
                 </div>
                 <div className="card-chip-container">
-                  <div className="card-chip-gold"></div>
+                  <div className="card-chip-gold">
+                    <span className="chip-line line-h"></span>
+                    <span className="chip-line line-v"></span>
+                  </div>
                   <span className="card-tier-badge">
                     {user ? (points >= 1500 ? 'VIP Member' : points >= 500 ? 'Gold Roaster' : 'Silver Member') : 'Club Member'}
                   </span>
@@ -202,6 +205,13 @@ export default function ClubPage() {
                   <Flame size={18} />
                   <span>{toPersianDigits(user ? streak : '0')} روز استریک</span>
                 </div>
+              </div>
+
+              <div className="card-cardnumber-display">
+                <span>KC-2026</span>
+                <span>••••</span>
+                <span>••••</span>
+                <span>{toPersianDigits(user?.id ? String(user.id).padStart(4, '0') : '8840')}</span>
               </div>
 
               <div className="card-bottom">
