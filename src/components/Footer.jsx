@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Coffee, Phone } from './Icons';
-import { site, links } from '../data/site';
+import { links } from '../data/site';
 import './Footer.css';
 
 const InstagramIcon = () => (

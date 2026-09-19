@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Phone, MessageCircle, X, Send, WhatsApp, Telegram } from './Icons';
+import { Phone, MessageCircle, X, WhatsApp, Telegram } from './Icons';
 import { site, links } from '../data/site';
 import './FloatingContact.css';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Award, Crown, Gem, Flame, Star, Coffee, ArrowLeft, Check } from './Icons';
+import { Award, Crown, Flame, Star, Coffee, ArrowLeft } from './Icons';
 import { useAuth } from '../context/AuthContext';
 import { toPersianDigits, formatToman } from '../utils/format';
 import './CustomerClub.css';
