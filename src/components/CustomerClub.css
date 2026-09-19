@@ -155,54 +155,55 @@
   border-color: #FFFFFF;
 }
 
-/* --- Digital VIP Roastery Card (Matches ClubPage) --- */
+/* --- Authentic Roastery Digital Membership Card --- */
 .club-card-stage {
   display: flex;
   justify-content: center;
   align-items: center;
-  perspective: 1000px;
 }
 
-.club-vip-card {
+.roastery-club-card {
   width: 100%;
   max-width: 440px;
-  aspect-ratio: 1.58 / 1;
-  background: linear-gradient(140deg, #22352b 0%, #131f18 45%, #0b130f 100%);
-  border: 1.5px solid rgba(222, 158, 72, 0.6);
-  border-radius: 22px;
-  padding: 26px 26px 22px;
+  background: linear-gradient(150deg, #182820 0%, #111b15 60%, #0d1511 100%);
+  border: 1.5px solid rgba(200, 141, 78, 0.45);
+  border-radius: 20px;
+  padding: 24px 26px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 18px;
   box-shadow: 
-    0 24px 60px rgba(0, 0, 0, 0.65), 
-    0 0 35px rgba(222, 158, 72, 0.2),
-    inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    0 20px 50px rgba(0, 0, 0, 0.55),
+    0 0 35px rgba(200, 141, 78, 0.12),
+    inset 0 1px 1px rgba(255, 255, 255, 0.12);
   position: relative;
   overflow: hidden;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
-  transform: rotate(-2.5deg);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s, box-shadow 0.35s;
+  direction: rtl;
 }
 
-.club-vip-card:hover {
-  transform: rotate(0deg) scale(1.03);
+.roastery-club-card:hover {
+  transform: translateY(-3px);
+  border-color: #DE9E48;
   box-shadow: 
-    0 30px 75px rgba(0, 0, 0, 0.75), 
-    0 0 50px rgba(222, 158, 72, 0.35),
-    inset 0 1px 2px rgba(255, 255, 255, 0.25);
+    0 26px 65px rgba(0, 0, 0, 0.65),
+    0 0 45px rgba(222, 158, 72, 0.25),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
 }
 
-.card-ambient-light {
+.card-ambient-glow {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at 80% 20%, rgba(222, 158, 72, 0.15) 0%, transparent 60%);
+  top: -40px;
+  left: -40px;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(222, 158, 72, 0.18) 0%, transparent 70%);
+  border-radius: 50%;
   pointer-events: none;
 }
 
-.card-top-bar {
+/* Card Header */
+.roastery-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -210,132 +211,202 @@
   z-index: 2;
 }
 
-.card-brand-group {
+.roastery-card-brand {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
-.card-coffee-icon {
-  color: #DE9E48;
-}
-
-.card-brand-title {
-  font-size: 1.05rem;
-  font-weight: 900;
-  letter-spacing: 2px;
-  color: #F7F3EC;
-  font-family: 'Cinzel', serif, sans-serif;
-}
-
-.card-chip-wrap {
+.brand-symbol {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(222, 158, 72, 0.14);
+  border: 1px solid rgba(222, 158, 72, 0.35);
   display: flex;
   align-items: center;
-  gap: 10px;
-}
-
-.card-chip-metal {
-  width: 40px;
-  height: 28px;
-  border-radius: 5px;
-  background: linear-gradient(135deg, #DE9E48 0%, #F5CE93 50%, #C88D4E 100%);
-  border: 1px solid #FFE7B8;
-  position: relative;
-  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4);
-}
-
-.card-chip-metal::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 10%;
-  right: 10%;
-  height: 1px;
-  background: rgba(0, 0, 0, 0.25);
-}
-
-.card-tier-label {
-  background: rgba(222, 158, 72, 0.15);
-  border: 1px solid rgba(222, 158, 72, 0.4);
+  justify-content: center;
   color: #DE9E48;
-  padding: 3px 10px;
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.brand-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name-fa {
+  font-size: 1.15rem;
   font-weight: 800;
-  letter-spacing: 0.5px;
+  color: #FFFFFF;
+  line-height: 1.25;
 }
 
-.card-body-metrics {
+.brand-sub-fa {
+  font-size: 0.76rem;
+  color: rgba(247, 243, 236, 0.65);
+  font-weight: 500;
+}
+
+.roastery-card-tier-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(222, 158, 72, 0.15);
+  border: 1px solid rgba(222, 158, 72, 0.45);
+  color: #F5CE93;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.tier-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #DE9E48;
+  box-shadow: 0 0 8px #DE9E48;
+}
+
+/* Card Body */
+.roastery-card-body {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 16px 18px;
   position: relative;
   z-index: 2;
-  margin: 12px 0;
 }
 
-.card-metric-label {
-  display: block;
-  font-size: 0.8rem;
-  color: rgba(247, 243, 236, 0.65);
-  margin-bottom: 2px;
+.points-showcase {
+  display: flex;
+  flex-direction: column;
 }
 
-.card-metric-val {
+.points-label {
+  font-size: 0.78rem;
+  color: rgba(247, 243, 236, 0.7);
+  margin-bottom: 4px;
+}
+
+.points-numeric-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.points-digit {
   font-size: 2.2rem;
   font-weight: 900;
   color: #DE9E48;
   line-height: 1;
-  font-family: 'JetBrains Mono', 'Vazirmatn', monospace;
+  letter-spacing: -0.5px;
 }
 
-.card-metric-val small {
-  font-size: 0.9rem;
-  color: rgba(222, 158, 72, 0.75);
-  margin-right: 4px;
+.points-unit {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: rgba(247, 243, 236, 0.8);
 }
 
-.card-streak-badge {
+.points-value-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.75rem;
+  color: rgba(247, 243, 236, 0.7);
+}
+
+.points-value-pill strong {
+  font-size: 0.95rem;
+  color: #4ADE80;
+  font-weight: 800;
+  margin: 2px 0;
+}
+
+/* Progress Box */
+.roastery-card-progress-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: rgba(247, 243, 236, 0.75);
+}
+
+.progress-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #DE9E48 0%, #F5CE93 100%);
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+/* Card Footer */
+.roastery-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 14px;
+  position: relative;
+  z-index: 2;
+}
+
+.member-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.meta-label {
+  font-size: 0.72rem;
+  color: rgba(247, 243, 236, 0.55);
+}
+
+.meta-value {
+  font-size: 0.88rem;
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+.status-badge-active {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 5px 12px;
-  border-radius: var(--radius-full);
-  font-size: 0.82rem;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #FCA5A5;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
   font-weight: 700;
-  color: #F7F3EC;
 }
 
-.card-footer-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  position: relative;
-  z-index: 2;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: 12px;
-}
-
-.card-sub-label {
-  display: block;
-  font-size: 0.72rem;
-  color: rgba(247, 243, 236, 0.5);
-  margin-bottom: 2px;
-}
-
-.card-owner-name {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #F7F3EC;
-}
-
-.card-active-pill {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #4ADE80;
-  background: rgba(74, 222, 128, 0.15);
-  padding: 2px 8px;
-  border-radius: 6px;
+@media (max-width: 640px) {
+  .roastery-club-card {
+    padding: 20px 18px;
+    gap: 16px;
+    border-radius: 16px;
+  }
+  .points-digit {
+    font-size: 1.85rem;
+  }
 }

@@ -214,12 +214,6 @@
   font-size: 0.85rem;
 }
 
-.footer-shipping-policy {
-  color: var(--color-accent);
-  font-weight: 600;
-  font-size: 0.82rem;
-}
-
 @media (max-width: 768px) {
   .footer {
     padding: 60px 0 24px;

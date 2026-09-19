@@ -75,47 +75,80 @@ export default function CustomerClub() {
             </div>
           </div>
 
-          {/* Luxury VIP Roastery Digital Card */}
+          {/* Authentic Roastery Digital Membership Card */}
           <div className="club-card-stage">
-            <div className="club-vip-card">
-              <div className="card-ambient-light"></div>
-              
-              <div className="card-top-bar">
-                <div className="card-brand-group">
-                  <Coffee size={22} className="card-coffee-icon" />
-                  <span className="card-brand-title">KEEP COFFEE</span>
+            <div className="roastery-club-card">
+              <div className="card-ambient-glow" />
+
+              {/* Card Header: Brand & Tier Badge */}
+              <div className="roastery-card-header">
+                <div className="roastery-card-brand">
+                  <div className="brand-symbol">
+                    <Coffee size={20} />
+                  </div>
+                  <div className="brand-titles">
+                    <strong className="brand-name-fa">کیپ کافی</strong>
+                    <span className="brand-sub-fa">باشگاه وفاداری روستری</span>
+                  </div>
                 </div>
-                <div className="card-chip-wrap">
-                  <div className="card-chip-metal"></div>
-                  <span className="card-tier-label">
-                    {user ? (points >= 1500 ? 'VIP Member' : points >= 500 ? 'Gold Roaster' : 'Silver Member') : 'Club Member'}
+                <div className="roastery-card-tier-pill">
+                  <span className="tier-dot" />
+                  <span>
+                    {user
+                      ? points >= 1500
+                        ? 'سطح ویژه (VIP)'
+                        : points >= 500
+                        ? 'سطح طلایی'
+                        : 'سطح نقره‌ای'
+                      : 'عضویت کارگاه'}
                   </span>
                 </div>
               </div>
 
-              <div className="card-body-metrics">
-                <div>
-                  <span className="card-metric-label">موجودی امتیاز:</span>
-                  <div className="card-metric-val">
-                    {toPersianDigits(user ? points : '120')} <small>PTS</small>
+              {/* Card Body: Points Showcase & Value */}
+              <div className="roastery-card-body">
+                <div className="points-showcase">
+                  <span className="points-label">موجودی امتیاز وفاداری</span>
+                  <div className="points-numeric-row">
+                    <span className="points-digit">{toPersianDigits(user ? points : '۱۲۰')}</span>
+                    <span className="points-unit">امتیاز</span>
                   </div>
                 </div>
-                <div className="card-streak-badge">
-                  <Flame size={16} />
-                  <span>{toPersianDigits(user ? streak : '7')} روز استریک</span>
+                <div className="points-value-pill">
+                  <span>معادل</span>
+                  <strong>{formatToman((user ? points : 120) * 1000)}</strong>
+                  <span>تخفیف نقدی</span>
                 </div>
               </div>
 
-              <div className="card-footer-bar">
-                <div>
-                  <span className="card-sub-label">دارنده کارت</span>
-                  <strong className="card-owner-name">
-                    {user?.displayName || 'همراه ویژه کارگاه'}
-                  </strong>
+              {/* Progress to Next Tier */}
+              <div className="roastery-card-progress-box">
+                <div className="progress-labels">
+                  <span>پیشرفت تا سطح بعدی</span>
+                  <span>
+                    {toPersianDigits(Math.min(user ? points : 120, 500))} / {toPersianDigits(500)} امتیاز
+                  </span>
                 </div>
-                <div style={{ textAlign: 'left' }}>
-                  <span className="card-sub-label">وضعیت</span>
-                  <span className="card-active-pill">{user ? 'فعال ✓' : 'عضویت باز'}</span>
+                <div className="progress-track">
+                  <div
+                    className="progress-fill"
+                    style={{ width: `${Math.min(((user ? points : 120) / 500) * 100, 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Card Footer: User & Status */}
+              <div className="roastery-card-footer">
+                <div className="member-meta-item">
+                  <span className="meta-label">نام مشترک</span>
+                  <strong className="meta-value">{user?.displayName || 'همراه ویژه کیپ کافی'}</strong>
+                </div>
+                <div className="member-meta-item text-left">
+                  <span className="meta-label">وضعیت حساب</span>
+                  <span className="status-badge-active">
+                    <Flame size={13} />
+                    <span>{toPersianDigits(user ? streak : '۷')} روز حضور</span>
+                  </span>
                 </div>
               </div>
             </div>

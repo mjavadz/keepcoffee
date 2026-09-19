@@ -138,7 +138,6 @@ export default function Footer() {
 
         <div className="footer-bottom">
           <p>© {new Date().getFullYear()} Keep Coffee Roastery — تمامی حقوق محفوظ است.</p>
-          <span className="footer-shipping-policy">ارسال شهری رایگان در تهران برای سفارش‌های بالای ۲۰ کیلوگرم</span>
         </div>
       </div>
     </footer>
