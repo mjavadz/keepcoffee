@@ -1,3 +1,8 @@
+/* ==========================================================================
+   LuckyWheel Component - Keep Coffee Roastery
+   Vector SVG-driven wheel of fortune with precision needle and elegant roastery aesthetic
+   ========================================================================== */
+
 .lucky-wheel-container {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -48,96 +53,71 @@
   align-items: center;
 }
 
-/* Wheel Interactive Wrap */
+@media (max-width: 900px) {
+  .wheel-stage-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
+
+/* Wheel Interactive Frame */
 .wheel-interactive-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
-  padding: 20px 0;
+  padding: 10px 0;
 }
 
-.wheel-pointer-pin {
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 14px solid transparent;
-  border-right: 14px solid transparent;
-  border-top: 24px solid #DE9E48;
-  z-index: 10;
-  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
-}
-
-.wheel-disc {
-  width: 280px;
-  height: 280px;
-  border-radius: 50%;
-  border: 8px solid #18261E;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 0 15px rgba(0, 0, 0, 0.4);
-  position: relative;
-  overflow: hidden;
-  background: #18261E;
-}
-
-[data-theme="dark"] .wheel-disc {
-  border-color: #0A110E;
-}
-
-.wheel-segment {
+/* Top Pointer Needle */
+.wheel-pointer-container {
   position: absolute;
   top: 0;
   left: 50%;
-  width: 140px;
-  height: 140px;
-  transform-origin: 0 140px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 18px;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 44px;
+  z-index: 15;
+  pointer-events: none;
 }
 
-.wheel-segment.even {
-  background: linear-gradient(135deg, rgba(222, 158, 72, 0.95), rgba(200, 141, 78, 0.9));
-  color: #101914;
+.wheel-pointer-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
-.wheel-segment.odd {
-  background: linear-gradient(135deg, #18261E, #1E3328);
-  color: #F7F4EF;
-}
-
-.segment-label {
-  font-size: 0.78rem;
-  font-weight: 800;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  white-space: nowrap;
-}
-
-.wheel-center-hub {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 58px;
-  height: 58px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #DE9E48 0%, #B87A30 100%);
-  border: 4px solid #FFFFFF;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+/* Disc Frame & Rotator */
+.wheel-disc-frame {
+  width: 320px;
+  height: 320px;
+  max-width: 100%;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 5;
+  margin-top: 10px;
 }
 
-.hub-text {
-  font-family: 'Playfair Display', serif;
-  font-weight: 900;
-  font-size: 0.95rem;
-  color: #101914;
+@media (max-width: 400px) {
+  .wheel-disc-frame {
+    width: 290px;
+    height: 290px;
+  }
+}
+
+.wheel-disc-rotator {
+  width: 100%;
+  height: 100%;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.wheel-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.45));
 }
 
 .wheel-action-bar {
@@ -149,29 +129,37 @@
 
 .spin-btn {
   width: 100%;
-  max-width: 240px;
+  max-width: 250px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  padding: 12px 24px;
+  font-size: 1rem;
   font-weight: 800;
   box-shadow: 0 8px 24px rgba(222, 158, 72, 0.35);
+  transition: all 0.25s ease;
+}
+
+.spin-btn.is-spinning {
+  opacity: 0.8;
+  cursor: not-allowed;
 }
 
 .cooldown-active-pill {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(222, 158, 72, 0.1);
+  background: rgba(222, 158, 72, 0.12);
   border: 1px solid rgba(222, 158, 72, 0.3);
   color: var(--color-accent);
-  padding: 10px 18px;
+  padding: 10px 20px;
   border-radius: var(--radius-full);
-  font-size: 0.86rem;
+  font-size: 0.88rem;
   font-weight: 700;
 }
 
-/* Rewards & Coupons Panel */
+/* Rewards Panel */
 .wheel-rewards-panel {
   display: flex;
   flex-direction: column;
@@ -182,33 +170,34 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05));
-  border: 1px solid rgba(34, 197, 94, 0.4);
+  background: linear-gradient(135deg, rgba(222, 158, 72, 0.18) 0%, rgba(200, 141, 78, 0.1) 100%);
+  border: 1.5px solid #DE9E48;
   border-radius: var(--radius-md);
   padding: 14px 18px;
-  animation: pulse-win 1.5s infinite alternate;
+  animation: prizePopup 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes pulse-win {
-  from { transform: scale(0.99); }
-  to { transform: scale(1.01); }
+@keyframes prizePopup {
+  from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .won-prize-icon {
-  font-size: 2rem;
+  font-size: 1.8rem;
 }
 
 .won-prize-alert strong {
+  color: var(--color-accent);
   display: block;
-  font-size: 0.96rem;
-  color: #22C55E;
+  font-size: 0.95rem;
   margin-bottom: 2px;
 }
 
 .won-prize-alert p {
+  color: var(--color-text-primary);
   margin: 0;
   font-size: 0.88rem;
-  color: var(--color-text-primary);
+  line-height: 1.5;
 }
 
 .coupons-wallet-card {
@@ -251,17 +240,18 @@
 
 .wallet-empty-state {
   text-align: center;
-  padding: 20px 10px;
+  padding: 24px 12px;
   color: var(--color-text-secondary);
-  font-size: 0.86rem;
+  font-size: 0.88rem;
 }
 
 .coupons-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  max-height: 220px;
+  gap: 12px;
+  max-height: 280px;
   overflow-y: auto;
+  padding-left: 4px;
 }
 
 .coupon-ticket {
@@ -269,28 +259,35 @@
   align-items: center;
   justify-content: space-between;
   background: var(--color-surface);
-  border: 1px dashed var(--color-accent);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
+  border: 1px dashed rgba(222, 158, 72, 0.45);
+  border-radius: 10px;
+  padding: 12px 14px;
   gap: 12px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.coupon-ticket:hover {
+  border-color: #DE9E48;
+  transform: translateY(-2px);
 }
 
 .ticket-body strong {
   display: block;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   color: var(--color-text-primary);
   margin-bottom: 2px;
 }
 
 .ticket-body p {
   margin: 0 0 4px;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   color: var(--color-text-secondary);
 }
 
 .ticket-expire {
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   color: #DE9E48;
+  font-weight: 600;
 }
 
 .copy-code-btn {
@@ -298,12 +295,12 @@
   align-items: center;
   gap: 6px;
   background: rgba(222, 158, 72, 0.12);
-  border: 1px solid rgba(222, 158, 72, 0.3);
+  border: 1px solid rgba(222, 158, 72, 0.35);
   color: var(--color-accent);
-  padding: 6px 10px;
+  padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 700;
   transition: all var(--transition-fast);
 }
@@ -321,11 +318,4 @@
 
 .copy-code-btn code {
   font-family: monospace;
-}
-
-@media (max-width: 880px) {
-  .wheel-stage-grid {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
 }

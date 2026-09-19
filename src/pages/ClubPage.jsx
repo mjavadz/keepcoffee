@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import CheckInCard from '../components/CheckInCard';
+import LuckyWheel from '../components/club/LuckyWheel';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api';
 import { toPersianDigits, formatToman } from '../utils/format';
@@ -108,6 +109,10 @@ export default function ClubPage() {
   const points = profile?.user?.points ?? user?.points ?? 0;
   const streak = profile?.user?.streak ?? user?.streak ?? 0;
   const discountToman = calcPoints * 1000;
+
+  const handleWheelPointsWon = useCallback(() => {
+    refreshProfile();
+  }, [refreshProfile]);
 
   return (
     <div className="page club-page">
@@ -358,6 +363,15 @@ export default function ClubPage() {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Interactive Daily Lucky Wheel */}
+      <section className="container club-wheel-section" style={{ margin: '50px auto' }}>
+        <LuckyWheel
+          user={user}
+          onPointsWon={handleWheelPointsWon}
+          storageKey={user ? `kc_user_${user.id}` : 'kc_guest'}
+        />
       </section>
 
       {/* 3 Luxury Membership Tiers */}

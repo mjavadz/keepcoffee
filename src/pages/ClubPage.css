@@ -977,3 +977,19 @@
   justify-content: center;
   gap: 16px;
 }
+
+/* Fix light theme readability bug on Roastery callout action */
+.club-bottom-actions .btn-outline {
+  color: #F7F3EC !important;
+  border: 1.5px solid rgba(247, 243, 236, 0.45) !important;
+  background: rgba(24, 38, 30, 0.55) !important;
+  backdrop-filter: blur(10px);
+  transition: all 0.25s ease;
+}
+
+.club-bottom-actions .btn-outline:hover {
+  color: #DE9E48 !important;
+  border-color: #DE9E48 !important;
+  background: rgba(222, 158, 72, 0.18) !important;
+  box-shadow: 0 4px 20px rgba(222, 158, 72, 0.25);
+}
