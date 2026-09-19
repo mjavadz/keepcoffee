@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Award, Crown, Gem, Flame, Star, Coffee, ArrowLeft, Check } from './Icons';
 import { useAuth } from '../context/AuthContext';
-import { toPersianDigits } from '../utils/format';
+import { toPersianDigits, formatToman } from '../utils/format';
 import './CustomerClub.css';
 
 export default function CustomerClub() {
