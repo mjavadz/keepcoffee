@@ -249,9 +249,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-height: 280px;
-  overflow-y: auto;
-  padding-left: 4px;
+  overflow: visible;
+  padding: 0;
 }
 
 .coupon-ticket {

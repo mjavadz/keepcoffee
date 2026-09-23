@@ -43,7 +43,7 @@ const REASON_LABELS = {
 };
 
 const TABS = [
-  { id: 'wallet', label: 'کیف پول و دارایی', icon: Wallet, badge: 'جدید' },
+  { id: 'wallet', label: 'کیف پول و دارایی', icon: Wallet },
   { id: 'wheel', label: 'گردونه جوایز', icon: Gift, badge: 'رایگان' },
   { id: 'brew', label: 'دستیار دم‌آوری', icon: Clock },
   { id: 'journal', label: 'دفترچه طعم‌یابی', icon: Coffee },
