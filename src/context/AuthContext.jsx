@@ -47,8 +47,25 @@ export function AuthProvider({ children }) {
 
   const login = useCallback(async (email, password) => {
     const res = await api.post('/auth/login', { email, password });
-    return handleAuthPayload(res);
+    if (res?.requires2FA) {
+      if (res.csrfToken) setCsrfToken(res.csrfToken);
+      return res;
+    }
+    handleAuthPayload(res);
+    return res;
   }, [handleAuthPayload]);
+
+  const verify2FA = useCallback(async (code) => {
+    const res = await api.post('/auth/verify-2fa', { code });
+    handleAuthPayload(res);
+    return res;
+  }, [handleAuthPayload]);
+
+  const resend2FA = useCallback(async () => {
+    const res = await api.post('/auth/resend-2fa');
+    if (res?.csrfToken) setCsrfToken(res.csrfToken);
+    return res;
+  }, []);
 
   const register = useCallback(async (displayName, email, password) => {
     const res = await api.post('/auth/register', { displayName, email, password });
@@ -67,6 +84,8 @@ export function AuthProvider({ children }) {
     user,
     loading,
     login,
+    verify2FA,
+    resend2FA,
     register,
     logout,
     refresh,

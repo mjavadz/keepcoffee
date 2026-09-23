@@ -25,7 +25,9 @@ import {
   Check,
   Wallet,
   Camera,
-  Trash2
+  Trash2,
+  Shield,
+  CheckCircle
 } from '../components/Icons';
 import './ProfilePage.css';
 
@@ -59,6 +61,23 @@ export default function ProfilePage() {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [twoFaLoading, setTwoFaLoading] = useState(false);
+  const [twoFaMsg, setTwoFaMsg] = useState('');
+
+  const handleToggle2FA = async (newVal) => {
+    setTwoFaLoading(true);
+    setTwoFaMsg('');
+    try {
+      const res = await api.post('/profile/2fa/toggle', { enable: newVal });
+      await Promise.all([loadProfile(), refresh()]);
+      setTwoFaMsg(res.message);
+      setTimeout(() => setTwoFaMsg(''), 4500);
+    } catch (err) {
+      setTwoFaMsg(err.message || 'خطا در تغییر وضعیت تایید دو مرحله‌ای');
+    } finally {
+      setTwoFaLoading(false);
+    }
+  };
   const [saveMsg, setSaveMsg] = useState('');
   const [userAvatar, setUserAvatar] = useState(null);
   const [journalPrefill, setJournalPrefill] = useState(null);
@@ -454,6 +473,51 @@ export default function ProfilePage() {
                       {saving ? 'در حال ذخیره…' : 'ذخیره تغییرات در دیتابیس'}
                     </button>
                   </form>
+                </div>
+
+                {/* Security & 2FA Section */}
+                <div className="profile-card" style={{ marginTop: '1.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Shield size={22} />
+                    </div>
+                    <div>
+                      <h2 className="profile-card-title" style={{ margin: 0, fontSize: '1.15rem' }}>امنیت و ورود دو مرحله‌ای (2FA)</h2>
+                      <p style={{ margin: '0.2rem 0 0', fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
+                        حفاظت مضاعف از حساب و موجودی امتیازات وفاداری شما
+                      </p>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem', background: 'var(--color-bg)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                        <strong style={{ fontSize: '0.98rem' }}>ارسال کد تایید یکبار مصرف به ایمیل</strong>
+                        <span style={{ fontSize: '0.75rem', padding: '0.2rem 0.6rem', borderRadius: '6px', background: currentUser?.twoFactorEnabled ? 'rgba(16,185,129,0.18)' : 'rgba(239,68,68,0.15)', color: currentUser?.twoFactorEnabled ? '#34d399' : '#f87171', fontWeight: 800 }}>
+                          {currentUser?.twoFactorEnabled ? '● فعال' : '○ غیرفعال'}
+                        </span>
+                      </div>
+                      <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--color-text-secondary)', maxWidth: '440px', lineHeight: 1.6 }}>
+                        با فعال‌سازی این گزینه، در هر بار ورود به حساب علاوه بر رمز عبور، یک کد تایید ۶ رقمی به آدرس ایمیل شما ارسال می‌شود تا هیچ فرد دیگری نتواند به حساب شما دسترسی یابد.
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      className={`btn btn-sm ${currentUser?.twoFactorEnabled ? 'btn-outline-danger' : 'btn-primary'}`}
+                      disabled={twoFaLoading}
+                      onClick={() => handleToggle2FA(!currentUser?.twoFactorEnabled)}
+                      style={{ whiteSpace: 'nowrap' }}
+                    >
+                      {twoFaLoading ? 'در حال اعمال…' : currentUser?.twoFactorEnabled ? 'غیرفعال‌سازی ۲FA' : 'فعال‌سازی ورود دو مرحله‌ای'}
+                    </button>
+                  </div>
+
+                  {twoFaMsg && (
+                    <div style={{ marginTop: '0.85rem', padding: '0.75rem 1rem', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '8px', color: '#34d399', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <CheckCircle size={16} /> <span>{twoFaMsg}</span>
+                    </div>
+                  )}
                 </div>
               </section>
 

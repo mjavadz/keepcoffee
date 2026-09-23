@@ -22,7 +22,11 @@ import {
   ArrowLeft,
   Plus,
   Download,
-  Edit2
+  Edit2,
+  Printer,
+  AlertTriangle,
+  Trash2,
+  CheckCircle
 } from '../components/Icons';
 import SEO from '../components/SEO';
 import Loader from '../components/Loader';
@@ -55,6 +59,18 @@ const PAYMENT_LABELS = {
   refunded: { label: 'مرجوعی', class: 'badge-refunded' },
 };
 
+
+const IMAGE_PRESETS = [
+  { url: '/images/photo-1509042239860-500.webp', label: 'دانه قهوه برشته' },
+  { url: '/images/photo-1514432324607-500.webp', label: 'بسته قهوه تخصصی' },
+  { url: '/images/photo-1498804103079-500.webp', label: 'کمکس و قهوه دمی' },
+  { url: '/images/photo-1511920170033-800.webp', label: 'شات اسپرسو و فنجان' },
+  { url: '/images/photo-1541167760496-500.webp', label: 'لاته آرت کارگاه' },
+  { url: '/images/photo-1559056199-500.webp', label: 'آسیاب و دریپر' },
+  { url: '/images/photo-1544787219-500.webp', label: 'فرنچ پرس و ماگ' },
+  { url: '/images/photo-1572442388796-500.webp', label: 'قهوه سرددم Cold Brew' },
+];
+
 const REASON_LABELS = {
   checkin: 'چک‌این روزانه',
   checkin_streak_bonus: 'پاداش زنجیره حضور',
@@ -85,6 +101,20 @@ export default function AdminPage() {
   const [ordersTotal, setOrdersTotal] = useState(0);
   const [ordersPage, setOrdersPage] = useState(1);
   const [orderStatusFilter, setOrderStatusFilter] = useState('all');
+  const [orderPaymentFilter, setOrderPaymentFilter] = useState('all');
+  const [invoiceOrder, setInvoiceOrder] = useState(null);
+  const [trackingInput, setTrackingInput] = useState('');
+
+  // Store general settings state
+  const [storeSettings, setStoreSettings] = useState({
+    contact_whatsapp: '09120000000',
+    contact_phone: '02188888888',
+    shipping_cost: '45000',
+    free_shipping_threshold: '800000',
+    announcement_banner: 'ارسال سریع دانه‌های برشته‌کاری کیپ کافی به سراسر کشور',
+    roastery_address: 'تهران، کارگاه تخصصی برشته‌کاری کیپ کافی'
+  });
+  const [settingsLoading, setSettingsLoading] = useState(false);
   const [orderSearch, setOrderSearch] = useState('');
 
   const [usersList, setUsersList] = useState([]);
@@ -100,6 +130,7 @@ export default function AdminPage() {
   // Products / Inventory State
   const [catalog, setCatalog] = useState([]);
   const [catalogCategory, setCatalogCategory] = useState('all');
+  const [catalogStockFilter, setCatalogStockFilter] = useState('all');
   const [catalogSearch, setCatalogSearch] = useState('');
   const [editingPriceId, setEditingPriceId] = useState(null);
   const [editingPriceVal, setEditingPriceVal] = useState('');
@@ -316,6 +347,51 @@ export default function AdminPage() {
     }
   }, []);
 
+
+  // Fetch store settings
+  const fetchStoreSettings = useCallback(async () => {
+    try {
+      setSettingsLoading(true);
+      const res = await api.get('/admin/settings');
+      if (res?.settings) {
+        setStoreSettings(prev => ({ ...prev, ...res.settings }));
+      }
+    } catch (err) {
+      showToast('خطا در دریافت تنظیمات کارگاه', 'error');
+    } finally {
+      setSettingsLoading(false);
+    }
+  }, []);
+
+  const handleSaveStoreSettings = async (e) => {
+    e.preventDefault();
+    try {
+      setActionLoading(true);
+      await api.post('/admin/settings/update', storeSettings);
+      showToast('تنظیمات فروشگاه با موفقیت ذخیره شد');
+    } catch (err) {
+      showToast(err.message || 'خطا در ذخیره تنظیمات', 'error');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteProduct = async (p) => {
+    if (!window.confirm(`آیا از حذف دائم محصول "${p.name}" از دیتابیس اطمینان دارید؟`)) {
+      return;
+    }
+    try {
+      setActionLoading(true);
+      await api.post('/admin/products/delete', { id: p.id });
+      showToast(`محصول "${p.name}" با موفقیت حذف شد`);
+      fetchCatalog();
+    } catch (err) {
+      showToast(err.message || 'خطا در حذف محصول', 'error');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   // Tab change trigger
   useEffect(() => {
     if (!isAdminAuthed) return;
@@ -324,7 +400,8 @@ export default function AdminPage() {
     if (activeTab === 'products') fetchCatalog();
     if (activeTab === 'users') fetchUsers();
     if (activeTab === 'transactions') fetchTransactions();
-  }, [activeTab, isAdminAuthed, fetchStats, fetchOrders, fetchCatalog, fetchUsers, fetchTransactions]);
+    if (activeTab === 'settings') fetchStoreSettings();
+  }, [activeTab, isAdminAuthed, fetchStats, fetchOrders, fetchCatalog, fetchUsers, fetchTransactions, fetchStoreSettings]);
 
   // Update product quick fields (price, stock_status, inventory_qty, is_active)
   const handleQuickUpdateProduct = async (id, fields) => {
@@ -438,13 +515,15 @@ export default function AdminPage() {
   };
 
   // Update order status handler
-  const handleUpdateOrderStatus = async (orderId, newStatus, newPaymentStatus) => {
+  const handleUpdateOrderStatus = async (orderId, newStatus, newPaymentStatus, customTracking) => {
     try {
       setActionLoading(true);
+      const trackingCode = customTracking !== undefined ? customTracking : trackingInput;
       await api.post('/admin/orders/status', {
         orderId,
         status: newStatus,
         paymentStatus: newPaymentStatus,
+        trackingCode: trackingCode,
       });
       showToast('وضعیت سفارش با موفقیت به‌روزرسانی شد');
       if (selectedOrder) {
@@ -452,6 +531,7 @@ export default function AdminPage() {
           ...prev,
           status: newStatus || prev.status,
           payment_status: newPaymentStatus || prev.payment_status,
+          tracking_code: trackingCode,
         }));
       }
       fetchOrders();
@@ -697,6 +777,7 @@ export default function AdminPage() {
               if (activeTab === 'orders') fetchOrders();
               if (activeTab === 'users') fetchUsers();
               if (activeTab === 'transactions') fetchTransactions();
+    if (activeTab === 'settings') fetchStoreSettings();
               showToast('اطلاعات با موفقیت به‌روزرسانی شد');
             }}
             className="admin-action-link"
@@ -796,6 +877,32 @@ export default function AdminPage() {
               <Loader minHeight="40vh" />
             ) : (
               <>
+                {/* Low Stock Alert Banner */}
+                {stats?.lowStockProducts?.length > 0 && (
+                  <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.35)', borderRadius: '14px', padding: '1.25rem 1.5rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                      <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#3b2814', color: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <AlertTriangle size={22} />
+                      </div>
+                      <div>
+                        <strong style={{ color: '#f59e0b', fontSize: '1rem', display: 'block' }}>
+                          هشدار انبار: {toPersianDigits(stats.lowStockProducts.length)} محصول نیازمند برشته‌کاری یا شارژ مجدد است!
+                        </strong>
+                        <span style={{ fontSize: '0.85rem', color: '#b5c7bc' }}>
+                          {stats.lowStockProducts.map(p => `${p.name} (${toPersianDigits(p.inventory_qty)} ${p.unit || 'کیلو'})`).join(' • ')}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      className="admin-dark-btn admin-dark-btn-accent"
+                      onClick={() => { setActiveTab('products'); setCatalogStockFilter('low_stock'); }}
+                      style={{ fontSize: '0.85rem' }}
+                    >
+                      مدیریت موجودی انبار
+                    </button>
+                  </div>
+                )}
+
                 <div className="admin-metrics-grid">
                   <div className="admin-metric-card">
                     <div className="admin-metric-head">
@@ -960,6 +1067,21 @@ export default function AdminPage() {
                     <option value="cancelled">لغو شده</option>
                   </select>
                 </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <label style={{ fontSize: '0.85rem', color: '#8da495', whiteSpace: 'nowrap' }}>وضعیت پرداخت:</label>
+                  <select
+                    value={orderPaymentFilter}
+                    onChange={(e) => { setOrderPaymentFilter(e.target.value); setOrdersPage(1); }}
+                    className="admin-input"
+                    style={{ width: 'auto' }}
+                  >
+                    <option value="all">همه پرداخت‌ها</option>
+                    <option value="paid">پرداخت شده</option>
+                    <option value="unpaid">در انتظار پرداخت</option>
+                    <option value="refunded">مرجوعی</option>
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -1020,9 +1142,19 @@ export default function AdminPage() {
                               </span>
                             </td>
                             <td>
-                              <button className="admin-dark-btn" onClick={() => setSelectedOrder(ord)}>
-                                مشاهده و تغییر وضعیت
-                              </button>
+                              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                                <button className="admin-dark-btn" onClick={() => { setSelectedOrder(ord); setTrackingInput(ord.tracking_code || ''); }}>
+                                  مشاهده و اقدام
+                                </button>
+                                <button
+                                  className="admin-dark-btn"
+                                  onClick={() => setInvoiceOrder(ord)}
+                                  title="چاپ فاکتور و برچسب پستی"
+                                  style={{ padding: '0.4rem 0.6rem' }}
+                                >
+                                  <Printer size={15} />
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ))
@@ -1100,6 +1232,21 @@ export default function AdminPage() {
                     <option value="accessories">لوازم جانبی</option>
                   </select>
                 </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <label style={{ fontSize: '0.85rem', color: '#8da495' }}>وضعیت انبار:</label>
+                  <select
+                    value={catalogStockFilter}
+                    onChange={(e) => setCatalogStockFilter(e.target.value)}
+                    className="admin-input"
+                    style={{ width: 'auto' }}
+                  >
+                    <option value="all">همه موجودی‌ها</option>
+                    <option value="in_stock">موجود در کارگاه</option>
+                    <option value="low_stock">رو به اتمام (هشدار)</option>
+                    <option value="out_of_stock">ناموجود</option>
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -1122,6 +1269,7 @@ export default function AdminPage() {
                   <tbody>
                     {catalog
                       .filter(p => catalogCategory === 'all' || p.category === catalogCategory)
+                      .filter(p => catalogStockFilter === 'all' || p.stock_status === catalogStockFilter)
                       .filter(p => !catalogSearch.trim() || p.name.includes(catalogSearch.trim()) || (p.notes && p.notes.includes(catalogSearch.trim())))
                       .map(p => (
                         <tr key={p.id}>
@@ -1216,13 +1364,23 @@ export default function AdminPage() {
                             </button>
                           </td>
                           <td>
-                            <button
-                              className="admin-dark-btn"
-                              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
-                              onClick={() => setSelectedProductForEdit(p)}
-                            >
-                              <Edit2 size={14} /> <span>ویرایش کامل</span>
-                            </button>
+                            <div style={{ display: 'flex', gap: '0.4rem' }}>
+                              <button
+                                className="admin-dark-btn"
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+                                onClick={() => setSelectedProductForEdit(p)}
+                              >
+                                <Edit2 size={14} /> <span>ویرایش</span>
+                              </button>
+                              <button
+                                className="admin-dark-btn admin-dark-btn-danger"
+                                style={{ padding: '0.35rem 0.55rem' }}
+                                onClick={() => handleDeleteProduct(p)}
+                                title="حذف دائم محصول"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -1590,7 +1748,89 @@ export default function AdminPage() {
             Tab 6: Admin Settings & Password Change
             =================================================================== */}
         {activeTab === 'settings' && (
-          <div style={{ maxWidth: '540px', margin: '0 auto', background: '#17241d', padding: '2.5rem 2rem', borderRadius: '18px', border: '1px solid #273b30', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.5rem', maxWidth: '1100px', margin: '0 auto' }}>
+            {/* Box 1: Store General Settings */}
+            <div style={{ background: '#17241d', padding: '2rem', borderRadius: '18px', border: '1px solid #273b30', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+              <h2 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '0.75rem', color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Settings size={22} style={{ color: '#c88d4e' }} />
+                <span>تنظیمات عمومی فروشگاه و کارگاه</span>
+              </h2>
+              <p style={{ color: '#8da495', fontSize: '0.85rem', marginBottom: '1.5rem', lineHeight: 1.5 }}>
+                این مقادیر در هدر، فوتر، تسویه سبد خرید و صفحات تماس وب‌سایت برای مشتریان نمایش داده می‌شوند.
+              </p>
+
+              <form onSubmit={handleSaveStoreSettings} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+                <div className="admin-input-group">
+                  <label className="admin-input-label">شماره واتساپ کارگاه (بدون صفر و با ۹۸ یا ۰۹):</label>
+                  <input
+                    type="text"
+                    dir="ltr"
+                    className="admin-input"
+                    value={storeSettings.contact_whatsapp}
+                    onChange={(e) => setStoreSettings({ ...storeSettings, contact_whatsapp: e.target.value })}
+                    placeholder="0912..."
+                  />
+                </div>
+
+                <div className="admin-input-group">
+                  <label className="admin-input-label">تلفن تماس پشتیبانی کارگاه:</label>
+                  <input
+                    type="text"
+                    dir="ltr"
+                    className="admin-input"
+                    value={storeSettings.contact_phone}
+                    onChange={(e) => setStoreSettings({ ...storeSettings, contact_phone: e.target.value })}
+                    placeholder="02188888888"
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                  <div className="admin-input-group">
+                    <label className="admin-input-label">هزینه ارسال پیش‌فرض (تومان):</label>
+                    <input
+                      type="number"
+                      dir="ltr"
+                      className="admin-input"
+                      value={storeSettings.shipping_cost}
+                      onChange={(e) => setStoreSettings({ ...storeSettings, shipping_cost: e.target.value })}
+                    />
+                  </div>
+                  <div className="admin-input-group">
+                    <label className="admin-input-label">حداقل خرید ارسال رایگان (تومان):</label>
+                    <input
+                      type="number"
+                      dir="ltr"
+                      className="admin-input"
+                      value={storeSettings.free_shipping_threshold}
+                      onChange={(e) => setStoreSettings({ ...storeSettings, free_shipping_threshold: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="admin-input-group">
+                  <label className="admin-input-label">متن بنر ویژه / اطلاعیه بالای سایت:</label>
+                  <textarea
+                    rows={2}
+                    className="admin-input"
+                    value={storeSettings.announcement_banner}
+                    onChange={(e) => setStoreSettings({ ...storeSettings, announcement_banner: e.target.value })}
+                    placeholder="متن پیام بالای سایت..."
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={actionLoading}
+                  className="admin-login-btn"
+                  style={{ marginTop: '0.5rem' }}
+                >
+                  {actionLoading ? 'در حال ذخیره‌سازی…' : 'ذخیره تنظیمات عمومی کارگاه'}
+                </button>
+              </form>
+            </div>
+
+            {/* Box 2: Password Change */}
+            <div style={{ background: '#17241d', padding: '2rem', borderRadius: '18px', border: '1px solid #273b30', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
             <h2 style={{ fontSize: '1.35rem', fontWeight: 800, marginBottom: '0.75rem', color: '#fff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Key size={22} style={{ color: '#c88d4e' }} />
               <span>تنظیمات و تغییر رمز عبور مدیریت</span>
@@ -1648,6 +1888,7 @@ export default function AdminPage() {
               </button>
             </form>
           </div>
+        </div>
         )}
 
         {/* ===================================================================
@@ -1754,9 +1995,44 @@ export default function AdminPage() {
                     <p style={{ margin: '0.25rem 0 0', fontSize: '0.88rem' }}>{selectedOrder.notes}</p>
                   </div>
                 )}
+
+                {/* Tracking Code Section */}
+                <div style={{ background: '#121c17', border: '1px solid #273b30', borderRadius: '10px', padding: '1rem', marginTop: '0.5rem' }}>
+                  <label className="admin-input-label" style={{ fontWeight: 700, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <Package size={16} style={{ color: '#c88d4e' }} />
+                    <span>کد رهگیری مرسوله پستی / پیک:</span>
+                  </label>
+                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.4rem' }}>
+                    <input
+                      type="text"
+                      dir="ltr"
+                      placeholder="مثال: 123456789012345678901234 (کد رهگیری پست پیشتاز)"
+                      value={trackingInput}
+                      onChange={(e) => setTrackingInput(e.target.value)}
+                      className="admin-input"
+                    />
+                    <button
+                      type="button"
+                      className="admin-dark-btn admin-dark-btn-accent"
+                      onClick={() => handleUpdateOrderStatus(selectedOrder.id, null, null, trackingInput)}
+                      disabled={actionLoading}
+                      style={{ whiteSpace: 'nowrap' }}
+                    >
+                      ثبت کد رهگیری
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              <div className="admin-dark-modal-foot">
+              <div className="admin-dark-modal-foot" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <button
+                  type="button"
+                  className="admin-dark-btn"
+                  onClick={() => setInvoiceOrder(selectedOrder)}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#c88d4e' }}
+                >
+                  <Printer size={16} /> <span>چاپ فاکتور کارگاه</span>
+                </button>
                 <button className="admin-dark-btn" onClick={() => setSelectedOrder(null)}>بستن</button>
               </div>
             </div>
@@ -1931,6 +2207,23 @@ export default function AdminPage() {
                   </div>
 
                   <div className="admin-input-group">
+                    <label className="admin-input-label">انتخاب سریع تصویر شاخص کارگاه:</label>
+                    <div className="admin-img-presets-grid">
+                      {IMAGE_PRESETS.map((img, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          className={`admin-img-preset-btn ${selectedProductForEdit.image === img.url ? 'active' : ''}`}
+                          onClick={() => setSelectedProductForEdit({ ...selectedProductForEdit, image: img.url })}
+                          title={img.label}
+                        >
+                          <img src={img.url} alt={img.label} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="admin-input-group">
                     <label className="admin-input-label">توضیحات و داستان محصول</label>
                     <textarea
                       rows={3}
@@ -2079,6 +2372,23 @@ export default function AdminPage() {
                   </div>
 
                   <div className="admin-input-group">
+                    <label className="admin-input-label">انتخاب سریع تصویر شاخص کارگاه:</label>
+                    <div className="admin-img-presets-grid">
+                      {IMAGE_PRESETS.map((img, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          className={`admin-img-preset-btn ${newProd.image === img.url ? 'active' : ''}`}
+                          onClick={() => setNewProd({ ...newProd, image: img.url })}
+                          title={img.label}
+                        >
+                          <img src={img.url} alt={img.label} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="admin-input-group">
                     <label className="admin-input-label">توضیحات کوتاه محصول</label>
                     <textarea
                       rows={2}
@@ -2100,6 +2410,116 @@ export default function AdminPage() {
             </div>
           </div>
         )}
+
+
+      {/* ===================================================================
+          Printable Official Invoice & Packing Slip Modal
+          =================================================================== */}
+      {invoiceOrder && (
+        <div className="admin-dark-modal-backdrop" onClick={() => setInvoiceOrder(null)}>
+          <div className="admin-dark-modal" style={{ maxWidth: '820px', background: '#fff', color: '#111' }} onClick={(e) => e.stopPropagation()}>
+            <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', borderBottom: '1px solid #ddd', background: '#f5f5f5', borderRadius: '14px 14px 0 0' }}>
+              <strong style={{ color: '#12281c', fontSize: '1.05rem' }}>پیش‌نمایش فاکتور رسمی و برچسب پستی</strong>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button
+                  type="button"
+                  className="admin-dark-btn admin-dark-btn-accent"
+                  onClick={() => window.print()}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 1rem' }}
+                >
+                  <Printer size={16} /> <span>چاپ فاکتور (Print)</span>
+                </button>
+                <button
+                  type="button"
+                  className="admin-dark-btn"
+                  onClick={() => setInvoiceOrder(null)}
+                  style={{ color: '#555', borderColor: '#ccc' }}
+                >
+                  ✕ بستن
+                </button>
+              </div>
+            </div>
+
+            <div className="invoice-paper" style={{ padding: '2rem' }}>
+              <div className="invoice-header">
+                <div>
+                  <h1 className="invoice-title">کارگاه برشته‌کاری کیپ کافی</h1>
+                  <p className="invoice-sub">Keep Coffee Roastery • فاکتور فروش و مرسوله</p>
+                </div>
+                <div className="invoice-meta-box">
+                  <div><strong>شماره سفارش:</strong> <span style={{ fontFamily: 'monospace', fontSize: '1.1rem' }}>{invoiceOrder.order_number}</span></div>
+                  <div><strong>تاریخ ثبت:</strong> {invoiceOrder.created_at}</div>
+                  {invoiceOrder.tracking_code && (
+                    <div style={{ marginTop: '0.25rem', color: '#097969', fontWeight: 700 }}>
+                      <strong>کد رهگیری مرسوله:</strong> {invoiceOrder.tracking_code}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="invoice-parties-grid">
+                <div>
+                  <strong style={{ display: 'block', color: '#12281c', marginBottom: '0.35rem', borderBottom: '1px solid #ddd', paddingBottom: '0.2rem' }}>مشخصات فرستنده:</strong>
+                  <div>کارگاه برشته‌کاری کیپ کافی (Keep Coffee)</div>
+                  <div>شماره تماس کارگاه: {storeSettings.contact_phone || '۰۲۱-۸۸۸۸۸۸۸۸'}</div>
+                  <div>نشانی: تهران، کارگاه برشته‌کاری و بسته‌بندی قهوه تخصصی</div>
+                </div>
+                <div>
+                  <strong style={{ display: 'block', color: '#12281c', marginBottom: '0.35rem', borderBottom: '1px solid #ddd', paddingBottom: '0.2rem' }}>مشخصات گیرنده و خریدار:</strong>
+                  <div><strong>نام خریدار:</strong> {invoiceOrder.customer_name}</div>
+                  <div><strong>شماره تماس:</strong> <span dir="ltr">{invoiceOrder.customer_phone}</span></div>
+                  <div><strong>نشانی تحویل:</strong> {invoiceOrder.customer_address || 'تحویل حضوری در کارگاه'}</div>
+                </div>
+              </div>
+
+              <table className="invoice-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '40px' }}>ردیف</th>
+                    <th>شرح کالا و مشخصات</th>
+                    <th>نوع آسیاب</th>
+                    <th style={{ width: '70px' }}>تعداد</th>
+                    <th>قیمت واحد (تومان)</th>
+                    <th>مبلغ کل (تومان)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {invoiceOrder.items?.map((it, idx) => (
+                    <tr key={idx}>
+                      <td style={{ textAlign: 'center' }}>{toPersianDigits(idx + 1)}</td>
+                      <td><strong>{it.product_name}</strong></td>
+                      <td>{it.grind || 'دانه کامل'}</td>
+                      <td style={{ textAlign: 'center' }}>{toPersianDigits(it.quantity)}</td>
+                      <td>{formatToman(it.unit_price)}</td>
+                      <td>{formatToman(it.total_price)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <div className="invoice-total-row">
+                <span>مبلغ نهایی قابل پرداخت:</span>
+                <span style={{ fontSize: '1.25rem' }}>{formatToman(invoiceOrder.final_amount)} تومان</span>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #eee' }}>
+                <div>
+                  <span style={{ fontSize: '0.85rem', color: '#666' }}>یادداشت و توضیحات سفارش:</span>
+                  <p style={{ margin: '0.25rem 0 0', fontSize: '0.88rem' }}>{invoiceOrder.notes || 'دانه‌ها تازه‌برشت با بالاترین کیفیت آماده و بسته‌بندی شده‌اند.'}</p>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <span style={{ fontSize: '0.85rem', color: '#666' }}>مهر و امضای کارگاه برشته‌کاری:</span>
+                  <div style={{ height: '50px' }}></div>
+                </div>
+              </div>
+
+              <div className="invoice-footer">
+                از انتخاب و همراهی شما با برشته‌کاری کیپ کافی سپاسگزاریم • وب‌سایت: keepcoffee.ir
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       </main>
     </div>
