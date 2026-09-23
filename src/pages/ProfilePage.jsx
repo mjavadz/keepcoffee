@@ -43,13 +43,13 @@ const REASON_LABELS = {
 };
 
 const TABS = [
-  { id: 'wallet', label: 'کیف پول و دارایی‌ها', icon: Wallet, badge: 'جدید' },
-  { id: 'wheel', label: 'گردونه شانس و جوایز', icon: Gift, badge: 'رایگان' },
+  { id: 'wallet', label: 'کیف پول و دارایی', icon: Wallet, badge: 'جدید' },
+  { id: 'wheel', label: 'گردونه جوایز', icon: Gift, badge: 'رایگان' },
   { id: 'brew', label: 'دستیار دم‌آوری', icon: Clock },
   { id: 'journal', label: 'دفترچه طعم‌یابی', icon: Coffee },
-  { id: 'quests', label: 'ماموریت‌ها و نشان‌ها', icon: Trophy },
-  { id: 'referral', label: 'کد معرف و دعوت', icon: Send },
-  { id: 'settings', label: 'مشخصات و عکس', icon: User },
+  { id: 'quests', label: 'ماموریت و نشان‌ها', icon: Trophy },
+  { id: 'referral', label: 'دعوت از دوستان', icon: Send },
+  { id: 'settings', label: 'مشخصات و امنیت', icon: User },
 ];
 
 export default function ProfilePage() {

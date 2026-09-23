@@ -649,7 +649,7 @@ export default function WalletHub({ user, storageKey }) {
           onClick={() => setSubTab('web3')}
         >
           <Sparkles size={16} />
-          <span>اتصال کیف پول Web3 (واریز مستقیم)</span>
+          <span>کیف پول Web3</span>
           <span className="live-dot" />
         </button>
 
@@ -668,7 +668,7 @@ export default function WalletHub({ user, storageKey }) {
           onClick={() => setSubTab('crypto')}
         >
           <QrCode size={16} />
-          <span>آدرس‌های والت من</span>
+          <span>آدرس‌های والت</span>
         </button>
 
         <button
@@ -677,7 +677,7 @@ export default function WalletHub({ user, storageKey }) {
           onClick={() => setSubTab('history')}
         >
           <ShieldCheck size={16} />
-          <span>تاریخچه تراکنش‌ها</span>
+          <span>سوابق تراکنش‌ها</span>
         </button>
       </div>
 
