@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Trash2, Send, Phone, Check, Coffee, Truck, WhatsApp, Telegram, ArrowLeft } from '../components/Icons';
+import Stepper from '../components/ui/Stepper';
+import NumberField from '../components/ui/NumberField';
 import SEO from '../components/SEO';
 import { useCart } from '../context/CartContext';
 import { api } from '../api';
@@ -89,33 +91,49 @@ export default function CartPage() {
             <Link to="/shop" className="btn btn-primary btn-lg">مشاهده کاتالوگ قهوه‌ها</Link>
           </div>
         ) : (
-          <div className="cart-layout">
-            <div className="cart-items">
-              {detailedItems.map((item) => (
-                <div key={item.cartKey} className="cart-row">
-                  <Link to={`/product/${item.slug}`} className="cart-thumb">
-                    <img src={item.image} alt={item.name} />
-                  </Link>
-                  <div className="cart-row-main">
-                    <Link to={`/product/${item.slug}`} className="cart-name">{item.name}</Link>
-                    {item.grindLabel && (
-                      <span className="cart-grind-tag">آسیاب: {item.grindLabel}</span>
-                    )}
-                    <span className="cart-unit">{formatToman(item.price)}</span>
-                  </div>
-                  <div className="qty-stepper" role="group" aria-label="تعداد">
-                    <button onClick={() => updateQty(item.cartKey, item.qty - 1)} aria-label="کاهش">−</button>
-                    <span>{toPersianDigits(item.qty)}</span>
-                    <button onClick={() => updateQty(item.cartKey, item.qty + 1)} aria-label="افزایش">+</button>
-                  </div>
-                  <span className="cart-line-total">{formatToman(item.lineTotal)}</span>
-                  <button className="cart-remove" onClick={() => removeItem(item.cartKey)} aria-label={`حذف ${item.name}`}>
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-              ))}
-              <button className="cart-clear" onClick={clear}>خالی کردن کامل سبد</button>
+          <>
+            <div className="cart-stepper-wrap" style={{ maxWidth: '820px', margin: '0 auto 2rem' }}>
+              <Stepper
+                steps={[
+                  { label: 'بررسی اقلام سبد', description: `${toPersianDigits(count)} ردیف کالا` },
+                  { label: 'مشخصات تحویل', description: customer.name ? customer.name : 'نام و آدرس گیرنده' },
+                  { label: 'تأیید و ارسال به کارگاه', description: 'واتساپ / تلگرام' }
+                ]}
+                current={customer.name && customer.phone ? 2 : detailedItems.length > 0 ? 1 : 0}
+              />
             </div>
+
+            <div className="cart-layout">
+              <div className="cart-items">
+                {detailedItems.map((item) => (
+                  <div key={item.cartKey} className="cart-row">
+                    <Link to={`/product/${item.slug}`} className="cart-thumb">
+                      <img src={item.image} alt={item.name} />
+                    </Link>
+                    <div className="cart-row-main">
+                      <Link to={`/product/${item.slug}`} className="cart-name">{item.name}</Link>
+                      {item.grindLabel && (
+                        <span className="cart-grind-tag">آسیاب: {item.grindLabel}</span>
+                      )}
+                      <span className="cart-unit">{formatToman(item.price)}</span>
+                    </div>
+                    <div className="cart-row-qty">
+                      <NumberField
+                        value={item.qty}
+                        onChange={(newQty) => updateQty(item.cartKey, newQty)}
+                        min={1}
+                        max={50}
+                        ariaLabel={`تعداد ${item.name}`}
+                      />
+                    </div>
+                    <span className="cart-line-total">{formatToman(item.lineTotal)}</span>
+                    <button className="cart-remove" onClick={() => removeItem(item.cartKey)} aria-label={`حذف ${item.name}`}>
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                ))}
+                <button className="cart-clear" onClick={clear}>خالی کردن کامل سبد</button>
+              </div>
 
             <aside className="cart-summary">
               <h2>خلاصه پیش‌فاکتور</h2>
@@ -192,6 +210,7 @@ export default function CartPage() {
               </Link>
             </aside>
           </div>
+          </>
         )}
       </div>
     </div>

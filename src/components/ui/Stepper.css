@@ -1,0 +1,118 @@
+/* VibeFarsi Stepper Theme for Keep Coffee */
+.vibe-stepper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.75rem 0;
+  width: 100%;
+  direction: rtl;
+}
+
+.vibe-step-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.vibe-step-item:last-child {
+  flex: 0 0 auto;
+}
+
+.vibe-step-item.clickable {
+  cursor: pointer;
+}
+
+.vibe-step-indicator {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.vibe-step-circle {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  background: var(--bg-card, #231c19);
+  color: var(--text-muted, #9c8e84);
+  border: 1.5px solid var(--border-color, rgba(200, 141, 78, 0.25));
+  transition: all 0.2s ease;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.vibe-step-item.active .vibe-step-circle {
+  border-color: #c88d4e;
+  color: #c88d4e;
+  background: rgba(200, 141, 78, 0.12);
+  box-shadow: 0 0 0 4px rgba(200, 141, 78, 0.18);
+  transform: scale(1.05);
+}
+
+.vibe-step-item.done .vibe-step-circle {
+  background: #10b981;
+  border-color: #10b981;
+  color: #fff;
+}
+
+.vibe-step-line {
+  flex: 1;
+  height: 2px;
+  background: var(--border-color, rgba(255, 255, 255, 0.1));
+  margin: 0 0.5rem;
+  transition: background 0.2s ease;
+}
+
+.vibe-step-item.done .vibe-step-line {
+  background: #10b981;
+}
+
+.vibe-step-content {
+  margin-top: 0.4rem;
+  padding-left: 0.5rem;
+}
+
+.vibe-step-label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted, #9c8e84);
+  transition: color 0.15s ease;
+}
+
+.vibe-step-item.active .vibe-step-label {
+  color: var(--text-heading, #fff);
+}
+
+.vibe-step-item.done .vibe-step-label {
+  color: var(--text-base, #e4ded7);
+}
+
+.vibe-step-desc {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-dim, #7a6e65);
+  margin-top: 0.1rem;
+}
+
+@media (max-width: 600px) {
+  .vibe-step-circle {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.75rem;
+  }
+  .vibe-step-label {
+    font-size: 0.75rem;
+  }
+  .vibe-step-desc {
+    display: none;
+  }
+}

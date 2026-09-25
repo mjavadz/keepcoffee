@@ -4,6 +4,7 @@ import SEO from '../components/SEO';
 import { useAuth } from '../context/AuthContext';
 import { api, setCsrfToken } from '../api';
 import { Key, Shield, ArrowLeft, RefreshCw, CheckCircle, Mail } from '../components/Icons';
+import OtpField from '../components/ui/OtpField';
 import './AuthPage.css';
 
 export default function LoginPage() {
@@ -285,21 +286,16 @@ export default function LoginPage() {
               )}
 
               <form onSubmit={handle2FASubmit} noValidate>
-                <div className="auth-field">
-                  <label htmlFor="twofa-code">کد تایید ۶ رقمی ایمیل</label>
-                  <input
-                    id="twofa-code"
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    maxLength={6}
-                    dir="ltr"
-                    className="auth-code-input"
+                <div className="auth-field" style={{ textAlign: 'center' }}>
+                  <label htmlFor="twofa-code" style={{ display: 'block', marginBottom: '0.25rem' }}>
+                    کد تایید ۶ رقمی ایمیل
+                  </label>
+                  <OtpField
                     value={twoFaCode}
-                    onChange={(e) => setTwoFaCode(e.target.value.replace(/[^0-9]/g, ''))}
-                    placeholder="— — — — — —"
-                    autoFocus
-                    required
+                    onChange={(val) => setTwoFaCode(val)}
+                    onComplete={(val) => setTwoFaCode(val)}
+                    disabled={loading}
+                    error={!!error}
                   />
                 </div>
 
@@ -424,20 +420,16 @@ export default function LoginPage() {
               )}
 
               <form onSubmit={handleResetConfirmSubmit} noValidate>
-                <div className="auth-field">
-                  <label htmlFor="reset-code">کد ۶ رقمی دریافتی از ایمیل</label>
-                  <input
-                    id="reset-code"
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={6}
-                    dir="ltr"
-                    className="auth-code-input"
+                <div className="auth-field" style={{ textAlign: 'center' }}>
+                  <label htmlFor="reset-code" style={{ display: 'block', marginBottom: '0.25rem' }}>
+                    کد ۶ رقمی دریافتی از ایمیل
+                  </label>
+                  <OtpField
                     value={resetCode}
-                    onChange={(e) => setResetCode(e.target.value.replace(/[^0-9]/g, ''))}
-                    placeholder="— — — — — —"
-                    autoFocus
-                    required
+                    onChange={(val) => setResetCode(val)}
+                    onComplete={(val) => setResetCode(val)}
+                    disabled={loading}
+                    error={!!error}
                   />
                 </div>
 

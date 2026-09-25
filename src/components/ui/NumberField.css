@@ -1,0 +1,62 @@
+/* VibeFarsi NumberField Theme for Keep Coffee */
+.vibe-number-field {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 10px;
+  background: var(--bg-card, #231c19);
+  border: 1.5px solid var(--border-color, rgba(200, 141, 78, 0.25));
+  overflow: hidden;
+  height: 2.3rem;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.vibe-number-field:hover {
+  border-color: rgba(200, 141, 78, 0.5);
+}
+
+.vibe-number-field:focus-within {
+  border-color: #c88d4e;
+  box-shadow: 0 0 0 2px rgba(200, 141, 78, 0.2);
+}
+
+.vibe-num-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 100%;
+  background: transparent;
+  border: none;
+  color: var(--text-heading, #fff);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.vibe-num-btn:hover:not(:disabled) {
+  background: rgba(200, 141, 78, 0.2);
+  color: #c88d4e;
+}
+
+.vibe-num-btn:active:not(:disabled) {
+  background: rgba(200, 141, 78, 0.35);
+}
+
+.vibe-num-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.vibe-num-value {
+  min-width: 2.2rem;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-heading, #fff);
+  border-left: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+  border-right: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+  padding: 0 0.3rem;
+  line-height: 2.3rem;
+}

@@ -1,0 +1,59 @@
+/* VibeFarsi OTP Field Theme for Keep Coffee */
+.vibe-otp-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  direction: ltr;
+  margin: 1.25rem 0;
+  width: 100%;
+}
+
+.vibe-otp-box {
+  width: 3rem;
+  height: 3.5rem;
+  text-align: center;
+  font-family: inherit;
+  font-size: 1.4rem;
+  font-weight: 800;
+  border-radius: 12px;
+  background: var(--bg-card, #231c19);
+  color: var(--text-heading, #fff);
+  border: 1.5px solid var(--border-color, rgba(200, 141, 78, 0.25));
+  transition: all 0.15s ease-in-out;
+  outline: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.vibe-otp-box:hover {
+  border-color: rgba(200, 141, 78, 0.5);
+}
+
+.vibe-otp-box:focus {
+  border-color: #c88d4e;
+  box-shadow: 0 0 0 3px rgba(200, 141, 78, 0.25);
+  background: var(--bg-elevated, #2c2420);
+  transform: translateY(-1px);
+}
+
+.vibe-otp-box:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.vibe-otp-container.has-error .vibe-otp-box {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+@media (max-width: 480px) {
+  .vibe-otp-container {
+    gap: 0.35rem;
+  }
+  .vibe-otp-box {
+    width: 2.5rem;
+    height: 3rem;
+    font-size: 1.2rem;
+    border-radius: 8px;
+  }
+}
