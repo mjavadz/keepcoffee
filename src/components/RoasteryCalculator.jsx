@@ -176,7 +176,9 @@ export default function RoasteryCalculator() {
               className="btn btn-primary btn-block calc-cta-btn"
             >
               <Send size={18} />
-              دریافت بسته تست (Sample Pack) و عقد قرارداد در واتساپ
+              <span>
+                دریافت بسته تست <span className="calc-sample-tag">(Sample Pack)</span> و عقد قرارداد <span className="calc-wa-tag">در واتساپ</span>
+              </span>
             </a>
             <div className="calc-phones-row">
               <a href={links.telRahimi()} className="calc-phone-link">
