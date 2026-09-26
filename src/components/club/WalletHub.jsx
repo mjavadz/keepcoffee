@@ -29,7 +29,7 @@ export const SUPPORTED_BANKS = [
 // Official Workshop Deposit Addresses for Top-Up
 export const WORKSHOP_DEPOSIT_WALLETS = {
   evm: {
-    address: '0x7e543a5aC5A1dDdfA5B3A6809a3f2F10f1eC93EC',
+    address: '0xdB25e672d7873d178f6465E242BAdF44e990A787',
     networks: ['Ethereum (ERC-20)', 'Binance Smart Chain (BEP-20)'],
     tokens: ['USDT (BEP-20)', 'USDT (ERC-20)', 'ETH', 'BNB'],
   },
@@ -1247,7 +1247,7 @@ export default function WalletHub({ user, storageKey }) {
                 <input
                   type="text"
                   dir="ltr"
-                  placeholder="0x7e543a5aC5A1dDdfA5B3A6809a3f2F10f1eC93EC..."
+                  placeholder="0xdB25e672d7873d178f6465E242BAdF44e990A787..."
                   value={cryptoAddresses.evm}
                   onChange={(e) => setCryptoAddresses({ ...cryptoAddresses, evm: e.target.value })}
                 />

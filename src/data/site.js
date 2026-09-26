@@ -30,7 +30,7 @@ export const site = {
   // --- Official Workshop Crypto Wallets ---
   wallets: {
     btc: 'bc1q5gs297eqhgjet7eqkm5cdx7lzpjsvnz8ny5us9',
-    evm: '0x7e543a5aC5A1dDdfA5B3A6809a3f2F10f1eC93EC',
+    evm: '0xdB25e672d7873d178f6465E242BAdF44e990A787',
     trx: 'TJSpjmoz4F84kB4e3tvxJt3LFhhwVtiHQN',
     sol: '3hY5AZkErdBrWRjYypr9TUaH7Vo3SvVuft8Zm7hJjJQn',
     gram: 'UQAzVbTDzh2sCc6854FjKI-c9x-jz_sjLlJa_SmF1SC1sIMS',
