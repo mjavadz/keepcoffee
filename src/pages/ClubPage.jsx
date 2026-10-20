@@ -119,7 +119,7 @@ export default function ClubPage() {
       <SEO 
         title="باشگاه مشتریان و همراهان" 
         path="/club" 
-        description="باشگاه وفاداری روستری کیپ کافی؛ امتیاز روزانه، کارت دیجیتال عضویت، تخفیف پلکانی تا ۱۵٪ و ارسال رایگان." 
+        description="باشگاه وفاداری برشته‌کاری کیپ کافی؛ امتیاز روزانه، کارت دیجیتال عضویت، تخفیف پلکانی تا ۱۵٪ و ارسال رایگان." 
       />
 
       {/* Hero with Roastery VIP Ambience */}
@@ -128,7 +128,7 @@ export default function ClubPage() {
           <div className="club-hero-text">
             <div className="club-badge-glow">
               <Star size={16} className="spin-star" />
-              <span>باشگاه وفاداری و همراهان روستری</span>
+              <span>باشگاه وفاداری و همراهان برشته‌کاری</span>
             </div>
             
             <h1 className="club-hero-title">
@@ -142,7 +142,7 @@ export default function ClubPage() {
             <div className="club-hero-stats">
               <div className="stat-pill">
                 <span className="stat-num">{toPersianDigits('2400')}+</span>
-                <span className="stat-lbl">عضو فعال روستری</span>
+                <span className="stat-lbl">عضو فعال برشته‌کاری</span>
               </div>
               <div className="stat-divider"></div>
               <div className="stat-pill">
@@ -192,7 +192,7 @@ export default function ClubPage() {
                   </div>
                   <div className="brand-titles">
                     <strong className="brand-name-fa">کیپ کافی</strong>
-                    <span className="brand-sub-fa">باشگاه وفاداری روستری</span>
+                    <span className="brand-sub-fa">باشگاه وفاداری برشته‌کاری</span>
                   </div>
                 </div>
                 <div className="roastery-card-tier-pill">
@@ -309,7 +309,7 @@ export default function ClubPage() {
             </div>
             <h3>سفارش ترکیب‌های محبوب</h3>
             <p>
-              با هر کیلوگرم خرید از ۶ ترکیب رسمی روستری، امتیاز به حساب شما اضافه می‌شود. خریدهای بالاتر شتاب کسب امتیاز را بیشتر می‌کنند.
+              با هر کیلوگرم خرید از ۶ ترکیب رسمی برشته‌کاری، امتیاز به حساب شما اضافه می‌شود. خریدهای بالاتر شتاب کسب امتیاز را بیشتر می‌کنند.
             </p>
           </div>
 
@@ -403,7 +403,7 @@ export default function ClubPage() {
         <div className="section-header-center">
           <span className="section-sub-badge">پاداش وفاداری پلکانی</span>
           <h2 className="section-title">سطوح عضویت در کارگاه</h2>
-          <p className="section-subtitle">با ارتقای سطح، امکانات و مزایای ویژه روستری به صورت خودکار برای شما باز می‌شوند</p>
+          <p className="section-subtitle">با ارتقای سطح، امکانات و مزایای ویژه برشته‌کاری به صورت خودکار برای شما باز می‌شوند</p>
         </div>
 
         <div className="tiers-grid-luxury">
@@ -510,7 +510,7 @@ export default function ClubPage() {
               </Link>
             )}
             <a href="tel:09335333499" className="btn btn-outline btn-lg">
-              تماس با کارگاه روستری
+              تماس با کارگاه برشته‌کاری
             </a>
           </div>
         </div>

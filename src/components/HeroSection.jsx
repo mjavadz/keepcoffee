@@ -13,7 +13,7 @@ export default function HeroSection() {
         <div className="hero-content">
           <span className="hero-badge">
             <Coffee size={16} />
-            <span>روستری کیپ کافی</span>
+            <span>برشته‌کاری کیپ کافی</span>
           </span>
           <h1 className="hero-title">
             طعم اصیل قهوه، <br />

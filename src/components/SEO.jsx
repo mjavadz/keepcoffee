@@ -18,7 +18,7 @@ export default function SEO({
 }) {
   const defaultTitle = "کیپ کافی | برشته‌کاری تخصصی قهوه و ملزومات دم‌آوری";
   const defaultDescription = "کیپ کافی؛ کارگاه برشته‌کاری تخصصی قهوه در تهران. تأمین انواع ترکیب‌های تازه برشت، قهوه اسپرسو و ملزومات حرفه‌ای باریستا با ارسال مستقیم کارگاهی.";
-  const defaultKeywords = "کیپ کافی, خرید قهوه, خرید قهوه عمده, قیمت دانه قهوه, قهوه روبوستا, قهوه عربیکا, قهوه اسپرسو, برشته کاری قهوه تهران, تجهیزات دم آوری, روستری کیپ کافی, keep coffee";
+  const defaultKeywords = "کیپ کافی, خرید قهوه, خرید قهوه عمده, قیمت دانه قهوه, قهوه روبوستا, قهوه عربیکا, قهوه اسپرسو, برشته کاری قهوه تهران, تجهیزات دم آوری, برشته‌کاری کیپ کافی, keep coffee";
 
   const siteTitle = title ? `${title} | کیپ کافی` : defaultTitle;
   const metaDescription = description || defaultDescription;
@@ -36,7 +36,7 @@ export default function SEO({
     "logo": `${SITE_URL}/apple-touch-icon.png`,
     "image": `${SITE_URL}/og-image.jpg`,
     "description": metaDescription,
-    "telephone": "+989120142210",
+    "telephone": `+98${site.phoneHref.replace(/^0/, '')}`,
     "email": site.email,
     "priceRange": "$$",
     "address": {

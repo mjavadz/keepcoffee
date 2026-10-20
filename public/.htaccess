@@ -6,3 +6,39 @@
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule . /index.html [L]
 </IfModule>
+
+# Security Headers (OWASP & ASVS compliant)
+<IfModule mod_headers.c>
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+  # Caching Policy:
+  # 1. Disable caching for HTML so app updates load immediately
+  <FilesMatch "(^$|\.html$)">
+    Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+    Header set Pragma "no-cache"
+    Header set Expires 0
+  </FilesMatch>
+
+  # 2. Immutable 1-year cache for versioned/hashed static assets
+  <FilesMatch "\.(js|css|woff2|webp|png|jpg|jpeg|svg|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>
+
+# Prevent access to dotfiles, backup files, and database files
+<FilesMatch "^\.(env|git|ht)|(\.(sql|sqlite|bak|log|zip|tar\.gz))$">
+  Require all denied
+</FilesMatch>
+
+Options -Indexes
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “alt-php82” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-alt-php82___lsphp .php .php8 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit

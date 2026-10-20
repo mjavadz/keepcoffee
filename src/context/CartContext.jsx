@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { products, grindOptions } from '../data/products';
+import { grindOptions } from '../data/products';
+import { useProducts } from './ProductsContext';
 
 const CartContext = createContext();
 export const useCart = () => useContext(CartContext);
@@ -17,6 +18,7 @@ function loadInitial() {
 }
 
 export function CartProvider({ children }) {
+  const { products } = useProducts();
   // items: [{ slug, qty, grind }]
   const [items, setItems] = useState(loadInitial);
 
@@ -83,7 +85,7 @@ export function CartProvider({ children }) {
           };
         })
         .filter(Boolean),
-    [items]
+    [items, products]
   );
 
   const count = useMemo(() => items.reduce((sum, i) => sum + i.qty, 0), [items]);

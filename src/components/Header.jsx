@@ -4,6 +4,7 @@ import { ShoppingCart, Moon, Sun, Monitor, Menu, X, Coffee, User } from './Icons
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import { useProducts } from '../context/ProductsContext';
 import { toPersianDigits } from '../utils/format';
 import './Header.css';
 
@@ -21,8 +22,18 @@ export default function Header() {
   const { count } = useCart();
   const { theme, activeTheme, toggleTheme } = useTheme();
   const { user } = useAuth();
+  const { settings } = useProducts();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(() => {
+    try {
+      return sessionStorage.getItem('keepcoffee_banner_dismissed') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const announcement = !bannerDismissed && settings?.announcement_banner ? settings.announcement_banner.trim() : null;
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -49,7 +60,26 @@ export default function Header() {
   };
 
   return (
-    <header className={`header ${scrolled ? 'header-scrolled' : ''}`}>
+    <header className={`header ${scrolled ? 'header-scrolled' : ''} ${announcement ? 'has-announcement' : ''}`}>
+      {announcement && (
+        <div className="header-announcement">
+          <div className="container announcement-content">
+            <span className="announcement-text">{announcement}</span>
+            <button
+              className="announcement-close"
+              onClick={() => {
+                setBannerDismissed(true);
+                try {
+                  sessionStorage.setItem('keepcoffee_banner_dismissed', 'true');
+                } catch {}
+              }}
+              aria-label="بستن پیام"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        </div>
+      )}
       <div className="container header-container">
         <Link to="/" className="header-logo">
           <Coffee size={28} className="logo-icon" />

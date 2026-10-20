@@ -4,7 +4,7 @@ import SEO from '../components/SEO';
 import RoasteryCalculator from '../components/RoasteryCalculator';
 import { site, links } from '../data/site';
 import { formatToman } from '../utils/format';
-import { products } from '../data/products';
+import { useProducts } from '../context/ProductsContext';
 import './WholesalePage.css';
 
 const WholesaleBanner = lazy(() => import('../components/WholesaleBanner'));
@@ -17,6 +17,7 @@ const benefits = [
 ];
 
 export default function WholesalePage() {
+  const { products } = useProducts();
   const beanProducts = products.filter(p => p.category === 'beans');
 
   const breadcrumbs = [

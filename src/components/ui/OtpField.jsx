@@ -4,7 +4,7 @@ import './OtpField.css';
 
 /**
  * کامپوننت کد تأیید ۶ رقمی وایب‌فارسی (VibeFarsi OTP Field)
- * سفارشی‌شده برای تم و استایل روستری کیپ‌کافی
+ * سفارشی‌شده برای تم و استایل برشته‌کاری کیپ‌کافی
  */
 export default function OtpField({
   length = 6,

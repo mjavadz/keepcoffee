@@ -19,7 +19,7 @@ export default function CustomerClub() {
           <div className="club-text">
             <div className="club-badge-glow">
               <Star size={15} />
-              <span>باشگاه وفاداری و همراهان روستری</span>
+              <span>باشگاه وفاداری و همراهان برشته‌کاری</span>
             </div>
 
             <h2 className="club-title">
@@ -88,7 +88,7 @@ export default function CustomerClub() {
                   </div>
                   <div className="brand-titles">
                     <strong className="brand-name-fa">کیپ کافی</strong>
-                    <span className="brand-sub-fa">باشگاه وفاداری روستری</span>
+                    <span className="brand-sub-fa">باشگاه وفاداری برشته‌کاری</span>
                   </div>
                 </div>
                 <div className="roastery-card-tier-pill">

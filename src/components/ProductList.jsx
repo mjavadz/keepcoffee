@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ProductCard from './ProductCard';
-import { products } from '../data/products';
+import { useProducts } from '../context/ProductsContext';
 import './ProductList.css';
 
 export default function ProductList({ limit = 4 }) {
+  const { products } = useProducts();
   const featured = products.slice(0, limit);
 
   return (

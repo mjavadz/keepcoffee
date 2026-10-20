@@ -3,7 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Phone, Check, ShieldCheck, Flame, Coffee, Sparkles } from '../components/Icons';
 import SEO from '../components/SEO';
 import ProductCard from '../components/ProductCard';
-import { getProduct, getRelated, grindOptions } from '../data/products';
+import { useProducts } from '../context/ProductsContext';
+import { grindOptions } from '../data/products';
 import { categoryLabel } from '../data/categories';
 import { useCart } from '../context/CartContext';
 import { formatToman, toPersianDigits } from '../utils/format';
@@ -14,6 +15,7 @@ import './ProductPage.css';
 export default function ProductPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const { getProduct, getRelated, loading } = useProducts();
   const product = getProduct(slug);
   const { addItem } = useCart();
   const [qty, setQty] = useState(1);
@@ -136,7 +138,7 @@ export default function ProductPage() {
             
             <div className="detail-price-box">
               <div className="detail-price">{formatToman(product.price)}</div>
-              {product.unit && <span className="price-unit-label">/ هر {product.unit}</span>}
+              {product.price && product.unit ? <span className="price-unit-label">/ هر {product.unit}</span> : null}
             </div>
 
             <p className="detail-desc">{product.description}</p>
@@ -258,6 +260,9 @@ export default function ProductPage() {
               </div>
             ) : (
               <div className="detail-actions">
+                <p className="price-inquiry-hint" style={{ width: '100%', margin: '0 0 12px 0', fontSize: '0.88rem', color: 'var(--color-accent)' }}>
+                  ⚠️ به دلیل نوسانات روزانه بازار، نرخ این محصول به‌صورت استعلامی است. جهت دریافت قیمت قطعی و ثبت سفارش با ما در ارتباط باشید:
+                </p>
                 <a href={links.tel(site.phoneHref)} className="btn btn-primary btn-lg detail-phone-btn">
                   <Phone size={18} />
                   تماس جهت استعلام قیمت ({site.phone})

@@ -127,7 +127,7 @@ export default function LuckyWheel({ user, onPointsWon, storageKey }) {
       <div className="wheel-banner-header">
         <div className="wheel-badge">
           <Sparkles size={16} />
-          <span>گردونه شانس روزانه روستری</span>
+          <span>گردونه شانس روزانه برشته‌کاری</span>
         </div>
         <h3>شانس روزانه‌ات را امتحان کن و برنده شو!</h3>
         <p>
@@ -223,7 +223,7 @@ export default function LuckyWheel({ user, onPointsWon, storageKey }) {
                         fill={p.text}
                         fontSize="13"
                         fontWeight="800"
-                        fontFamily="Vazirmatn, system-ui, sans-serif"
+                        fontFamily="var(--font-family)"
                         letterSpacing="0.2"
                       >
                         {p.label}
@@ -237,7 +237,7 @@ export default function LuckyWheel({ user, onPointsWon, storageKey }) {
                         opacity="0.85"
                         fontSize="9.5"
                         fontWeight="600"
-                        fontFamily="Vazirmatn, system-ui, sans-serif"
+                        fontFamily="var(--font-family)"
                       >
                         {p.tag}
                       </text>

@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import SEO from '../components/SEO';
 import ProductCard from '../components/ProductCard';
-import { products } from '../data/products';
+import { useProducts } from '../context/ProductsContext';
 import { categories } from '../data/categories';
 import { toPersianDigits } from '../utils/format';
 import './ShopPage.css';
@@ -15,6 +15,7 @@ const sortOptions = [
 ];
 
 export default function ShopPage() {
+  const { products, loading } = useProducts();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCategory = searchParams.get('category') || 'all';
   const [sort, setSort] = useState('default');

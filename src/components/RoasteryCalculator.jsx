@@ -1,12 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { Coffee, Calculator, Check, Send, Phone, Truck, Sparkles } from './Icons';
-import { products } from '../data/products';
+import { useProducts } from '../context/ProductsContext';
 import { formatToman, toPersianDigits } from '../utils/format';
 import { site, links } from '../data/site';
 import './RoasteryCalculator.css';
 
 export default function RoasteryCalculator() {
-  const beanProducts = useMemo(() => products.filter(p => p.category === 'beans'), []);
+  const { products } = useProducts();
+  const beanProducts = useMemo(() => products.filter(p => p.category === 'beans'), [products]);
   
   // State
   const [dailyShots, setDailyShots] = useState(80); // 80 cups per day default

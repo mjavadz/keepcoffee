@@ -369,6 +369,7 @@ export default function AdminPage() {
       setActionLoading(true);
       await api.post('/admin/settings/update', storeSettings);
       showToast('تنظیمات فروشگاه با موفقیت ذخیره شد');
+      window.dispatchEvent(new Event('keepcoffee_products_updated'));
     } catch (err) {
       showToast(err.message || 'خطا در ذخیره تنظیمات', 'error');
     } finally {
@@ -385,6 +386,7 @@ export default function AdminPage() {
       await api.post('/admin/products/delete', { id: p.id });
       showToast(`محصول "${p.name}" با موفقیت حذف شد`);
       fetchCatalog();
+      window.dispatchEvent(new Event('keepcoffee_products_updated'));
     } catch (err) {
       showToast(err.message || 'خطا در حذف محصول', 'error');
     } finally {
@@ -411,6 +413,7 @@ export default function AdminPage() {
       showToast('مشخصات محصول با موفقیت ذخیره شد');
       setEditingPriceId(null);
       fetchCatalog();
+      window.dispatchEvent(new Event('keepcoffee_products_updated'));
     } catch (err) {
       showToast(err.message || 'خطا در به‌روزرسانی محصول', 'error');
     } finally {
@@ -435,10 +438,15 @@ export default function AdminPage() {
         notes: selectedProductForEdit.notes,
         description: selectedProductForEdit.description,
         isActive: selectedProductForEdit.is_active ? 1 : 0,
+        image: selectedProductForEdit.image,
+        category: selectedProductForEdit.category,
+        unit: selectedProductForEdit.unit,
+        origin: selectedProductForEdit.origin,
       });
       showToast('تغییرات محصول در دیتابیس ثبت شد');
       setSelectedProductForEdit(null);
       fetchCatalog();
+      window.dispatchEvent(new Event('keepcoffee_products_updated'));
     } catch (err) {
       showToast(err.message || 'خطا در ذخیره مشخصات محصول', 'error');
     } finally {
@@ -477,6 +485,7 @@ export default function AdminPage() {
         image: '/images/photo-1509042239860-500.webp',
       });
       fetchCatalog();
+      window.dispatchEvent(new Event('keepcoffee_products_updated'));
     } catch (err) {
       showToast(err.message || 'خطا در افزودن محصول جدید', 'error');
     } finally {

@@ -71,7 +71,7 @@ export default function QuestsAndBadges({ user, journalCount = 0, onClaimReward,
     {
       id: 'novice',
       title: 'عضو خانواده کیپ کافی',
-      desc: 'آغاز مسیر همراهی با روستری',
+      desc: 'آغاز مسیر همراهی با برشته‌کاری',
       icon: Coffee,
       unlocked: true,
       tier: 'برنز',

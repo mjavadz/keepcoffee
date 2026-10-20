@@ -4,7 +4,7 @@
   min-height: 100vh;
   background-color: #111b16;
   color: #e5ede7;
-  font-family: 'Vazirmatn', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-family);
   direction: rtl;
   display: flex;
   flex-direction: column;

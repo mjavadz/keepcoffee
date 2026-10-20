@@ -9,7 +9,7 @@ const AcademyBlock = lazy(() => import('../components/AcademyBlock'));
 export default function AboutPage() {
   return (
     <div className="page">
-      <SEO title="درباره ما" path="/about" description="داستان کیپ کافی؛ روستری تخصصی قهوه از مزرعه تا فنجان، با تعهد به کیفیت و تازگی." />
+      <SEO title="درباره ما" path="/about" description="داستان کیپ کافی؛ برشته‌کاری تخصصی قهوه از مزرعه تا فنجان، با تعهد به کیفیت و تازگی." />
 
       <div className="page-hero">
         <div className="container">

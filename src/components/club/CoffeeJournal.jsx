@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Coffee, Star, Trash2, Check, Sparkles } from '../Icons';
 import { toPersianDigits } from '../../utils/format';
-import { products } from '../../data/products';
+import { useProducts } from '../../context/ProductsContext';
 import './CoffeeJournal.css';
 
 const TASTE_TAGS = [
@@ -18,6 +18,7 @@ const TASTE_TAGS = [
 ];
 
 export default function CoffeeJournal({ user, storageKey, onEntryAdded, prefill }) {
+  const { products } = useProducts();
   const beanProducts = products.filter((p) => p.category === 'beans');
 
   const [entries, setEntries] = useState([]);
