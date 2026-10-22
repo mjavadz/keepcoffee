@@ -773,7 +773,7 @@ export default function AdminPage() {
       <header className="admin-standalone-topbar">
         <div className="admin-topbar-brand">
           <div className="admin-brand-icon"><Coffee size={20} strokeWidth={2} /></div>
-          <div>
+          <div className="admin-brand-titles">
             <span className="admin-brand-text">Keep Coffee Roastery</span>
             <span className="admin-badge-tag">مدیریت کارگاه</span>
           </div>
@@ -1151,15 +1151,14 @@ export default function AdminPage() {
                               </span>
                             </td>
                             <td>
-                              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', alignItems: 'center' }}>
                                 <button className="admin-dark-btn" onClick={() => { setSelectedOrder(ord); setTrackingInput(ord.tracking_code || ''); }}>
                                   مشاهده و اقدام
                                 </button>
                                 <button
-                                  className="admin-dark-btn"
+                                  className="admin-dark-btn admin-btn-icon-only"
                                   onClick={() => setInvoiceOrder(ord)}
                                   title="چاپ فاکتور و برچسب پستی"
-                                  style={{ padding: '0.4rem 0.6rem' }}
                                 >
                                   <Printer size={15} />
                                 </button>
@@ -1373,7 +1372,7 @@ export default function AdminPage() {
                             </button>
                           </td>
                           <td>
-                            <div style={{ display: 'flex', gap: '0.4rem' }}>
+                            <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
                               <button
                                 className="admin-dark-btn"
                                 style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
@@ -1382,8 +1381,7 @@ export default function AdminPage() {
                                 <Edit2 size={14} /> <span>ویرایش</span>
                               </button>
                               <button
-                                className="admin-dark-btn admin-dark-btn-danger"
-                                style={{ padding: '0.35rem 0.55rem' }}
+                                className="admin-dark-btn admin-dark-btn-danger admin-btn-icon-only"
                                 onClick={() => handleDeleteProduct(p)}
                                 title="حذف دائم محصول"
                               >

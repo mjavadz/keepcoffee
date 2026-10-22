@@ -244,20 +244,31 @@ select.admin-input:focus,
   color: #c88d4e;
 }
 
+.admin-brand-titles {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .admin-brand-text {
   font-size: 1.15rem;
   font-weight: 800;
   color: #fff;
+  line-height: 1;
 }
 
 .admin-badge-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: #c88d4e;
   color: #fff;
   font-size: 0.72rem;
   font-weight: 700;
-  padding: 0.2rem 0.6rem;
+  padding: 0.22rem 0.6rem;
   border-radius: 999px;
-  margin-right: 0.5rem;
+  line-height: 1;
+  margin-right: 0;
 }
 
 .admin-topbar-actions {
@@ -672,6 +683,23 @@ select.admin-input:focus,
 .admin-dark-btn-danger:hover {
   background: #331515;
   border-color: #ef4444;
+}
+
+.admin-btn-icon-only {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.admin-btn-icon-only svg {
+  display: block;
+  margin: 0 auto;
 }
 
 @media (max-width: 768px) {
