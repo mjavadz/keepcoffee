@@ -701,7 +701,7 @@ export default function AdminPage() {
   if (!isAdminAuthed) {
     return (
       <div className="admin-login-screen">
-        <SEO title="ورود به سامانه مدیریت | کیپ کافی" description="ورود به بخش مدیریت کارگاه برشته‌کاری کیپ کافی" />
+        <SEO title="ورود به سامانه مدیریت" description="ورود به بخش مدیریت کارگاه برشته‌کاری کیپ کافی" />
 
         <div className="admin-login-card">
           <div className="admin-login-logo">
@@ -761,7 +761,7 @@ export default function AdminPage() {
   // =========================================================================
   return (
     <div className="admin-standalone-root">
-      <SEO title="سامانه مدیریت کارگاه | کیپ کافی" description="پنل مستقل مدیریت سفارشات و کاربران" />
+      <SEO title="سامانه مدیریت کارگاه" description="پنل مستقل مدیریت سفارشات و کاربران" />
 
       {toast && (
         <div className={`admin-toast ${toast.type}`}>
