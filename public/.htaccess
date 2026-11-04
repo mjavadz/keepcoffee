@@ -6,6 +6,9 @@
   RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK) [NC]
   RewriteRule .* - [F]
 
+  # Block sensitive file extensions immediately (403 Forbidden)
+  RewriteRule \.(sql|sqlite|bak|log|zip|tar\.gz|yml|yaml|ini|conf|config|sh|py|md)$ - [F,NC,L]
+
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
