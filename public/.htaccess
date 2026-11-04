@@ -1,6 +1,11 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+
+  # Block dangerous/probing HTTP methods
+  RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK) [NC]
+  RewriteRule .* - [F]
+
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
@@ -9,11 +14,15 @@
 
 # Security Headers (OWASP & ASVS compliant)
 <IfModule mod_headers.c>
+  Header always unset X-Powered-By
+  Header unset X-Powered-By
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set X-Content-Type-Options "nosniff"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header always set X-XSS-Protection "1; mode=block"
+  Header always set Content-Security-Policy "default-src 'self' https://keepcoffee.ir; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https://keepcoffee.ir; frame-ancestors 'self'; base-uri 'self'; object-src 'none';"
 
   # Caching Policy:
   # 1. Disable caching for HTML so app updates load immediately
@@ -30,7 +39,7 @@
 </IfModule>
 
 # Prevent access to dotfiles, backup files, and database files
-<FilesMatch "^\.(env|git|ht)|(\.(sql|sqlite|bak|log|zip|tar\.gz))$">
+<FilesMatch "^\.(env|git|ht)|(\.(sql|sqlite|bak|log|zip|tar\.gz|yml|yaml|ini|conf|config|sh|py|md))$">
   Require all denied
 </FilesMatch>
 
